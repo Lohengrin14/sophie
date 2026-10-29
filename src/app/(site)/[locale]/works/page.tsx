@@ -9,21 +9,10 @@ export default async function Works({ params }: { params: Promise<{ locale: stri
   if (!isLocale(locale)) notFound()
   const works = await getArtworks(locale)
   return (
-    <main id="main" className="container page-main">
-      <header className="page-heading catalog-heading">
-        <p className="eyebrow">{text(locale, 'ОРИГИНАЛЬНАЯ ЖИВОПИСЬ', 'ORIGINAL PAINTINGS')}</p>
-        <h1>
-          {text(locale, 'Коллекция', 'The collection')}
-          <sup>({String(works.length).padStart(2, '0')})</sup>
-        </h1>
-        <p>
-          {text(
-            locale,
-            'Выберите картину — детали обсудим лично.',
-            'Find your painting. We’ll work out the details together.',
-          )}
-        </p>
-      </header>
+    <main id="main" className="container gallery-main">
+      <div className="gallery-bar">
+        <h1>{text(locale, 'Все картины', 'All paintings')}</h1>
+      </div>
       <Catalog locale={locale} works={works.map(toCardItem)} />
     </main>
   )

@@ -37,12 +37,18 @@ export function Catalog({ works, locale }: { works: CatalogItem[]; locale: Local
       </div>
       <div className="artwork-grid">
         {visible.map((work, i) => (
-          <ArtworkCard key={work.id} work={work} locale={locale} index={i} />
+          <ArtworkCard key={work.id} work={work} locale={locale} priority={i < 3} />
         ))}
       </div>
       {visible.length === 0 && (
         <div className="empty-state">
-          <h3>{text(locale, 'Здесь пока тихо', 'A little quiet here')}</h3>
+          <h2>
+            {text(
+              locale,
+              works.length ? 'В этом разделе пока нет работ' : 'Работы скоро появятся',
+              works.length ? 'No works in this section yet' : 'New works coming soon',
+            )}
+          </h2>
           <p>
             {text(
               locale,
