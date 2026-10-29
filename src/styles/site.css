@@ -1979,3 +1979,25 @@ p {
     transform: none;
   }
 }
+
+.work-thumbnails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.work-thumbnails button {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.work-thumbnails button[aria-pressed='true'] {
+  border: 2px solid var(--accent);
+}
+.work-thumbnails img {
+  object-fit: contain;
+  padding: 5px;
+}

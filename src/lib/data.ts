@@ -18,9 +18,9 @@ export const getArtworks = cache(async (locale: Locale) => {
     locale,
     overrideAccess: false,
     depth: 1,
-    sort: ['-featured', 'sortOrder', 'id'],
+    sort: ['sortOrder', 'id'],
     limit: 100,
-    where: { and: [{ title: { exists: true } }, { description: { exists: true } }] },
+    where: { and: [{ title: { exists: true } }, { title: { not_equals: '' } }] },
   })
   return result.docs
 })

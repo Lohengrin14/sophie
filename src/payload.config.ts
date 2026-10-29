@@ -6,7 +6,9 @@ import {
   type GlobalConfig,
   type Access,
   type NumberField,
+  ValidationError,
 } from 'payload'
+import { galleryImageIDs, requestStatuses } from './lib/studio-admin'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { ru } from '@payloadcms/translations/languages/ru'
 import { artworkSlug, validStoredPrice } from './lib/admin-helpers'
@@ -117,17 +119,33 @@ const References: CollectionConfig = {
 }
 const Artworks: CollectionConfig = {
   slug: 'artworks',
-  labels: { singular: 'Картина', plural: 'Картины' },
+  labels: { singular: 'Галерея', plural: 'Галереи' },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'availability', 'priceMinor', 'published'],
     group: 'Студия',
     description:
-      'Заполните русский вариант и сохраните. Затем выберите English и добавьте перевод названия и описания. Работа появится на сайте после включения «Показывать на сайте» и сохранения.',
+      'Галерея объединяет работу и её изображения. Для публикации в каждом языке нужно название; описание необязательно. Основной редактор находится на главной мастерской.',
   },
   access: { read: published, create: staff, update: staff, delete: staff },
   hooks: {
     beforeValidate: [
+      ({ data, originalDoc }) => {
+        if (!data) return data
+        if (data.image !== undefined || data.images !== undefined) {
+          try {
+            data.images = galleryImageIDs(
+              data.images ?? originalDoc?.images,
+              data.image ?? originalDoc?.image,
+            )
+          } catch (error) {
+            throw new ValidationError({
+              errors: [{ path: 'images', message: (error as Error).message }],
+            })
+          }
+        }
+        return data
+      },
       async ({ data, originalDoc, req }) => {
         if (!data) return data
         if (typeof data.slug === 'string' && data.slug.trim()) return data
@@ -169,7 +187,10 @@ const Artworks: CollectionConfig = {
       type: 'text',
       label: 'Название картины',
       localized: true,
-      required: true,
+      validate: (value: unknown, { operation }: { operation?: string }) =>
+        (operation === 'update' && value == null) ||
+        (typeof value === 'string' && value.trim().length > 0) ||
+        'Укажите название галереи.',
       admin: {
         placeholder: 'Например: Вечер у моря',
         description:
@@ -188,16 +209,42 @@ const Artworks: CollectionConfig = {
       },
     },
     {
+      name: 'images',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      maxRows: 10,
+      label: 'Изображения галереи',
+      admin: {
+        description:
+          'До 10 изображений вместе с обложкой. Главное изображение выбирается отдельно.',
+      },
+    },
+    {
+      name: 'displaySize',
+      type: 'number',
+      min: 1,
+      max: 5,
+      label: 'Размер на доске',
+      validate: (value: unknown) =>
+        value == null ||
+        (typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5) ||
+        'Выберите размер от 1 до 5.',
+      admin: {
+        description:
+          '1 — небольшой, 5 — самый крупный. Не меняет реальные размеры холста. Пусто — подобрать по размерам.',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
       label: 'Описание картины',
       localized: true,
-      required: true,
       admin: {
         rows: 4,
         placeholder: 'Например: Тёплый вечерний свет и тихое море. Работа написана с натуры…',
         description:
-          'Расскажите о сюжете, настроении и важных деталях. Не нужно повторять цену и размеры — для них есть отдельные поля.',
+          'Необязательно. Расскажите о сюжете и материалах. Под изображениями на главной этот текст не выводится.',
       },
     },
     {
@@ -281,11 +328,11 @@ const Artworks: CollectionConfig = {
     {
       name: 'featured',
       type: 'checkbox',
-      label: 'Показывать в начале галереи',
+      label: 'Старая отметка витрины',
       defaultValue: false,
       admin: {
         description:
-          'Отмеченные работы идут первыми на главной и в каталоге. Внутри группы действует «Порядок в каталоге»: меньшее число — раньше.',
+          'Сохранено для совместимости API. Порядок теперь задаётся приоритетом галереи.',
       },
     },
     {
@@ -295,7 +342,7 @@ const Artworks: CollectionConfig = {
       defaultValue: false,
       admin: {
         description:
-          'Выключено — черновик виден только здесь. Включите и сохраните, когда работа готова. Для каждого языка нужны название и описание.',
+          'Выключено — черновик виден только сотрудникам. Для каждого языка нужно название; описание необязательно.',
       },
     },
     {
@@ -322,11 +369,12 @@ const Artworks: CollectionConfig = {
         {
           name: 'sortOrder',
           type: 'number',
-          label: 'Порядок в каталоге',
+          label: 'Приоритет галереи',
           defaultValue: 0,
           admin: {
             placeholder: '0',
-            description: 'Меньшее число — выше в списке. Например: 0, 10, 20. Можно оставить 0.',
+            description:
+              'Приоритет: меньшее число — раньше. Первая галерея закрепляется слева сверху. Например: 1, 2, 3.',
           },
         },
         {
@@ -575,13 +623,7 @@ const Requests: CollectionConfig = {
       type: 'select',
       label: 'Статус',
       defaultValue: 'new',
-      options: [
-        { label: 'Новая', value: 'new' },
-        { label: 'Обсуждаем', value: 'discussing' },
-        { label: 'Согласовано', value: 'accepted' },
-        { label: 'Завершена', value: 'completed' },
-        { label: 'Отменена', value: 'cancelled' },
-      ],
+      options: requestStatuses.map(([value, label]) => ({ value, label })),
       admin: {
         description:
           'Новая → Обсуждаем → Согласовано → Завершена. Статус заявки не меняет наличие картины автоматически.',
@@ -606,7 +648,7 @@ const Studio: GlobalConfig = {
   admin: {
     group: 'Настройки',
     description:
-      'Имя, контакты и информация на сайте. Можно заполнить всё здесь; если значение уже задано в конфигурации разработчиком, оно имеет приоритет. Перевод биографии добавляется через переключатель языка.',
+      'Имя, контакты и информация на сайте. Заполненные значения отсюда имеют приоритет над резервными настройками разработчика. Перевод биографии добавляется через переключатель языка.',
   },
   access: { read: () => true, update: staff },
   fields: [
@@ -692,7 +734,11 @@ export default buildConfig({
     user: 'users',
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: '— Artist Studio' },
-    components: { beforeDashboard: ['/components/admin/welcome#StudioWelcome'] },
+    components: {
+      header: ['/components/admin/studio-header#StudioHeader'],
+      Nav: '/components/admin/studio-header#StudioNav',
+      views: { dashboard: { Component: '/components/admin/studio-dashboard#StudioDashboard' } },
+    },
   },
   i18n: { supportedLanguages: { ru }, fallbackLanguage: 'ru' },
   collections: [Users, Media, Artworks, QuoteRules, Requests, References],

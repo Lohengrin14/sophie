@@ -34,7 +34,7 @@ export function MosaicGallery({ works, locale }: { works: CatalogItem[]; locale:
             href={`/${locale}/works/${work.slug}`}
             className="mosaic-work"
             style={style}
-            data-canvas-tier={canvasSize(work.width, work.height).tier}
+            data-canvas-tier={work.displaySize ?? canvasSize(work.width, work.height).tier}
             aria-label={text(locale, `Посмотреть картину «${work.title}»`, `View “${work.title}”`)}
           >
             <div className="mosaic-image">
