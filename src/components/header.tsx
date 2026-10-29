@@ -41,7 +41,16 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
               key={path}
               href={`/${locale}/${path}`}
               onClick={() => setOpen(false)}
-              className={pathname.includes(`/${path}`) ? 'active' : ''}
+              className={
+                pathname.includes(`/${path}`) || (path === 'works' && pathname === `/${locale}`)
+                  ? 'active'
+                  : ''
+              }
+              aria-current={
+                pathname === `/${locale}/${path}` || (path === 'works' && pathname === `/${locale}`)
+                  ? 'page'
+                  : undefined
+              }
             >
               {label}
             </Link>
