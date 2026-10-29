@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:smoke": "node --env-file=.env.local scripts/smoke.mjs",
     "seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "seed:layout": "tsx --env-file=.env.local scripts/seed-layout.ts",
     "payload": "payload",
     "db:up": "docker compose up -d db",
     "db:stop": "docker compose stop db"
