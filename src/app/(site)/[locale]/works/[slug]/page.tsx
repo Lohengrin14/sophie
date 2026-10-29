@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft, ArrowUpRight, Expand, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ShieldCheck } from 'lucide-react'
+import { WorkImages } from '@/components/work-images'
+import type { Media } from '@/payload-types'
 import { getArtworks, getStudio, artworkImage } from '@/lib/data'
 import { availabilityLabel, isLocale, mediumLabel, money, text } from '@/lib/i18n'
 import { RequestForm } from '@/components/request-form'
@@ -16,7 +17,7 @@ export async function generateMetadata({
   return work
     ? {
         title: String(work.title),
-        description: String(work.description),
+        description: work.description || undefined,
         openGraph: { title: String(work.title), images: [artworkImage(work)] },
       }
     : {}
@@ -31,6 +32,12 @@ export default async function Work({
   const [works, studio] = await Promise.all([getArtworks(locale), getStudio(locale)])
   const work = works.find((w) => w.slug === slug)
   if (!work) notFound()
+  const media = [work.image, ...(work.images || [])].filter((image): image is Media =>
+    Boolean(image && typeof image === 'object' && image.url),
+  )
+  const images = [
+    ...new Map(media.map((image) => [image.id, { id: image.id, url: String(image.url) }])).values(),
+  ]
   return (
     <main id="main" className="container page-main">
       <Link className="back-link" href={`/${locale}#work-${work.id}`}>
@@ -39,25 +46,12 @@ export default async function Work({
       </Link>
       <div className="work-detail">
         <div>
-          <a
-            className="detail-image"
-            href={artworkImage(work)}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={text(locale, 'Открыть изображение крупнее', 'Open full-size image')}
-          >
-            <Image
-              src={artworkImage(work)}
-              alt={String(work.title)}
-              fill
-              priority
-              sizes="(max-width: 800px) 90vw, 55vw"
-            />
-            <span className="zoom-label">
-              <Expand size={16} />
-              {text(locale, 'Рассмотреть ближе', 'A closer look')}
-            </span>
-          </a>
+          <WorkImages
+            key={work.id}
+            images={images}
+            title={String(work.title || '')}
+            locale={locale}
+          />
           {work.demo && (
             <p className="demo-caption detail-demo">
               {text(

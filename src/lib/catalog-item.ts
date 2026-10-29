@@ -11,4 +11,5 @@ export type CatalogItem = {
   medium: string
   availability: string
   demo: boolean
+  displaySize?: number | null
 }

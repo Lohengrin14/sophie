@@ -14,5 +14,6 @@ export function toCardItem(work: Artwork): CatalogItem {
     medium: String(work.medium),
     availability: String(work.availability),
     demo: Boolean(work.demo),
+    displaySize: work.displaySize,
   }
 }

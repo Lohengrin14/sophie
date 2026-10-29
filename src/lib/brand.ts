@@ -10,15 +10,17 @@ export function safeSocial(value: unknown, hosts: string[]) {
   }
 }
 export function resolveBrand(studio: Record<string, unknown> = {}) {
-  const email = process.env.NEXT_PUBLIC_ARTIST_EMAIL || studio.email
+  const configured = (value: unknown, fallback: string | undefined) =>
+    typeof value === 'string' && value.trim() ? value.trim() : fallback?.trim() || ''
+  const email = configured(studio.email, process.env.NEXT_PUBLIC_ARTIST_EMAIL)
   return {
-    name: process.env.NEXT_PUBLIC_ARTIST_NAME?.trim() || String(studio.name || ''),
-    alias: process.env.NEXT_PUBLIC_ARTIST_ALIAS?.trim() || String(studio.alias || ''),
-    instagram: safeSocial(process.env.NEXT_PUBLIC_ARTIST_INSTAGRAM_URL || studio.instagram, [
-      'instagram.com',
-      'www.instagram.com',
-    ]),
-    telegram: safeSocial(process.env.NEXT_PUBLIC_ARTIST_TELEGRAM_URL || studio.telegram, [
+    name: configured(studio.name, process.env.NEXT_PUBLIC_ARTIST_NAME),
+    alias: configured(studio.alias, process.env.NEXT_PUBLIC_ARTIST_ALIAS),
+    instagram: safeSocial(
+      configured(studio.instagram, process.env.NEXT_PUBLIC_ARTIST_INSTAGRAM_URL),
+      ['instagram.com', 'www.instagram.com'],
+    ),
+    telegram: safeSocial(configured(studio.telegram, process.env.NEXT_PUBLIC_ARTIST_TELEGRAM_URL), [
       't.me',
       'www.t.me',
     ]),
