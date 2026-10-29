@@ -175,7 +175,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
           )}
         </p>
         <ContactLinks brand={brand} />
-        <Link className="button primary" href={`/${locale}/works`}>
+        <Link className="button primary" href={`/${locale}`}>
           {text(locale, 'Вернуться к работам', 'Back to the collection')} <ArrowUpRight size={17} />
         </Link>
       </div>

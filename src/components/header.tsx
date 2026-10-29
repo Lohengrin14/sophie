@@ -12,7 +12,7 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
   const other = locale === 'ru' ? 'en' : 'ru'
   const alternate = pathname.replace(/^\/(ru|en)(?=\/|$)/, `/${other}`)
   const links = [
-    ['works', text(locale, 'Работы', 'Works')],
+    ['', text(locale, 'Работы', 'Works')],
     ['commission', text(locale, 'На заказ', 'Commissions')],
     ['about', text(locale, 'О художнике', 'About')],
     ['contact', text(locale, 'Контакты', 'Contact')],
@@ -39,17 +39,19 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
           {links.map(([path, label]) => (
             <Link
               key={path}
-              href={`/${locale}/${path}`}
+              href={path ? `/${locale}/${path}` : `/${locale}`}
               onClick={() => setOpen(false)}
               className={
-                pathname.includes(`/${path}`) || (path === 'works' && pathname === `/${locale}`)
+                (
+                  path
+                    ? pathname.startsWith(`/${locale}/${path}`)
+                    : pathname === `/${locale}` || pathname.startsWith(`/${locale}/works/`)
+                )
                   ? 'active'
                   : ''
               }
               aria-current={
-                pathname === `/${locale}/${path}` || (path === 'works' && pathname === `/${locale}`)
-                  ? 'page'
-                  : undefined
+                pathname === (path ? `/${locale}/${path}` : `/${locale}`) ? 'page' : undefined
               }
             >
               {label}
