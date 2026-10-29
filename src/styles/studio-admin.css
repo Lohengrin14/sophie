@@ -1,5 +1,8 @@
 /* Dedicated artist workspace; Payload remains available through the tools menu. */
 .template-default {
+  /* StudioNav renders no sidebar. Payload's two-column grid would place the
+     only child (__wrap) in its zero-width navigation column after hydration. */
+  display: block;
   --nav-width: 0px;
 }
 .template-default__nav-toggler-wrapper {
