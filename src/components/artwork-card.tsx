@@ -1,31 +1,31 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight } from 'lucide-react'
-import { artworkImage, type Artwork } from '@/lib/data'
+import type { CatalogItem } from '@/lib/catalog-item'
 import { availabilityLabel, mediumLabel, money, type Locale, text } from '@/lib/i18n'
 export function ArtworkCard({
   work,
   locale,
   index = 0,
 }: {
-  work: Artwork
+  work: CatalogItem
   locale: Locale
   index?: number
 }) {
   return (
     <Link href={`/${locale}/works/${work.slug}`} className="artwork-card">
       <div className={`artwork-image artwork-image-${index % 3}`}>
-        {artworkImage(work) && (
+        {work.image && (
           <Image
-            src={artworkImage(work)}
-            alt={String(work.title)}
+            src={work.image}
+            alt={work.title}
             fill
             sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
           />
         )}
         <span className={`availability ${work.availability === 'available' ? 'available' : ''}`}>
           <i />
-          {availabilityLabel(String(work.availability), locale)}
+          {availabilityLabel(work.availability, locale)}
         </span>
         <span className="card-open">
           <ArrowUpRight size={20} />
@@ -33,16 +33,16 @@ export function ArtworkCard({
       </div>
       <div className="artwork-info">
         <div>
-          <h3>{String(work.title)}</h3>
+          <h3>{work.title}</h3>
           <p>
-            {mediumLabel(String(work.medium), locale)} <span>·</span> {work.width} × {work.height}{' '}
+            {mediumLabel(work.medium, locale)} <span>·</span> {work.width} × {work.height}{' '}
             {text(locale, 'см', 'cm')}
           </p>
         </div>
         <span className="artwork-price">
           {work.availability === 'sold'
             ? text(locale, 'Продана', 'Sold')
-            : money(Number(work.priceMinor), String(work.currency), locale)}
+            : money(work.priceMinor, work.currency, locale)}
         </span>
       </div>
       {work.demo && (

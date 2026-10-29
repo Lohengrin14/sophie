@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { ArrowDownRight, Sparkles } from 'lucide-react'
+import { ArrowDownRight } from 'lucide-react'
 import { getStudio } from '@/lib/data'
 import { isLocale, text } from '@/lib/i18n'
 import { RequestForm } from '@/components/request-form'
@@ -21,27 +21,17 @@ export default async function Commission({ params }: { params: Promise<{ locale:
           <p className="lead">
             {text(
               locale,
-              'Иногда самой важной картине ещё только предстоит появиться.',
-              'Sometimes the most meaningful painting is the one yet to be made.',
+              'Сюжет, размер, настроение. Выберите детали — узнайте примерную цену и срок.',
+              'Subject, size, mood. Choose the details for an estimated price and timeline.',
             )}
           </p>
           <p className="muted">
             {text(
               locale,
-              'Выберите несколько деталей, посмотрите ориентир и расскажите о себе. Дальше — спокойный разговор с художником.',
-              'Choose a few details, see an estimate, and introduce yourself. Then we’ll take it from there, together.',
+              'Пока только идея? Этого достаточно.',
+              'Just an idea so far? That’s enough to begin.',
             )}
           </p>
-          <div className="commission-promise">
-            <Sparkles size={20} strokeWidth={1.2} />
-            <span>
-              {text(
-                locale,
-                'Не знаете, с чего начать? Выберите «Помогите выбрать» — это тоже хороший план.',
-                'Not sure where to begin? Choose “Help me choose” — that’s a good plan too.',
-              )}
-            </span>
-          </div>
           <ArrowDownRight className="intro-arrow" size={82} strokeWidth={0.8} />
         </div>
         <div className="form-shell">
@@ -55,10 +45,7 @@ export default async function Commission({ params }: { params: Promise<{ locale:
       </div>
       <section className="faq-section">
         <p className="eyebrow">{text(locale, 'ЧТО СТОИТ ЗНАТЬ', 'A FEW THINGS TO KNOW')}</p>
-        <h2>
-          {text(locale, 'Без лишних', 'No unanswered')}{' '}
-          <em>{text(locale, 'неизвестных.', 'questions.')}</em>
-        </h2>
+        <h2>{text(locale, 'Перед заказом', 'Before you begin')}</h2>
         {[
           [
             text(locale, 'Цена окончательная?', 'Is the price final?'),

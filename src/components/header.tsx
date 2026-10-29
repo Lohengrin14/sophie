@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import type { Brand } from '@/lib/brand'
 
@@ -30,9 +30,9 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
             {brand.alias || brand.name || 'ATELIER'}
             <span className="wordmark-dot">.</span>
           </span>
-          <small>{text(locale, 'ЖИВОПИСЬ И ЛИЧНЫЕ ИСТОРИИ', 'PAINTINGS & PERSONAL STORIES')}</small>
         </Link>
         <nav
+          id="main-navigation"
           aria-label={text(locale, 'Основное меню', 'Main navigation')}
           className={`main-nav ${open ? 'is-open' : ''}`}
         >
@@ -58,13 +58,11 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
             <span className="language-divider">/</span>
             <span className={locale === 'en' ? 'current' : ''}>EN</span>
           </Link>
-          <Link href={`/${locale}/commission`} className="header-cta">
-            {text(locale, 'Ваша картина', 'Your painting')} <ArrowUpRight size={15} />
-          </Link>
           <button
             className="menu-button"
             aria-label={text(locale, 'Меню', 'Menu')}
             aria-expanded={open}
+            aria-controls="main-navigation"
             onClick={() => setOpen(!open)}
           >
             {open ? <X size={22} /> : <Menu size={22} />}

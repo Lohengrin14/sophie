@@ -14,15 +14,15 @@ export default async function Contact({ params }: { params: Promise<{ locale: st
         <div className="commission-intro">
           <p className="eyebrow">{text(locale, 'ПРОСТО НАПИШИТЕ', 'SAY HELLO')}</p>
           <h1>
-            {text(locale, 'Хорошие истории', 'Good stories')}
+            {text(locale, 'Давайте', 'Let’s')}
             <br />
-            <em>{text(locale, 'начинаются так.', 'begin like this.')}</em>
+            <em>{text(locale, 'поговорим.', 'talk.')}</em>
           </h1>
           <p className="lead">
             {text(
               locale,
-              'Вопрос о картине, неожиданная идея или просто желание познакомиться — всему рады.',
-              'A question about a painting, an unexpected idea, or just a wish to say hello — all are welcome.',
+              'О картине, новой идее или сотрудничестве.',
+              'About a painting, a new idea, or working together.',
             )}
           </p>
           <ContactLinks brand={brand} />
