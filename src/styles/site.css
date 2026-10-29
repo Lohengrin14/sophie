@@ -1900,3 +1900,82 @@ p {
     transform: none;
   }
 }
+
+/* A continuous wall of canvases, packed into stable rectangular slots. */
+.mosaic-main {
+  --mosaic-side: 24px;
+  --mosaic-gap: 12px;
+  --mosaic-columns: 24;
+  width: calc(100% - 2 * var(--mosaic-side));
+  margin-inline: auto;
+  padding-block: 22px 30px;
+  min-height: 75svh;
+}
+.mosaic-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--mosaic-columns), minmax(0, 1fr));
+  grid-auto-rows: calc(
+    (100vw - 2 * var(--mosaic-side) - (var(--mosaic-columns) - 1) * var(--mosaic-gap)) /
+      var(--mosaic-columns)
+  );
+  gap: var(--mosaic-gap);
+}
+.mosaic-work {
+  position: relative;
+  display: block;
+  min-width: 0;
+  grid-column: var(--wide-column) / span var(--wide-width);
+  grid-row: var(--wide-row) / span var(--wide-height);
+  scroll-margin-top: 105px;
+}
+.mosaic-image {
+  position: absolute;
+  inset: 8px;
+}
+.mosaic-image img {
+  object-fit: contain;
+  transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.mosaic-work:focus-visible img {
+  transform: scale(1.035);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mosaic-work:hover img {
+    transform: scale(1.035);
+  }
+}
+@media (max-width: 1100px) {
+  .mosaic-main {
+    --mosaic-columns: 16;
+    --mosaic-side: 20px;
+    --mosaic-gap: 10px;
+  }
+  .mosaic-work {
+    grid-column: var(--medium-column) / span var(--medium-width);
+    grid-row: var(--medium-row) / span var(--medium-height);
+  }
+}
+@media (max-width: 700px) {
+  .mosaic-main {
+    --mosaic-columns: 12;
+    --mosaic-side: 12px;
+    --mosaic-gap: 6px;
+    padding-top: 12px;
+  }
+  .mosaic-work {
+    grid-column: var(--small-column) / span var(--small-width);
+    grid-row: var(--small-row) / span var(--small-height);
+  }
+  .mosaic-image {
+    inset: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mosaic-image img {
+    transition: none;
+  }
+  .mosaic-work:hover img,
+  .mosaic-work:focus-visible img {
+    transform: none;
+  }
+}

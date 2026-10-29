@@ -33,7 +33,7 @@ export default async function Work({
   if (!work) notFound()
   return (
     <main id="main" className="container page-main">
-      <Link className="back-link" href={`/${locale}/works`}>
+      <Link className="back-link" href={`/${locale}#work-${work.id}`}>
         <ArrowLeft size={16} />
         {text(locale, 'К коллекции', 'Back to the collection')}
       </Link>
@@ -77,7 +77,6 @@ export default async function Work({
             <i />
             {availabilityLabel(String(work.availability), locale)}
           </span>
-          <p className="work-story">{String(work.description)}</p>
           <dl className="work-specs">
             <div>
               <dt>{text(locale, 'Материал', 'Medium')}</dt>

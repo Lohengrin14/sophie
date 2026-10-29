@@ -31,9 +31,6 @@ export function Catalog({ works, locale }: { works: CatalogItem[]; locale: Local
             </button>
           ))}
         </div>
-        <span className="result-count">
-          {text(locale, 'Работ:', 'Works:')} {visible.length}
-        </span>
       </div>
       <div className="artwork-grid">
         {visible.map((work, i) => (
