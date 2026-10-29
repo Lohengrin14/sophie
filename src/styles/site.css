@@ -1762,6 +1762,7 @@ p {
   min-height: calc(100svh - 148px);
 }
 .showcase-grid {
+  --canvas-stage-height: clamp(340px, calc(100svh - 240px), 1000px);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(18px, 2vw, 36px);
@@ -1777,7 +1778,7 @@ p {
   position: relative;
   display: block;
   min-width: 0;
-  height: clamp(340px, calc(100svh - 240px), 1000px);
+  height: auto;
 }
 .showcase-work img {
   object-fit: contain;
@@ -1834,12 +1835,9 @@ p {
     padding-top: 16px;
   }
   .showcase-grid[data-count] {
+    --canvas-stage-height: min(75svh, calc(100vw - 32px));
     grid-template-columns: 1fr;
     gap: 32px;
-  }
-  .showcase-work {
-    height: auto;
-    max-height: 78svh;
   }
   .showcase-navigation {
     margin-top: 24px;
@@ -1849,6 +1847,48 @@ p {
     gap: 30px;
     min-height: 50px;
     padding: 12px 22px;
+  }
+}
+
+/* Each grid cell has the same stage. The canvas scales within it, centred on both axes. */
+.canvas-stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: var(--canvas-stage-height, clamp(280px, 30vw, 480px));
+  aspect-ratio: auto;
+  overflow: visible;
+}
+.canvas-fit {
+  position: relative;
+  width: var(--canvas-size);
+  height: var(--canvas-size);
+}
+.canvas-fit img {
+  object-fit: contain;
+  padding: 0;
+  transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .artwork-card:hover .canvas-fit img {
+    transform: scale(1.045);
+  }
+}
+.artwork-card:focus-visible .canvas-fit img {
+  transform: scale(1.045);
+}
+@media (max-width: 700px) {
+  .artwork-grid {
+    --canvas-stage-height: min(75svh, calc(100vw - 36px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-fit img {
+    transition: none;
+  }
+  .artwork-card:hover .canvas-fit img,
+  .artwork-card:focus-visible .canvas-fit img {
+    transform: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

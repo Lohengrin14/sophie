@@ -62,8 +62,8 @@ export default async function Work({
             <p className="demo-caption detail-demo">
               {text(
                 locale,
-                'Изображение создано ИИ для демонстрации. Характеристики и цена — пример.',
-                'AI-generated demonstration image. Specifications and price are illustrative.',
+                'Демонстрационное изображение. Характеристики и цена — пример.',
+                'Demonstration image. Specifications and price are illustrative.',
               )}
             </p>
           )}
