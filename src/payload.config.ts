@@ -160,6 +160,11 @@ const Artworks: CollectionConfig = {
   },
   fields: [
     {
+      name: 'artworkGuide',
+      type: 'ui',
+      admin: { components: { Field: '/components/admin/artwork-guide#ArtworkGuide' } },
+    },
+    {
       name: 'title',
       type: 'text',
       label: 'Название картины',
@@ -248,9 +253,9 @@ const Artworks: CollectionConfig = {
           required: true,
           defaultValue: 'EUR',
           admin: {
-            placeholder: 'EUR',
+            components: { Field: '/components/admin/currency-field#CurrencyField' },
             description:
-              'EUR — евро, USD — доллары, RUB — рубли. Валюта не зависит от языка сайта.',
+              'Выберите валюту, в которой продаётся эта картина. На обоих языках сайта цена остаётся в этой валюте. Автоматического пересчёта пока нет.',
           },
           validate: (v: unknown) =>
             (typeof v === 'string' && /^[A-Z]{3}$/.test(v)) || 'Например EUR, USD или RUB',
@@ -408,8 +413,9 @@ const QuoteRules: CollectionConfig = {
       defaultValue: 'EUR',
       required: true,
       admin: {
-        placeholder: 'EUR',
-        description: 'Например: EUR — евро, USD — доллары, RUB — рубли.',
+        components: { Field: '/components/admin/currency-field#CurrencyField' },
+        description:
+          'В этой валюте посетитель увидит обе границы оценки. Смена валюты не пересчитывает введённые суммы.',
       },
       validate: (v: unknown) =>
         (typeof v === 'string' && /^[A-Z]{3}$/.test(v)) ||
