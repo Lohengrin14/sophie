@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import { CanvasImage } from '@/components/canvas-image'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { notFound } from 'next/navigation'
@@ -20,18 +20,13 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             key={work.id}
             href={`/${locale}/works/${work.slug}`}
             className="showcase-work"
-            style={{
-              aspectRatio:
-                typeof work.image === 'object' && work.image.width && work.image.height
-                  ? `${work.image.width} / ${work.image.height}`
-                  : `${work.width} / ${work.height}`,
-            }}
             aria-label={text(locale, `Посмотреть картину «${work.title}»`, `View “${work.title}”`)}
           >
-            <Image
+            <CanvasImage
               src={artworkImage(work)}
               alt={String(work.title)}
-              fill
+              width={work.width}
+              height={work.height}
               priority
               sizes="(max-width: 900px) 94vw, 33vw"
             />
@@ -54,11 +49,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       )}
       {hasDemo && (
         <p className="showcase-demo">
-          {text(
-            locale,
-            'Среди работ есть демо-изображения ИИ',
-            'Includes AI-generated demo images',
-          )}
+          {text(locale, 'Демонстрационные изображения', 'Demonstration images')}
         </p>
       )}
     </main>
