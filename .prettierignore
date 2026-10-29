@@ -1,0 +1,5 @@
+node_modules
+.next
+media
+src/payload-types.ts
+package-lock.json
