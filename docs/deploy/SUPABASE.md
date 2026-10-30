@@ -9,7 +9,7 @@ Google-вход в админку через Supabase Auth настраивае�
 ```dotenv
 DATABASE_TARGET=supabase
 SUPABASE_DB_HOST=your-region.pooler.supabase.com
-SUPABASE_DB_PORT=5432
+SUPABASE_DB_PORT=6543
 SUPABASE_DB_NAME=postgres
 SUPABASE_DB_USER=postgres.your-project-reference
 SUPABASE_DB_PASSWORD="your database password"
@@ -17,7 +17,7 @@ DATABASE_SSL_CA_FILE=.local/prod-ca-2021.crt
 PAYLOAD_SECRET=your-separate-preview-signing-secret
 ```
 
-Пароль хранится без ручного URL-кодирования: `databaseOptions()` кодирует его при сборке строки подключения. Сертификат скачивается из Supabase → Database Settings → SSL Configuration. Проверка сертификата и имени сервера остаётся включённой.
+Пароль хранится без ручного URL-кодирования: `databaseOptions()` кодирует его при сборке строки подключения. Порт 6543 использует transaction-пул и подходит для Netlify и локальной проверки runtime. Сессионный порт 5432 можно явно выбрать для долгоживущего процесса или отдельного инструмента миграций, которому нужны сессионные возможности. Сертификат скачивается из Supabase → Database Settings → SSL Configuration. Проверка сертификата и имени сервера остаётся включённой.
 
 Для облачного окружения вместо пути к файлу можно задать `DATABASE_SSL_CA` с полным PEM-сертификатом. Пул Supabase ограничен тремя соединениями на экземпляр приложения: Payload 3.92 удерживает служебное соединение, ещё нужны соединения для запросов и транзакций, автоматическое изменение схемы и создание базы отключены.
 

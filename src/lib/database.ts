@@ -31,7 +31,9 @@ export function databaseOptions(
 
   const url = new URL('postgresql://localhost')
   url.hostname = env.SUPABASE_DB_HOST!
-  url.port = env.SUPABASE_DB_PORT || '5432'
+  // Serverless instances must share database connections through transaction pooling.
+  // A persistent development process or migration can explicitly select session port 5432.
+  url.port = env.SUPABASE_DB_PORT || '6543'
   url.pathname = '/' + encodeURIComponent(env.SUPABASE_DB_NAME || 'postgres')
   url.username = encodeURIComponent(env.SUPABASE_DB_USER!)
   url.password = encodeURIComponent(env.SUPABASE_DB_PASSWORD!)
