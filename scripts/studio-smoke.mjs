@@ -25,6 +25,16 @@ try {
   })
   assert.equal(login.status, 200)
   token = (await login.json()).token
+  const adminCookie = { Cookie: `payload-token=${token}` }
+  const listHTML = await (await fetch(base + '/admin?tab=gallery', { headers: adminCookie })).text()
+  assert.ok(listHTML.includes('Добавить галерею'), 'The gallery list always exposes creation to an administrator')
+  assert.ok(listHTML.includes('href="/admin?tab=gallery"'), 'The gallery tab explicitly links back to the list')
+  const createHTML = await (await fetch(base + '/admin?tab=gallery&gallery=new', { headers: adminCookie })).text()
+  assert.ok(createHTML.includes('Новая галерея'), 'The URL opens creation directly, including after reload')
+  assert.ok(createHTML.includes('name="description"'))
+  const returnedHTML = await (await fetch(base + '/admin?tab=gallery', { headers: adminCookie })).text()
+  assert.ok(returnedHTML.includes('Добавить галерею'))
+  assert.ok(!returnedHTML.includes('name="files"'), 'Returning to the list must not retain the creation form')
   const originals = (await get('/api/artworks?limit=1000&depth=0')).docs.map(
     ({ id, updatedAt }) => ({ id, updatedAt }),
   )

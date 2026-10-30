@@ -978,6 +978,12 @@ body:has(.studio-topbar) {
 .studio-page-heading > div {
   min-width: 0;
 }
+.studio-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
 @media (max-width: 700px) {
   .studio-header-language > span {
     display: none;
