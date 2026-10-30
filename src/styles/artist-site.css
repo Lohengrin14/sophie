@@ -49,12 +49,11 @@ body {
   white-space: nowrap;
 }
 .site-header .main-nav {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-flow: column;
-  grid-template-rows: repeat(2, 20px);
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
   margin: 0;
-  gap: 0 32px;
+  gap: 24px;
 }
 .site-header .main-nav a {
   position: relative;
@@ -67,22 +66,14 @@ body {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .site-header .main-nav a:hover,
 .site-header .main-nav a.active {
   background: transparent;
   color: var(--nav-accent);
 }
-.site-header .main-nav a.active::before {
-  content: '';
-  position: absolute;
-  left: -9px;
-  top: 8px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-}
+
 .site-header .header-actions {
   justify-self: end;
   gap: 14px;
@@ -176,18 +167,15 @@ body {
     border-bottom: 1px solid var(--line);
   }
   .site-header .main-nav.is-open {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, 44px);
-    gap: 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
   }
   .site-header .main-nav a {
     min-height: 44px;
     font-size: 12px;
     line-height: 1.4;
-  }
-  .site-header .main-nav a.active::before {
-    top: 20px;
   }
   .theme-panel {
     width: min(340px, calc(100vw - 24px));
