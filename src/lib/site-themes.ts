@@ -1,4 +1,5 @@
 export const THEME_COOKIE = 'artist_theme'
+export const DEFAULT_THEME = 'graphite'
 export const siteThemes = [
   {
     id: 'mono',
@@ -104,7 +105,10 @@ export const siteThemes = [
 export type SiteTheme = (typeof siteThemes)[number]
 export type ThemeId = SiteTheme['id']
 export function resolveTheme(value: unknown): SiteTheme {
-  return siteThemes.find((theme) => theme.id === value) || siteThemes[0]
+  return (
+    siteThemes.find((theme) => theme.id === value) ||
+    siteThemes.find((theme) => theme.id === DEFAULT_THEME)!
+  )
 }
 export function themeVariables(theme: SiteTheme): Record<string, string> {
   const c = theme.colors

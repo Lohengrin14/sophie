@@ -1,0 +1,149 @@
+/* A small personal masthead, rather than a studio navigation bar. */
+.site-header {
+  --nav-accent: var(--accent);
+  border-bottom: 0;
+}
+:root[data-site-theme='graphite'] .site-header {
+  --nav-accent: #d4ed8a;
+}
+.header-inner.container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 28px;
+}
+.site-header .wordmark {
+  display: inline-flex;
+  max-width: 100%;
+  justify-self: start;
+  overflow-wrap: normal;
+}
+.site-header .wordmark > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: -0.06em;
+}
+.artist-mark {
+  display: inline-block;
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: 19px;
+  font-style: normal;
+  color: var(--nav-accent);
+  transform: translateY(-5px) rotate(-12deg);
+}
+.site-header .main-nav {
+  margin: 0;
+  gap: 20px;
+}
+.site-header .main-nav a {
+  gap: 5px;
+  padding: 8px 0;
+  border-radius: 0;
+  font-size: 13px;
+  letter-spacing: -0.025em;
+}
+.site-header .main-nav a:hover,
+.site-header .main-nav a.active {
+  background: transparent;
+  color: var(--nav-accent);
+}
+.site-header .main-nav a.active .nav-label::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 6px 3px 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+.nav-outbound {
+  font-size: 16px;
+}
+.site-header .header-actions {
+  justify-self: end;
+  gap: 12px;
+}
+.site-header .language {
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.language-arrow {
+  font-size: 13px;
+}
+.site-header .theme-trigger {
+  color: var(--muted);
+}
+.site-header .theme-trigger:hover {
+  color: var(--ink);
+}
+.page-main > h1,
+.artist-page h1,
+.commission-intro h1 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+.contact-page .contact-links a {
+  font-size: clamp(20px, 3vw, 36px);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+.contact-page .contact-links {
+  gap: 24px;
+}
+.faq-section h2 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+}
+@media (max-width: 1000px) and (min-width: 801px) {
+  .header-inner.container {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 18px;
+  }
+  .site-header .main-nav {
+    gap: 14px;
+  }
+}
+@media (max-width: 800px) {
+  .header-inner.container {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .site-header .wordmark > span {
+    font-size: 24px;
+  }
+  .site-header .header-actions {
+    gap: 6px;
+  }
+  .site-header .main-nav {
+    gap: 0;
+    padding: 12px 20px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .site-header .main-nav a {
+    min-height: 48px;
+    font-size: 24px;
+    font-family: var(--serif);
+    font-style: italic;
+  }
+  .site-header .main-nav a.active .nav-label::before {
+    width: 5px;
+    height: 5px;
+    margin-right: 9px;
+  }
+}
+
+.site-header .artist-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

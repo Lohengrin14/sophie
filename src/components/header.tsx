@@ -5,13 +5,13 @@ import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import { ThemePicker } from './theme-picker'
-import type { ThemeId } from '@/lib/site-themes'
+import { DEFAULT_THEME, type ThemeId } from '@/lib/site-themes'
 import type { Brand } from '@/lib/brand'
 
 export function Header({
   locale,
   brand,
-  initialTheme = 'mono',
+  initialTheme = DEFAULT_THEME,
 }: {
   locale: Locale
   brand: Brand
@@ -22,10 +22,10 @@ export function Header({
   const other = locale === 'ru' ? 'en' : 'ru'
   const alternate = pathname.replace(/^\/(ru|en)(?=\/|$)/, `/${other}`)
   const links = [
-    ['', text(locale, 'Работы', 'Works')],
-    ['commission', text(locale, 'На заказ', 'Commissions')],
-    ['about', text(locale, 'О художнике', 'About')],
-    ['contact', text(locale, 'Контакты', 'Contact')],
+    ['', text(locale, 'картины', 'paintings')],
+    ['commission', text(locale, 'на заказ', 'commissions')],
+    ['about', text(locale, 'обо мне', 'about me')],
+    ['contact', text(locale, 'написать', 'say hello')],
   ]
   return (
     <header className="site-header">
@@ -37,8 +37,20 @@ export function Header({
           onClick={() => setOpen(false)}
         >
           <span>
-            {brand.alias || brand.name || 'ATELIER'}
-            <span className="wordmark-dot">.</span>
+            <span className="artist-name">{brand.alias || brand.name || 'Artist'}</span>
+            <svg
+              className="artist-mark"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2v20M2 12h20M5 5l14 14M5 19 19 5" />
+            </svg>
           </span>
         </Link>
         <nav
@@ -58,7 +70,12 @@ export function Header({
                 className={active ? 'active' : ''}
                 aria-current={active ? 'page' : undefined}
               >
-                {label}
+                <span className="nav-label">{label}</span>
+                {path === 'contact' && (
+                  <span className="nav-outbound" aria-hidden="true">
+                    ↗
+                  </span>
+                )}
               </Link>
             )
           })}
@@ -71,9 +88,10 @@ export function Header({
             onClick={() => setOpen(false)}
             aria-label={other === 'en' ? 'Switch to English' : 'Переключить на русский'}
           >
-            <span className={locale === 'ru' ? 'current' : ''}>RU</span>
-            <span className="language-divider">/</span>
-            <span className={locale === 'en' ? 'current' : ''}>EN</span>
+            <span>{other.toUpperCase()}</span>
+            <span className="language-arrow" aria-hidden="true">
+              ↗
+            </span>
           </Link>
           <button
             className="menu-button"

@@ -11,13 +11,9 @@ export default async function Commission({ params }: { params: Promise<{ locale:
     <main id="main" className="container page-main">
       <div className="commission-page">
         <div className="commission-intro">
-          <h1>{text(locale, 'Картина на заказ', 'Commission a painting')}</h1>
+          <h1>{text(locale, 'Что нарисуем?', 'What shall I paint?')}</h1>
           <p className="muted">
-            {text(
-              locale,
-              'Выберите сюжет, технику и размер.',
-              'Choose a subject, medium and size.',
-            )}
+            {text(locale, 'Начнём с сюжета и размера.', 'Start with a subject and size.')}
           </p>
         </div>
         <div className="form-shell">
@@ -30,30 +26,30 @@ export default async function Commission({ params }: { params: Promise<{ locale:
         </div>
       </div>
       <section className="faq-section">
-        <h2>{text(locale, 'Вопросы о заказе', 'Commission questions')}</h2>
+        <h2>{text(locale, 'О заказе', 'Commission questions')}</h2>
         {[
           [
             text(locale, 'Цена окончательная?', 'Is the price final?'),
             text(
               locale,
-              'Пока это ориентир. Количество деталей, сложность сюжета и пожелания могут повлиять на стоимость. Итог согласуем до начала работы.',
-              'It’s a starting estimate. Detail, complexity and your wishes may affect the price. We’ll agree on it before any work begins.',
+              'Это примерная цена. Точную назову, когда обсудим сюжет и детали.',
+              'It’s an estimate. I’ll confirm the price once we’ve discussed your idea.',
             ),
           ],
           [
             text(locale, 'Почему картина требует времени?', 'Why does it take time?'),
             text(
               locale,
-              'Помимо самой живописи, маслу нужна просушка. Ориентир включает время до готовности, но не доставку. Нужную вам дату обсудим отдельно.',
-              'Oil painting needs drying time as well as painting time. The estimate covers readiness, not shipping. We’ll discuss any important dates personally.',
+              'Маслу нужно высохнуть. Этот срок уже включён в оценку, доставка — отдельно. Если картина нужна к дате, напишите об этом.',
+              'Oils need time to dry. That’s included in the estimate; shipping is extra. Let me know if you have a date in mind.',
             ),
           ],
           [
             text(locale, 'Можно заказать в другую страну?', 'Can I order from another country?'),
             text(
               locale,
-              'Укажите страну и город в пожеланиях. Возможность, способ и стоимость доставки обсуждаются отдельно до подтверждения заказа.',
-              'Mention your country and city in your notes. Availability, method and cost of shipping are discussed before confirming the order.',
+              'Напишите страну и город — проверю варианты и стоимость доставки до заказа.',
+              'Tell me your country and city. I’ll check shipping options and costs before you order.',
             ),
           ],
         ].map(([q, a]) => (
