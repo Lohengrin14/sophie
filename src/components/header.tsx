@@ -25,7 +25,6 @@ export function Header({
     ['', text(locale, 'картины', 'paintings')],
     ['commission', text(locale, 'на заказ', 'commissions')],
     ['about', text(locale, 'обо мне', 'about me')],
-    ['contact', text(locale, 'написать', 'say hello')],
   ]
   return (
     <header className="site-header">

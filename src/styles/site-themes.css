@@ -146,7 +146,7 @@
 :root[data-site-theme] .artwork-image {
   background: var(--art-stage);
 }
-:root[data-site-theme='graphite'] .mosaic-visual .gallery-frame img {
+:root[data-site-theme='winter'] .mosaic-visual .gallery-frame img {
   filter: drop-shadow(0 1px 1px #0006) drop-shadow(0 10px 18px #0008);
 }
 @media (max-width: 800px) {
