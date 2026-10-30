@@ -9,7 +9,7 @@ export default async function Contact({ params }: { params: Promise<{ locale: st
   const { brand } = await getStudio(locale)
   return (
     <main id="main" className="container page-main contact-page">
-      <h1>{text(locale, 'Контакты', 'Contact')}</h1>
+      <h1>{text(locale, 'Написать мне', 'Say hello')}</h1>
       <ContactLinks brand={brand} />
       {!brand.telegram && !brand.instagram && !brand.email && (
         <p className="muted">

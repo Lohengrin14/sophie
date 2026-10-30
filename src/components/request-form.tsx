@@ -77,8 +77,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
     ),
     unavailable: text(
       locale,
-      'Эта работа больше не доступна. Обновите страницу или напишите нам.',
-      'This work is no longer available. Refresh the page or contact us.',
+      'Эта работа больше не доступна. Обновите страницу или напишите мне.',
+      'This work is no longer available. Refresh the page or contact me.',
     ),
     closed: text(
       locale,
@@ -98,7 +98,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
     save: text(
       locale,
       'Не удалось сохранить заявку. Данные формы остались здесь — попробуйте ещё раз.',
-      'We couldn’t save your request. Your form is still here — please try again.',
+      'Your request could not be saved. Your form is still here — please try again.',
     ),
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -281,13 +281,11 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
             </div>
           )}
           <div className="estimate-panel" aria-live="polite">
-            <span className="eyebrow">
-              {text(locale, 'ПРЕДВАРИТЕЛЬНЫЙ ОРИЕНТИР', 'YOUR STARTING ESTIMATE')}
-            </span>
+            <span className="eyebrow">{text(locale, 'ПРИМЕРНО', 'ESTIMATE')}</span>
             {loadingQuote ? (
               <p className="estimate-loading">
                 <LoaderCircle className="spin" size={18} />
-                {text(locale, 'Подбираем ориентир…', 'Finding your estimate…')}
+                {text(locale, 'Считаю…', 'Estimating…')}
               </p>
             ) : quoteError ? (
               <p>
@@ -313,8 +311,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
                 <small>
                   {text(
                     locale,
-                    'Точную стоимость и срок согласуем после знакомства с идеей. Доставка отдельно.',
-                    'We’ll confirm the price and timeline after discussing your idea. Shipping is separate.',
+                    'Цену и срок уточню, когда обсудим сюжет. Доставка отдельно.',
+                    'I’ll confirm the price and timing after we discuss your idea. Shipping is extra.',
                   )}
                 </small>
                 {quote.demo && (
@@ -335,8 +333,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
                 <p>
                   {text(
                     locale,
-                    'Для этой идеи цену и срок подберёт художник лично.',
-                    'The artist will estimate this idea personally.',
+                    'Для этой идеи я рассчитаю цену и срок лично.',
+                    'I’ll estimate this idea personally.',
                   )}
                 </p>
               </>
@@ -389,8 +387,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
         <label>
           {text(
             locale,
-            kind === 'question' ? 'Ваш вопрос' : 'Расскажите чуть больше',
-            kind === 'question' ? 'Your question' : 'A little more about your idea',
+            kind === 'question' ? 'Ваш вопрос' : 'Что хочется нарисовать?',
+            kind === 'question' ? 'Your question' : 'What do you have in mind?',
           )}
           <textarea
             name="message"
@@ -458,8 +456,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
               <ShieldCheck size={14} />
               {text(
                 locale,
-                'Референсы видны только в закрытой админке.',
-                'References are only visible in the private admin.',
+                'Эти фотографии не появятся на сайте.',
+                'These photos won’t appear on the site.',
               )}
             </p>
           </>
@@ -483,8 +481,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
           {sending ? <LoaderCircle className="spin" size={18} /> : <Mail size={17} />}{' '}
           {text(
             locale,
-            sending ? 'Сохраняем…' : 'Отправить заявку',
-            sending ? 'Saving…' : 'Send your request',
+            sending ? 'Сохраняем…' : 'Отправить идею',
+            sending ? 'Saving…' : 'Send your idea',
           )}
         </button>
         <p className="form-disclaimer">
