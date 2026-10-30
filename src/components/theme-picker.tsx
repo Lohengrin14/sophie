@@ -60,10 +60,13 @@ export function ThemePicker({
   function keys(event: KeyboardEvent<HTMLDivElement>) {
     const position = siteThemes.findIndex((theme) => theme.id === selected)
     let index = position
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight')
-      index = (position + 1) % siteThemes.length
-    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft')
+    const columns = window.matchMedia('(min-width: 801px)').matches ? 2 : 1
+    if (event.key === 'ArrowRight') index = (position + 1) % siteThemes.length
+    else if (event.key === 'ArrowLeft')
       index = (position + siteThemes.length - 1) % siteThemes.length
+    else if (event.key === 'ArrowDown') index = (position + columns) % siteThemes.length
+    else if (event.key === 'ArrowUp')
+      index = (position + siteThemes.length - columns) % siteThemes.length
     else if (event.key === 'Home') index = 0
     else if (event.key === 'End') index = siteThemes.length - 1
     else return

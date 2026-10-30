@@ -16,8 +16,8 @@ function contrast(a: string, b: string) {
   return (values[0] + 0.05) / (values[1] + 0.05)
 }
 describe('public site palettes', () => {
-  it('offers five distinct preferences and safely handles invalid cookies', () => {
-    expect(new Set(siteThemes.map((theme) => theme.id)).size).toBe(5)
+  it('offers ten distinct preferences and safely handles invalid cookies', () => {
+    expect(new Set(siteThemes.map((theme) => theme.id)).size).toBe(10)
     for (const value of [undefined, null, '', '__proto__', '<script>', 'unknown']) {
       expect(resolveTheme(value).id).toBe('graphite')
     }
