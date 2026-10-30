@@ -6,6 +6,7 @@ import type { Media } from '@/payload-types'
 import { getArtworkBySlug, getStudio, artworkImage } from '@/lib/data'
 import { availabilityLabel, isLocale, mediumLabel, money, text } from '@/lib/i18n'
 import { BuyLink } from '@/components/purchase-link'
+import { artworkPrice } from '@/lib/artwork-prices'
 export async function generateMetadata({
   params,
 }: {
@@ -31,6 +32,7 @@ export default async function Work({
   if (!isLocale(locale)) notFound()
   const [work, studio] = await Promise.all([getArtworkBySlug(locale, slug), getStudio(locale)])
   if (!work) notFound()
+  const price = artworkPrice(work, locale)
   const media = [work.image, ...(work.images || [])].filter((image): image is Media =>
     Boolean(image && typeof image === 'object' && image.url),
   )
@@ -77,9 +79,9 @@ export default async function Work({
               <dd>{work.year}</dd>
             </div>
           </dl>
-          <div className="detail-price">
-            {money(Number(work.priceMinor), String(work.currency), locale)}
-          </div>
+          {price && (
+            <div className="detail-price">{money(price.priceMinor, price.currency, locale)}</div>
+          )}
           {work.availability === 'available' ? (
             <BuyLink
               brand={studio.brand}

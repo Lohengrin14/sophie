@@ -68,8 +68,8 @@ try {
     images: ids.slice(0, 10),
     width: 40,
     height: 60,
-    priceMinor: 65050,
-    currency: 'EUR',
+    priceRubMinor: 65050,
+    priceUsdMinor: 70025,
     availability: 'available',
     medium: 'oil',
     year: 2026,
@@ -92,7 +92,7 @@ try {
   const cookieSave = await fetch(`${base}/api/artworks/${work.id}?locale=en`, {
     method: 'PATCH',
     headers: { Cookie: `payload-token=${token}`, Origin: base, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ priceMinor: 65050 }),
+    body: JSON.stringify({ priceRubMinor: 65050 }),
   })
   assert.equal(cookieSave.status, 200, 'Shared fields save even when this locale has no title yet')
   assert.equal(
@@ -107,7 +107,8 @@ try {
     'title',
     'sortOrder,-displaySize,title,id',
     'availability',
-    'priceMinor',
+    'priceRubMinor',
+    'priceUsdMinor',
     'width',
     'slug',
   ])
@@ -132,7 +133,12 @@ try {
     assert.ok(detail.includes('work-lightbox'))
     assert.ok(!detail.includes('id="purchase"'))
     assert.ok(!detail.includes('class="request-form"'))
-    assert.ok(detail.includes('viewer-arrow'))
+    assert.ok(detail.includes('aria-haspopup="dialog"'), 'The image opens the lazily rendered fullscreen viewer')
+    const priceBlock = detail.match(/<div class="detail-price">([^<]*)<\/div>/)?.[1]
+    assert.ok(
+      priceBlock?.includes(locale === 'ru' ? '650,50' : '$700.25'),
+      'The correct independently entered price is displayed',
+    )
     const home = await (await fetch(`${base}/${locale}`)).text()
     const main = home.match(/<main\b[\s\S]*?<\/main>/)?.[0]
     const card = main.match(new RegExp(`<a[^>]*id="work-${work.id}"[\\s\\S]*?</a>`))?.[0]
@@ -149,7 +155,17 @@ try {
   const latest = await get(`/api/artworks/${work.id}`)
   assert.equal(latest.width, 40)
   assert.equal(latest.height, 60)
-  assert.equal(latest.priceMinor, 65050)
+  assert.equal(latest.priceRubMinor, 65050)
+  assert.equal(latest.priceUsdMinor, 70025)
+  assert.equal(
+    (await api(`/api/artworks/${work.id}`, 'PATCH', { priceRubMinor: null })).status,
+    200,
+  )
+  const hiddenPrice = await (await fetch(`${base}/ru/works/${work.slug}`)).text()
+  assert.ok(
+    !hiddenPrice.includes('<div class="detail-price">'),
+    'Clearing RUB hides its price without falling back to USD',
+  )
   console.log(
     'PASS: upload, ten images, cover selection, overflow rejection, independent fields, RU/EN, priority, board size, public thumbnails',
   )

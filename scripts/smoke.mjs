@@ -56,8 +56,7 @@ try {
       width: 40,
       height: 40,
       year: 2026,
-      priceMinor: 10000,
-      currency: 'EUR',
+      priceRubMinor: 10000,
       availability: 'available',
       published: false,
       demo: true,
@@ -79,8 +78,7 @@ try {
       width: 40,
       height: 40,
       year: 2026,
-      priceMinor: 65050,
-      currency: 'EUR',
+      priceRubMinor: 65050,
       availability: 'available',
       published: false,
       demo: true,
@@ -102,9 +100,9 @@ try {
   })
   assert.equal(adminEdit.status, 200)
   const adminHTML = await adminEdit.text()
-  assert.ok(adminHTML.includes('Цена картины'))
-  assert.ok(adminHTML.includes('Введите обычную цену'))
-  const priceInput = adminHTML.match(/<input\b[^>]*\bid="field-priceMinor"[^>]*>/)?.[0]
+  assert.ok(adminHTML.includes('Цена в рублях'))
+  assert.ok(adminHTML.includes('Не заполнено'))
+  const priceInput = adminHTML.match(/<input\b[^>]*\bid="field-priceRubMinor"[^>]*>/)?.[0]
   assert.ok(priceInput, 'Admin has a price input')
   assert.ok(
     priceInput.includes('value="650.5"'),

@@ -5,6 +5,7 @@ import sharp from 'sharp'
 import { cms } from '@/lib/data'
 import { requestSchema } from '@/lib/requests'
 import { getQuote } from '@/lib/estimate'
+import { artworkPrice } from '@/lib/artwork-prices'
 
 const MAX_BODY = 17 * 1024 * 1024
 async function boundedForm(req: Request) {
@@ -89,7 +90,7 @@ export async function POST(req: Request) {
     })
     if (!work || work.availability !== 'available')
       return NextResponse.json({ error: 'unavailable' }, { status: 409 })
-    snapshot = { title: work.title, priceMinor: work.priceMinor, currency: work.currency }
+    snapshot = { title: work.title, ...artworkPrice(work, data.locale) }
   }
   if (data.kind === 'commission') {
     const studio = await payload.findGlobal({ slug: 'studio', overrideAccess: false })

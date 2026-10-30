@@ -27,13 +27,18 @@ const sectionAccess =
     can(req.user, section, action)
 const published: Access = ({ req }) =>
   can(req.user, 'gallery') ? true : { published: { equals: true } }
-const moneyField = (name: string, label: string, description: string): NumberField => ({
+const moneyField = (
+  name: string,
+  label: string,
+  description: string,
+  required = true,
+): NumberField => ({
   name,
   type: 'number',
   label,
-  required: true,
+  required,
   min: 0,
-  validate: validStoredPrice,
+  validate: (value: unknown) => (!required && value == null) || validStoredPrice(value),
   admin: {
     placeholder: 'Например: 650',
     description,
@@ -231,7 +236,7 @@ const Artworks: CollectionConfig = {
   labels: { singular: 'Галерея', plural: 'Галереи' },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'availability', 'priceMinor', 'published'],
+    defaultColumns: ['title', 'availability', 'priceRubMinor', 'priceUsdMinor', 'published'],
     group: 'Студия',
     description:
       'Галерея объединяет работу и её изображения. Для публикации в каждом языке нужно название; описание необязательно. Основной редактор находится на главной мастерской.',
@@ -403,23 +408,38 @@ const Artworks: CollectionConfig = {
       type: 'row',
       fields: [
         moneyField(
-          'priceMinor',
-          'Цена картины',
-          'Введите обычную цену в выбранной валюте. Например: 650 или 650,50. Доставку сюда не включайте.',
+          'priceRubMinor',
+          'Цена в рублях ₽',
+          'Для русской версии сайта. Не заполнено — цена не показывается.',
+          false,
         ),
+        moneyField(
+          'priceUsdMinor',
+          'Цена в долларах $',
+          'Для английской версии сайта. Не заполнено — цена не показывается.',
+          false,
+        ),
+      ],
+    },
+    {
+      type: 'row',
+      admin: { hidden: true },
+      fields: [
+        { name: 'priceMinor', type: 'number', label: 'Прежняя цена', min: 0 },
         {
           name: 'currency',
           type: 'text',
           label: 'Валюта цены',
-          required: true,
-          defaultValue: 'EUR',
+          required: false,
           admin: {
             components: { Field: '/components/admin/currency-field#CurrencyField' },
             description:
               'Выберите валюту, в которой продаётся эта картина. На обоих языках сайта цена остаётся в этой валюте. Автоматического пересчёта пока нет.',
           },
           validate: (v: unknown) =>
-            (typeof v === 'string' && /^[A-Z]{3}$/.test(v)) || 'Например EUR, USD или RUB',
+            v == null ||
+            (typeof v === 'string' && /^[A-Z]{3}$/.test(v)) ||
+            'Например EUR, USD или RUB',
         },
       ],
     },
