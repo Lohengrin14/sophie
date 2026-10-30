@@ -1022,6 +1022,31 @@ body:has(.studio-topbar) {
   border-radius: 20px;
   box-shadow: 0 8px 40px #18203308;
 }
+.studio-google-login {
+  margin-bottom: 24px;
+}
+.studio-google-login form { margin: 0; }
+.studio-google-login button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: 10px;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.studio-google-login button:hover { background: var(--theme-elevation-50); }
+.studio-google-login button:focus-visible { outline: 2px solid #315cd7; outline-offset: 3px; }
+.studio-google-login button span { font-size: 21px; font-weight: 700; }
+.studio-google-login [role='alert'] { color: var(--theme-error-500); font-size: 14px; }
+.studio-google-divider { margin-top: 20px; text-align: center; color: var(--theme-elevation-600); font-size: 13px; }
 .studio-workspace label.studio-search input:not([type='checkbox']):not([type='range']) {
   min-width: 0;
   border: 0;

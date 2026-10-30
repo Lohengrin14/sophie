@@ -20,14 +20,15 @@ const env = {
   ...local,
   NODE_ENV: 'production',
   DATABASE_TARGET: 'local',
+  STORAGE_TARGET: 'local',
   DATABASE_URL: testURL.href,
   DATABASE_PUSH: 'false',
   DATABASE_POOL_MAX: '3',
   PAYLOAD_DROP_DATABASE: 'false',
 }
-function cli(command) {
+function cli(command, ...args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, ['node_modules/payload/bin.js', command], {
+    const child = spawn(process.execPath, ['node_modules/payload/bin.js', command, ...args], {
       env,
       stdio: ['ignore', 'pipe', 'pipe'],
     })
@@ -78,6 +79,11 @@ try {
   created = true
   await cli('migrate')
   await verify()
+  if (process.argv.includes('--google-auth')) {
+    await cli('run', 'scripts/google-auth-smoke.ts')
+    await verify()
+    console.log('PASS: Google session bridge, employee permissions, denied access, refresh, logout, and password fallback.')
+  }
   await cli('migrate')
   await verify()
   console.log(

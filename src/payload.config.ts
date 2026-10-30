@@ -51,7 +51,7 @@ const mediumOptions = [
 const Users: CollectionConfig = {
   slug: 'users',
   labels: { singular: 'Сотрудник', plural: 'Сотрудники' },
-  auth: true,
+  auth: { cookies: { secure: process.env.GOOGLE_AUTH_ORIGIN?.startsWith('https:') ?? false } },
   admin: {
     useAsTitle: 'email',
     group: 'Настройки',
@@ -948,6 +948,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: '— Artist Studio' },
     components: {
+      beforeLogin: ['/components/admin/google-login#GoogleLogin'],
       header: ['/components/admin/studio-header#StudioHeader'],
       Nav: '/components/admin/studio-header#StudioNav',
       views: { dashboard: { Component: '/components/admin/studio-dashboard#StudioDashboard' } },
