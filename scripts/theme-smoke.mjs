@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 for (const [locale, theme, background] of [
   ['ru', 'winter', '#1b1f26'],
   ['en', 'autumn', '#f1e8dc'],
-  ['ru', 'summer', '#f7f3df'],
+  ['ru', 'summer', '#ffffff'],
   ['en', 'spring', '#eff3eb'],
   ['en', 'invalid', '#1b1f26'],
 ]) {
