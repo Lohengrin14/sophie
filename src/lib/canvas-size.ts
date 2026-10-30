@@ -1,4 +1,4 @@
-// Physical dimensions define aspect ratio only. Board scale is an independent choice.
+// Dimensions (centimeters or pixels) define aspect ratio only. Board scale is independent.
 export const canvasSizes = Array.from({ length: 10 }, (_, index) => ({
   tier: index + 1,
   scale: 1 + index / 3,

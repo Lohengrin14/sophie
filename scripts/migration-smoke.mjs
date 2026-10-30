@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs'
 import { parseEnv } from 'node:util'
 import { spawn } from 'node:child_process'
 import pg from 'pg'
@@ -42,8 +42,20 @@ function cli(command, ...args) {
     child.on('error', reject)
     child.on('close', (code) => {
       // No connection details or secret-containing error objects in CI output.
-      if (code !== 0) reject(new Error(`Migration QA command ${command} failed (${code}).`))
-      else resolve(output)
+      if (code !== 0) {
+        for (const [key, value] of Object.entries(env))
+          if (value && /PASSWORD|SECRET|KEY|DATABASE_URL/.test(key))
+            output = output
+              .replaceAll(value, '[redacted]')
+              .replaceAll(encodeURIComponent(value), '[redacted]')
+        mkdirSync('.local', { recursive: true })
+        writeFileSync('.local/migration-qa.log', output, { mode: 0o600 })
+        reject(
+          new Error(
+            `Migration QA command ${command} failed (${code}); see ignored .local/migration-qa.log.`,
+          ),
+        )
+      } else resolve(output)
     })
   })
 }
@@ -77,9 +89,14 @@ try {
   await admin.connect()
   await admin.query(`CREATE DATABASE "${name}"`)
   created = true
-  if (process.argv.includes('--artwork-prices')) await cli('run', 'scripts/artwork-prices-smoke.ts')
+  if (process.argv.includes('--artwork-materials'))
+    await cli('run', 'scripts/artwork-materials-smoke.ts')
+  else if (process.argv.includes('--artwork-prices'))
+    await cli('run', 'scripts/artwork-prices-smoke.ts')
   else await cli('migrate')
   await verify()
+  if (process.argv.includes('--artwork-materials'))
+    console.log('PASS: legacy artwork preservation, paper/cardboard formats, custom dimensions, digital pixels and validation.')
   if (process.argv.includes('--google-auth')) {
     await cli('run', 'scripts/google-auth-smoke.ts')
     await verify()

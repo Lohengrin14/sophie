@@ -10,6 +10,12 @@ import type { User } from '@/payload-types'
 import { SortHeader } from './studio-sort'
 import { formatPriceInput } from '@/lib/admin-helpers'
 import { readArtworkPrices } from '@/lib/artwork-prices'
+import {
+  readArtworkMaterials,
+  artworkDimensions,
+  techniqueLabel,
+  surfaceLabel,
+} from '@/lib/artwork-materials'
 import { money, availabilityLabel } from '@/lib/i18n'
 import { relationID } from '@/lib/studio-admin'
 import {
@@ -20,7 +26,7 @@ import {
   uploadArtImage,
   type Page,
 } from './studio-api'
-import { Priority, BoardSize, DimensionFields, Pagination, SaveBox } from './studio-controls'
+import { Priority, BoardSize, ArtworkMaterialFields, Pagination, SaveBox } from './studio-controls'
 
 type Language = 'ru' | 'en'
 const publicPath = (work: Artwork, locale: Language) => `/${locale}/works/${work.slug}`
@@ -191,7 +197,16 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                   }}
                 />
                 <SortHeader
-                  label={t('Размер, см')}
+                  label={t('Материалы')}
+                  field="medium"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Размер')}
                   field="width"
                   sort={sort}
                   onSort={(value) => {
@@ -251,8 +266,14 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                         : '—'}
                     </td>
                     <td className="studio-nowrap">
-                      {work.width} × {work.height}
+                      {techniqueLabel(work.medium || 'oil', locale)}
+                      {work.workKind !== 'digital' && (
+                        <small className="studio-draft">
+                          {surfaceLabel(work.surface || 'canvas', locale)}
+                        </small>
+                      )}
                     </td>
+                    <td className="studio-nowrap">{artworkDimensions(work, locale)}</td>
                     <td>
                       {work.published && work.title ? (
                         <a
@@ -528,12 +549,10 @@ function GalleryEditor({
             </label>
           </SaveBox>
           <SaveBox
-            title={t('Реальный размер')}
-            onSave={async (data) =>
-              patch({ width: Number(data.get('width')), height: Number(data.get('height')) })
-            }
+            title={t('Материалы и размер')}
+            onSave={async (data) => patch(readArtworkMaterials(data))}
           >
-            <DimensionFields width={work.width} height={work.height} />
+            <ArtworkMaterialFields work={work} />
           </SaveBox>
         </div>
         <div>
@@ -697,14 +716,12 @@ function NewGallery({
           description: String(data.get('description') || '').trim(),
           image: images[0],
           images,
-          width: Number(data.get('width')),
-          height: Number(data.get('height')),
+          ...readArtworkMaterials(data),
           ...prices,
           displaySize: Number(data.get('displaySize')),
           sortOrder: Number(data.get('sortOrder')),
           availability: 'available',
           published: false,
-          medium: 'oil',
           year: new Date().getFullYear(),
         }),
       )
@@ -768,7 +785,7 @@ function NewGallery({
           <p className="studio-hint">
             {t('Первое изображение станет обложкой. JPG, PNG или WebP, до 4 МБ каждый.')}
           </p>
-          <DimensionFields />
+          <ArtworkMaterialFields />
           <ArtworkPriceFields />
           <p className="studio-hint">
             {t('Обе цены необязательны. Если цена не заполнена, на сайте она не показывается.')}

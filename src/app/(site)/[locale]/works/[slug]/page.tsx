@@ -7,6 +7,7 @@ import { getArtworkBySlug, getStudio, artworkImage } from '@/lib/data'
 import { availabilityLabel, isLocale, mediumLabel, money, text } from '@/lib/i18n'
 import { BuyLink } from '@/components/purchase-link'
 import { artworkPrice } from '@/lib/artwork-prices'
+import { artworkDimensions, surfaceLabel } from '@/lib/artwork-materials'
 export async function generateMetadata({
   params,
 }: {
@@ -65,14 +66,24 @@ export default async function Work({
           {work.description?.trim() && <p className="work-story">{work.description.trim()}</p>}
           <dl className="work-specs">
             <div>
-              <dt>{text(locale, 'Материал', 'Medium')}</dt>
+              <dt>{text(locale, 'Техника', 'Medium')}</dt>
               <dd>{mediumLabel(String(work.medium), locale)}</dd>
             </div>
+            {work.workKind !== 'digital' && (
+              <div>
+                <dt>{text(locale, 'Основа', 'Support')}</dt>
+                <dd>{surfaceLabel(work.surface || 'canvas', locale)}</dd>
+              </div>
+            )}
+            {work.workKind === 'digital' && (
+              <div>
+                <dt>{text(locale, 'Вид работы', 'Artwork type')}</dt>
+                <dd>{text(locale, 'Цифровая работа', 'Digital artwork')}</dd>
+              </div>
+            )}
             <div>
               <dt>{text(locale, 'Размер', 'Dimensions')}</dt>
-              <dd>
-                {work.width} × {work.height} {text(locale, 'см', 'cm')}
-              </dd>
+              <dd>{artworkDimensions(work, locale)}</dd>
             </div>
             <div>
               <dt>{text(locale, 'Год', 'Year')}</dt>

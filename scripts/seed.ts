@@ -84,6 +84,7 @@ for (const [index, example] of examples.entries()) {
     collection: 'artworks',
     locale: 'ru',
     data: {
+      workKind: 'physical',
       title: example.ru,
       slug: example.slug,
       description: example.descriptionRu,
