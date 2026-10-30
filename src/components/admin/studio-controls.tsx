@@ -31,15 +31,6 @@ export function SaveBox({
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  useEffect(() => {
-    if (!dirty && !changed) return
-    const preventLoss = (event: BeforeUnloadEvent) => {
-      event.preventDefault()
-      event.returnValue = ''
-    }
-    window.addEventListener('beforeunload', preventLoss)
-    return () => window.removeEventListener('beforeunload', preventLoss)
-  }, [dirty, changed])
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
@@ -94,7 +85,7 @@ export function SaveBox({
       </div>
       {error && (
         <p className="studio-error" role="alert">
-          {error}
+          {t(error)}
         </p>
       )}
     </form>
@@ -248,13 +239,23 @@ export function Pagination({
         {total}
       </span>
       <div>
-        <button type="button" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+        <button
+          data-studio-navigation
+          type="button"
+          disabled={page <= 1}
+          onClick={() => onPage(page - 1)}
+        >
           {t('← Назад')}
         </button>
         <span>
           {page} / {Math.max(1, pages)}
         </span>
-        <button type="button" disabled={page >= pages} onClick={() => onPage(page + 1)}>
+        <button
+          data-studio-navigation
+          type="button"
+          disabled={page >= pages}
+          onClick={() => onPage(page + 1)}
+        >
           {t('Дальше →')}
         </button>
       </div>

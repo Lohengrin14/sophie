@@ -996,3 +996,36 @@ body:has(.studio-topbar) {
     grid-column: 1/-1;
   }
 }
+
+/* Keep the account and specialist Payload screens in the same visual family. */
+.template-default .btn,
+.template-minimal .btn {
+  border-radius: 10px;
+}
+.template-default .btn--style-primary,
+.template-minimal .btn--style-primary {
+  background: #315cd7;
+  color: #fff;
+}
+.template-default .field-type input:not([type='checkbox']):not([type='radio']),
+.template-default .field-type textarea,
+.template-minimal input:not([type='checkbox']):not([type='radio']) {
+  border-radius: 10px;
+}
+.template-minimal {
+  background: #f4f6fa;
+}
+.template-minimal__wrap {
+  padding: 32px;
+  background: var(--theme-bg);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px #18203308;
+}
+.studio-workspace label.studio-search input:not([type='checkbox']):not([type='range']) {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  box-shadow: none;
+}

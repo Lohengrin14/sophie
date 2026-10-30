@@ -130,7 +130,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Учётные записи для входа в мастерскую. Это сотрудники, а не покупатели сайта.
+ * Staff accounts for signing into the studio. These are not customer accounts.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -161,7 +161,7 @@ export interface User {
     };
   };
   /**
-   * Имя для внутренней работы. Имя художника на сайте задаётся в разделе «Художник и настройки».
+   * Internal name. Set the public artist name in Artist settings.
    */
   name?: string | null;
   updatedAt: string;
@@ -185,7 +185,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 5 МБ.
+ * Catalogue photographs. Upload directly when adding an artwork. JPG, PNG or WebP, up to 5 MB.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -193,7 +193,7 @@ export interface User {
 export interface Media {
   id: number;
   /**
-   * Одно короткое предложение для тех, кто не видит изображение. Это не имя файла. Перевод заполните в English.
+   * A short description for people who cannot see the image. This is not a filename. Add the English translation separately.
    */
   alt: string;
   updatedAt: string;
@@ -219,7 +219,7 @@ export interface Media {
   };
 }
 /**
- * Галерея объединяет работу и её изображения. Для публикации в каждом языке нужно название; описание необязательно. Основной редактор находится на главной мастерской.
+ * A gallery combines an artwork and its photographs. Publishing in each language requires a title; description is optional. Use the main studio editor.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "artworks".
@@ -227,78 +227,78 @@ export interface Media {
 export interface Artwork {
   id: number;
   /**
-   * Так посетитель увидит работу в каталоге. Для English укажите английское название.
+   * The public catalogue title. Add the English title for the English website.
    */
   title?: string | null;
   /**
-   * Выберите фото из медиатеки или нажмите «Создать» в этом поле, чтобы загрузить новое. JPG, PNG или WebP, до 5 МБ. Лучше без обрезки краёв картины.
+   * Select from the media library or create a new image. JPG, PNG or WebP, up to 5 MB. Keep the entire artwork visible.
    */
   image: number | Media;
   /**
-   * До 10 изображений вместе с обложкой. Главное изображение выбирается отдельно.
+   * Up to 10 images including the cover. Choose the cover separately.
    */
   images?: (number | Media)[] | null;
   /**
-   * 10 шагов от 1× до 4×. Сантиметры определяют только пропорции.
+   * 10 steps from 1× to 4×. Physical dimensions determine only the aspect ratio.
    */
   displaySize?: number | null;
   /**
-   * Необязательно. Расскажите о сюжете и материалах. Под изображениями на главной этот текст не выводится.
+   * Optional. Describe the subject and materials. This text is not shown under homepage images.
    */
   description?: string | null;
   /**
-   * Материал самой работы. Например: «Масло, холст».
+   * The artwork medium, for example oil on canvas.
    */
   medium: 'oil' | 'acrylic';
   /**
-   * Слева направо, без рамы. Например: 40.
+   * Left to right, without the frame. For example: 40.
    */
   width: number;
   /**
-   * Снизу вверх, без рамы. Например: 60.
+   * Bottom to top, without the frame. For example: 60.
    */
   height: number;
   /**
-   * Когда закончена картина. Например: 2026.
+   * Year the artwork was finished. For example: 2026.
    */
   year: number;
   /**
-   * Введите обычную цену в выбранной валюте. Например: 650 или 650,50. Доставку сюда не включайте.
+   * Regular amount in the chosen currency, for example 650 or 650.50, excluding shipping.
    */
   priceMinor: number;
   /**
-   * Выберите валюту, в которой продаётся эта картина. На обоих языках сайта цена остаётся в этой валюте. Автоматического пересчёта пока нет.
+   * The artwork currency stays the same in both website languages. Automatic conversion is not enabled.
    */
   currency: string;
   /**
-   * «Доступна» — можно оставить заявку. «Продана» — остаётся в портфолио без покупки.
+   * Available allows purchase enquiries. Sold keeps the work in the portfolio without a purchase option.
    */
   availability: 'available' | 'sold';
   /**
-   * Сохранено для совместимости API. Порядок теперь задаётся приоритетом галереи.
+   * Kept for API compatibility. Gallery priority now controls the order.
    */
   featured?: boolean | null;
   /**
-   * Выключено — черновик виден только сотрудникам. Для каждого языка нужно название; описание необязательно.
+   * Off means a staff-only draft. Each language requires a title; description is optional.
    */
   published?: boolean | null;
   /**
-   * Создаётся из названия при первом сохранении. «Вечер у моря» → vecher-u-morya. Страница будет /ru/works/vecher-u-morya и /en/works/vecher-u-morya. При переименовании ссылка сохраняется.
+   * Generated from the first title. Evening by the sea becomes evening-by-the-sea. Both language URLs keep the same slug when renamed.
    */
   slug: string;
   /**
-   * 1 — первое место, 50 — последнее. При равенстве: размер на доске по убыванию, затем название.
+   * 1 is first, 50 is last. Ties use descending board scale, then title.
    */
   sortOrder?: number | null;
   /**
-   * Для тестовой картинки и вымышленных расценок. У настоящих работ выключайте: на сайте исчезнет подпись «Демонстрационная работа и цена».
+   * Use for sample images and illustrative prices. Turn off for real artworks to remove the demonstration notice.
    */
   demo?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Одно правило — одно сочетание сюжета, техники и размера. Например: портрет, масло, 40 × 40 см → 500–650 евро, 28–49 дней. Это предварительная оценка для формы, а не окончательная договорённость.
+ * One rule covers one subject, medium and size, for example an oil portrait at 40 × 40 cm, EUR 500–650 and 28–49 days. This is an estimate, not a final agreement.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "quote-rules".
@@ -306,48 +306,48 @@ export interface Artwork {
 export interface QuoteRule {
   id: number;
   /**
-   * Видно только вам. Помогает быстро найти нужные расценки.
+   * Internal name to help find the right price guide.
    */
   label: string;
   subject: 'portrait' | 'landscape' | 'still-life';
   medium: 'oil' | 'acrylic';
   /**
-   * Стандартный размер из формы заказа. Произвольные размеры обсуждаются лично.
+   * Standard size in the commission form. Custom sizes are discussed personally.
    */
   size: '30x40' | '40x40' | '50x70';
   /**
-   * Обычная сумма, например: 500. Не умножайте на 100.
+   * Regular amount, for example 500. Do not multiply by 100.
    */
   minPrice: number;
   /**
-   * Верхняя граница, например: 650. Не меньше суммы «от».
+   * Maximum amount, for example 650. Must not be less than the minimum.
    */
   maxPrice: number;
   /**
-   * В этой валюте посетитель увидит обе границы оценки. Смена валюты не пересчитывает введённые суммы.
+   * Both estimate amounts use this currency. Changing it does not convert the amounts.
    */
   currency: string;
   /**
-   * Самый ранний срок до готовности: очередь + живопись + нужная просушка. Например: 28 дней. Без доставки.
+   * Earliest readiness: queue, painting and drying. For example: 28 days, excluding shipping.
    */
   minDays: number;
   /**
-   * Верхняя граница, например: 49 дней. Не меньше срока «от».
+   * Upper estimate, for example 49 days. Must not be less than the minimum.
    */
   maxDays: number;
   /**
-   * Выключите, чтобы временно убрать оценку из формы, сохранив правило. Не создавайте два активных правила для одинакового сочетания.
+   * Turn off to remove the estimate temporarily while keeping the rule. Avoid duplicate active rules for the same combination.
    */
   active?: boolean | null;
   /**
-   * На сайте появится пометка о демонстрационной оценке. Выключайте после ввода настоящих цен и сроков.
+   * The website shows a demonstration notice. Turn off after entering real prices and timelines.
    */
   demo?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Обращения с сайта. Откройте заявку, посмотрите пожелания и контакт, свяжитесь с человеком и обновите статус. Внутренние заметки посетителю не видны.
+ * Website enquiries. Read the request, contact the visitor and update its status. Internal notes are private.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "requests".
@@ -355,27 +355,27 @@ export interface QuoteRule {
 export interface Request {
   id: number;
   /**
-   * Присваивается автоматически. По нему можно найти обращение.
+   * Assigned automatically. Use it to find the enquiry.
    */
   reference: string;
   idempotencyKey: string;
   kind: 'purchase' | 'commission' | 'question';
   /**
-   * На каком языке человек заполнил форму. Поможет выбрать язык ответа.
+   * The language used to complete the form, to help you choose the reply language.
    */
   locale: 'ru' | 'en';
   /**
-   * Может быть пустым: в форме имя необязательно.
+   * Optional in the public form; may be empty.
    */
   name?: string | null;
   channel: 'email' | 'telegram' | 'instagram';
   /**
-   * Email или имя пользователя в выбранном мессенджере. Например: anna@example.com или @anna_art.
+   * Email or messenger username, for example anna@example.com or @anna_art.
    */
   contact: string;
   message?: string | null;
   /**
-   * Заполняется при заявке на готовую работу. Для индивидуального заказа может быть пустым.
+   * Provided for purchase enquiries; may be empty for commissions.
    */
   artwork?: (number | null) | Artwork;
   details?:
@@ -388,15 +388,15 @@ export interface Request {
     | boolean
     | null;
   /**
-   * Фотографии и примеры от посетителя. Открываются только сотрудникам, на сайт не публикуются.
+   * Visitor photographs and examples are staff-only and never published.
    */
   references?: (number | Reference)[] | null;
   /**
-   * Новая → Обсуждаем → Согласовано → Завершена. Статус заявки не меняет наличие картины автоматически.
+   * New → Discussing → Accepted → Completed. Request status does not automatically change artwork availability.
    */
   status?: ('new' | 'processing' | 'discussing' | 'accepted' | 'shipped' | 'completed' | 'cancelled') | null;
   /**
-   * Видны только сотрудникам. Можно записать договорённости, цену, сроки и следующий шаг.
+   * Staff-only agreements, price, timeline and next steps.
    */
   notes?: string | null;
   referenceCount?: number | null;
@@ -405,7 +405,7 @@ export interface Request {
   createdAt: string;
 }
 /**
- * Изображения, приложенные посетителями к заявкам. Они не видны в публичном каталоге.
+ * Images attached by visitors to requests. They are not shown in the public catalogue.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "references".
@@ -413,7 +413,7 @@ export interface Request {
 export interface Reference {
   id: number;
   /**
-   * Например: ART-EC804CF3 — фото для портрета. Саму заявку ищите в разделе «Заявки».
+   * For example: ART-EC804CF3 — portrait reference. Find the request in Requests.
    */
   note?: string | null;
   updatedAt: string;
@@ -735,7 +735,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Имя, контакты и информация на сайте. Заполненные значения отсюда имеют приоритет над резервными настройками разработчика. Перевод биографии добавляется через переключатель языка.
+ * Name, contacts and website information. Saved values override environment fallbacks. Use the language selector for the biography translation.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "studio".
@@ -744,31 +744,31 @@ export interface Studio {
   id: number;
   photo?: (number | null) | Media;
   /**
-   * Имя на странице художника и внизу сайта. Это пример — укажите своё.
+   * Public name on the artist page and footer. Replace the example with your name.
    */
   name?: string | null;
   /**
-   * Короткая подпись в шапке сайта. Если оставить пустым, используем имя художника.
+   * Short name in the header. Leave empty to use the artist name.
    */
   alias?: string | null;
   /**
-   * Полная ссылка на профиль, не просто @имя. Если оставить пустым, ссылка не показывается.
+   * Full profile link, not just a username. Empty links are not shown unless an environment fallback exists.
    */
   instagram?: string | null;
   /**
-   * Полная ссылка на ваш публичный профиль. Это не токен бота. Можно оставить пустым.
+   * Full public profile link, not a bot token. Optional.
    */
   telegram?: string | null;
   /**
-   * Публичный адрес для связи. Он появится на сайте, если заполнен.
+   * Public contact email, shown on the website when provided.
    */
   email?: string | null;
   /**
-   * Расскажите о себе, материалах и вдохновении. Для English заполните английский вариант.
+   * Your story, medium and inspiration. Add each language separately.
    */
   about?: string | null;
   /**
-   * Выключите, если заняты: форма заказа покажет паузу. Каталог готовых работ продолжит работать.
+   * Turn off when busy to pause commissions. Existing artworks remain available.
    */
   commissionsOpen?: boolean | null;
   updatedAt?: string | null;

@@ -21,6 +21,10 @@ describe('automatic gallery packing', () => {
       const layout = mosaicLayout(works, columns)
       expect(layout).toHaveLength(works.length)
       expect(layout[0]).toMatchObject({ column: 1, row: 1 })
+      for (let index = 1; index < layout.length; index++)
+        expect((layout[index].row - 1) * columns + layout[index].column).toBeGreaterThan(
+          (layout[index - 1].row - 1) * columns + layout[index - 1].column,
+        )
       const occupied = new Set<string>()
       for (const tile of layout) {
         expect(tile.column).toBeGreaterThan(0)

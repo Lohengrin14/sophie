@@ -28,6 +28,24 @@ try {
   const originals = (await get('/api/artworks?limit=1000&depth=0')).docs.map(
     ({ id, updatedAt }) => ({ id, updatedAt }),
   )
+  const guide = await api('/api/quote-rules', 'POST', {
+    label: 'Temporary range QA',
+    subject: 'portrait',
+    medium: 'oil',
+    size: '40x40',
+    minPrice: 10000,
+    maxPrice: 20000,
+    currency: 'EUR',
+    minDays: 10,
+    maxDays: 20,
+    active: false,
+    demo: true,
+  })
+  assert.equal(guide.status, 201)
+  const guideID = (await guide.json()).doc.id
+  cleanup.push(['quote-rules', guideID])
+  assert.equal((await api(`/api/quote-rules/${guideID}`, 'PATCH', { minPrice: 30000 })).status, 400)
+  assert.equal((await api(`/api/quote-rules/${guideID}`, 'PATCH', { maxDays: 5 })).status, 400)
   const file = await readFile('public/art/sea.png')
   const upload = new FormData()
   upload.set('_payload', JSON.stringify({ alt: 'Temporary studio admin QA image' }))
@@ -82,6 +100,18 @@ try {
     400,
   )
   assert.equal((await get(`/api/artworks/${work.id}`)).images.length, 10)
+  assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { sortOrder: 0 })).status, 400)
+  assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { sortOrder: 51 })).status, 400)
+  for (const sort of [
+    'image',
+    'title',
+    'sortOrder,-displaySize,title,id',
+    'availability',
+    'priceMinor',
+    'width',
+    'slug',
+  ])
+    assert.equal((await api(`/api/artworks?locale=ru&limit=2&sort=${sort}`)).status, 200)
   assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { displaySize: 11 })).status, 400)
   patch = await api(`/api/artworks/${work.id}?locale=en`, 'PATCH', { title: 'QA English gallery' })
   assert.equal(patch.status, 200, 'Title can be saved independently from optional description')
@@ -159,8 +189,14 @@ try {
     assert.equal(doc.message, request.message)
     assert.equal(doc.references.length, request.references.length)
   }
+  const archived = await get('/api/requests?where[status][in]=completed,cancelled&limit=1000')
+  assert.ok(archived.docs.some((item) => item.id === request.id))
+  const active = await get('/api/requests?where[status][not_in]=completed,cancelled&limit=1000')
+  assert.ok(!active.docs.some((item) => item.id === request.id))
   assert.ok([401, 403].includes((await fetch(base + '/api/requests')).status))
   assert.ok([401, 403].includes((await fetch(base + '/api/references')).status))
+  for (const sort of ['reference', 'name', 'kind', '-createdAt', 'referenceCount', 'status'])
+    assert.equal((await api(`/api/requests?limit=2&sort=${sort}`)).status, 200)
   console.log(
     'PASS: readable request data, attached private references, processing/shipped/cancelled statuses, guest access denied',
   )
@@ -187,7 +223,7 @@ try {
   )
 } finally {
   // Delete only records created by this check, parents before their uploaded files.
-  for (const collection of ['requests', 'artworks', 'references', 'media']) {
+  for (const collection of ['requests', 'artworks', 'references', 'media', 'quote-rules']) {
     for (const [kind, id] of cleanup.filter(([kind]) => kind === collection)) {
       const response = await api(`/api/${kind}/${id}`, 'DELETE')
       assert.equal(response.status, 200, `cleanup ${kind}/${id}`)

@@ -54,39 +54,63 @@ const words: Record<string, string> = {
   acrylic: 'Акрил, холст',
   unsure: 'Нужна помощь с выбором',
 }
-const price = (amount: unknown, currency: unknown) =>
+const price = (amount: unknown, currency: unknown, locale = 'ru') =>
   typeof amount === 'number' && typeof currency === 'string'
-    ? new Intl.NumberFormat('ru-RU', { style: 'currency', currency }).format(amount / 100)
+    ? new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
+        style: 'currency',
+        currency,
+      }).format(amount / 100)
     : '—'
 
-export function requestSummary(data: Record<string, unknown> = {}): [string, string][] {
+export function requestSummary(
+  data: Record<string, unknown> = {},
+  locale: 'ru' | 'en' = 'ru',
+): [string, string][] {
+  const t = (ru: string, en: string) => (locale === 'en' ? en : ru)
+  const englishWords: Record<string, string> = {
+    portrait: 'Portrait',
+    landscape: 'Landscape',
+    'still-life': 'Still life',
+    other: 'Another idea',
+    oil: 'Oil on canvas',
+    acrylic: 'Acrylic on canvas',
+    unsure: 'Help choosing',
+  }
   const rows: [string, string][] = []
   if (data.title)
     rows.push(
-      ['Галерея', String(data.title)],
-      ['Цена при обращении', price(data.priceMinor, data.currency)],
+      [t('Галерея', 'Gallery'), String(data.title)],
+      [t('Цена при обращении', 'Price at enquiry'), price(data.priceMinor, data.currency, locale)],
     )
   for (const [key, label] of [
-    ['subject', 'Сюжет'],
-    ['medium', 'Техника'],
+    ['subject', t('Сюжет', 'Subject')],
+    ['medium', t('Техника', 'Medium')],
   ])
-    if (data[key]) rows.push([label, words[String(data[key])] || String(data[key])])
+    if (data[key])
+      rows.push([
+        label,
+        (locale === 'en' ? englishWords : words)[String(data[key])] || String(data[key]),
+      ])
   if (data.size)
     rows.push([
-      'Размер',
+      t('Размер', 'Dimensions'),
       data.size === 'custom'
-        ? `${data.customWidth} × ${data.customHeight} см`
-        : `${String(data.size).replace('x', ' × ')} см`,
+        ? `${data.customWidth} × ${data.customHeight} ${t('см', 'cm')}`
+        : `${String(data.size).replace('x', ' × ')} ${t('см', 'cm')}`,
     ])
   const quote =
     data.quote && typeof data.quote === 'object' ? (data.quote as Record<string, unknown>) : null
   if ('quote' in data)
     rows.push([
-      'Ориентир',
+      t('Ориентир', 'Estimate'),
       quote
-        ? `${price(quote.minPrice, quote.currency)} — ${price(quote.maxPrice, quote.currency)}`
-        : 'Нужно уточнить лично',
+        ? `${price(quote.minPrice, quote.currency, locale)} — ${price(quote.maxPrice, quote.currency, locale)}`
+        : t('Нужно уточнить лично', 'Please discuss personally'),
     ])
-  if (quote) rows.push(['Готовность', `${quote.minDays}–${quote.maxDays} дней, включая просушку`])
+  if (quote)
+    rows.push([
+      t('Готовность', 'Ready in'),
+      `${quote.minDays}–${quote.maxDays} ${t('дней, включая просушку', 'days, including drying')}`,
+    ])
   return rows
 }

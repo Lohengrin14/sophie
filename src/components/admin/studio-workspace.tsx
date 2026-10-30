@@ -168,7 +168,9 @@ export function StudioWorkspace() {
     const guard = (event: MouseEvent) => {
       const target =
         event.target instanceof Element
-          ? event.target.closest('a[href], button.studio-back, button.studio-sort')
+          ? event.target.closest(
+              'a[href], button.studio-back, button.studio-sort, button[data-studio-navigation]',
+            )
           : null
       if (!target || (target instanceof HTMLAnchorElement && target.target === '_blank')) return
       if (!canLeave()) {
@@ -176,8 +178,18 @@ export function StudioWorkspace() {
         event.stopPropagation()
       }
     }
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      if (document.querySelector('.studio-savebox[data-dirty="true"]')) {
+        event.preventDefault()
+        event.returnValue = ''
+      }
+    }
     document.addEventListener('click', guard, true)
-    return () => document.removeEventListener('click', guard, true)
+    window.addEventListener('beforeunload', beforeUnload)
+    return () => {
+      document.removeEventListener('click', guard, true)
+      window.removeEventListener('beforeunload', beforeUnload)
+    }
   }, [locale])
   return (
     <main className="studio-workspace" aria-label={t('Ваша мастерская')}>
@@ -262,7 +274,7 @@ function ArtistPhoto({
         </button>
       )}
       {busy && <p role="status">{t('Загружаем…')}</p>}
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{t(error)}</p>}
     </SaveBox>
   )
 }

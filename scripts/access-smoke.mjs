@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 const base = 'http://127.0.0.1:3000'
-let owner, member, id
+let owner, member, id, secondID
 async function api(path, token, method = 'GET', data) {
   return fetch(base + path, {
     method,
@@ -57,10 +57,38 @@ try {
     password,
   })
   assert.ok([401, 403].includes(guest.status))
+  const permitted = await api(`/api/users/${id}`, owner, 'PATCH', {
+    permissions: { users: { read: true, edit: true }, gallery: { read: true, edit: false } },
+  })
+  assert.equal(permitted.status, 200)
+  const colleague = await api('/api/users', member, 'POST', {
+    email: `qa-colleague-${randomUUID()}@localhost.test`,
+    password,
+    role: 'staff',
+    name: 'Temporary colleague',
+  })
+  assert.equal(colleague.status, 201)
+  secondID = (await colleague.json()).doc.id
+  assert.equal(
+    (await api(`/api/users/${secondID}`, member, 'PATCH', { name: 'Edited colleague' })).status,
+    200,
+  )
+  assert.equal(
+    (
+      await api(`/api/users/${secondID}`, member, 'PATCH', {
+        permissions: { requests: { edit: true } },
+      })
+    ).status,
+    403,
+  )
+  assert.equal((await api(`/api/users/${id}`, member, 'PATCH', { role: 'admin' })).status, 403)
+  assert.equal((await api(`/api/users/${secondID}`, member, 'DELETE')).status, 200)
+  secondID = null
   console.log(
     'PASS: read-only gallery, private sections denied, writes and self-escalation denied; guest account creation denied',
   )
 } finally {
+  if (secondID) assert.equal((await api(`/api/users/${secondID}`, owner, 'DELETE')).status, 200)
   if (id) assert.equal((await api(`/api/users/${id}`, owner, 'DELETE')).status, 200)
   console.log('Removed only temporary access QA account.')
 }

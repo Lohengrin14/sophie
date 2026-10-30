@@ -1,4 +1,5 @@
 'use client'
+import { useAdminText } from './studio-locale'
 import { FieldDescription, FieldError, FieldLabel, useField } from '@payloadcms/ui'
 import type { TextFieldClientComponent } from 'payload'
 
@@ -9,6 +10,7 @@ const currencies = [
 ]
 
 export const CurrencyField: TextFieldClientComponent = ({ field, path, readOnly }) => {
+  const t = useAdminText()
   const { value, setValue, showError, disabled } = useField<string>({ path })
   const current = value || ''
   return (
@@ -35,13 +37,15 @@ export const CurrencyField: TextFieldClientComponent = ({ field, path, readOnly 
             font: 'inherit',
           }}
         >
-          {!current && <option value="">Выберите валюту</option>}
+          {!current && <option value="">{t('Выберите валюту')}</option>}
           {current && !currencies.some((item) => item.value === current) && (
-            <option value={current}>{current} — текущая валюта</option>
+            <option value={current}>
+              {current} — {t('текущая валюта')}
+            </option>
           )}
           {currencies.map((item) => (
             <option key={item.value} value={item.value}>
-              {item.label}
+              {t(item.label)}
             </option>
           ))}
         </select>

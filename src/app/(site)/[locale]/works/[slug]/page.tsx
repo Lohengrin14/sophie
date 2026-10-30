@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, ShieldCheck } from 'lucide-react'
 import { WorkImages } from '@/components/work-images'
 import type { Media } from '@/payload-types'
-import { getArtworks, getStudio, artworkImage } from '@/lib/data'
+import { getArtworkBySlug, getStudio, artworkImage } from '@/lib/data'
 import { availabilityLabel, isLocale, mediumLabel, money, text } from '@/lib/i18n'
 import { RequestForm } from '@/components/request-form'
 export async function generateMetadata({
@@ -13,7 +13,7 @@ export async function generateMetadata({
 }) {
   const { locale, slug } = await params
   if (!isLocale(locale)) return {}
-  const work = (await getArtworks(locale)).find((w) => w.slug === slug)
+  const work = await getArtworkBySlug(locale, slug)
   return work
     ? {
         title: String(work.title),
@@ -29,8 +29,7 @@ export default async function Work({
 }) {
   const { locale, slug } = await params
   if (!isLocale(locale)) notFound()
-  const [works, studio] = await Promise.all([getArtworks(locale), getStudio(locale)])
-  const work = works.find((w) => w.slug === slug)
+  const [work, studio] = await Promise.all([getArtworkBySlug(locale, slug), getStudio(locale)])
   if (!work) notFound()
   const media = [work.image, ...(work.images || [])].filter((image): image is Media =>
     Boolean(image && typeof image === 'object' && image.url),

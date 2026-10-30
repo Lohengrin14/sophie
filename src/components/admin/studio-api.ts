@@ -4,8 +4,8 @@ export async function studioAPI<T>(path: string, init?: RequestInit): Promise<T>
   const response = await fetch(path, { credentials: 'same-origin', ...init })
   const data = await response.json().catch(() => ({}))
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403)
-      throw new Error('Нет доступа. Обновите страницу и войдите в мастерскую ещё раз.')
+    if (response.status === 401) throw new Error('Сессия закончилась. Войдите в мастерскую ещё раз.')
+    if (response.status === 403) throw new Error('Недостаточно прав. Обратитесь к администратору.')
     const detail = data.errors
       ?.flatMap(
         (error: { message?: string; data?: { errors?: { message: string }[] } }) =>

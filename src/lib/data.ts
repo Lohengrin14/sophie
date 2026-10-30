@@ -29,3 +29,18 @@ export function artworkImage(work: Artwork) {
   const image = work.image
   return image && typeof image === 'object' && 'url' in image ? String(image.url || '') : ''
 }
+
+export const getArtworkBySlug = cache(async (locale: Locale, slug: string) => {
+  const payload = await cms()
+  const result = await payload.find({
+    collection: 'artworks',
+    locale,
+    overrideAccess: false,
+    depth: 1,
+    limit: 1,
+    where: {
+      and: [{ slug: { equals: slug } }, { title: { exists: true } }, { title: { not_equals: '' } }],
+    },
+  })
+  return result.docs[0] || null
+})
