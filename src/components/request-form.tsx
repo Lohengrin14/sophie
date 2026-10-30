@@ -15,6 +15,7 @@ import { text, money, type Locale } from '@/lib/i18n'
 import { ContactLinks } from './footer'
 import type { Brand } from '@/lib/brand'
 import type { Quote } from '@/lib/requests'
+import { validReferences } from '@/lib/upload-limits'
 
 type Props = {
   locale: Locale
@@ -72,8 +73,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
     ),
     files: text(
       locale,
-      'До 3 изображений JPG, PNG или WebP, каждое до 5 МБ.',
-      'Up to 3 JPG, PNG or WebP images, 5 MB each.',
+      'До 3 изображений JPG, PNG или WebP, суммарно до 4 МБ.',
+      'Up to 3 JPG, PNG or WebP images, 4 MB total.',
     ),
     unavailable: text(
       locale,
@@ -419,8 +420,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
               <small>
                 {text(
                   locale,
-                  'До 3 файлов JPG, PNG, WebP · до 5 МБ каждый',
-                  'Up to 3 JPG, PNG, WebP files · 5 MB each',
+                  'До 3 файлов JPG, PNG, WebP · до 4 МБ суммарно',
+                  'Up to 3 JPG, PNG, WebP files · 4 MB total',
                 )}
               </small>
               <input
@@ -429,14 +430,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
                 accept="image/jpeg,image/png,image/webp"
                 onChange={(event) => {
                   const selected = Array.from(event.target.files || [])
-                  if (
-                    selected.length > 3 ||
-                    selected.some(
-                      (f) =>
-                        f.size > 5 * 1024 * 1024 ||
-                        !['image/jpeg', 'image/png', 'image/webp'].includes(f.type),
-                    )
-                  ) {
+                  if (!validReferences(selected)) {
                     setFileError(errors.files)
                     setFiles([])
                     event.target.value = ''

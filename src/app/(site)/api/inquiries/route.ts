@@ -6,10 +6,10 @@ import { cms } from '@/lib/data'
 import { requestSchema } from '@/lib/requests'
 import { getQuote } from '@/lib/estimate'
 import { artworkPrice } from '@/lib/artwork-prices'
+import { MAX_INQUIRY_BODY_BYTES, validReferences } from '@/lib/upload-limits'
 
-const MAX_BODY = 17 * 1024 * 1024
 async function boundedForm(req: Request) {
-  if (Number(req.headers.get('content-length')) > MAX_BODY) throw new Error('large')
+  if (Number(req.headers.get('content-length')) > MAX_INQUIRY_BODY_BYTES) throw new Error('large')
   const reader = req.body?.getReader()
   if (!reader) throw new Error('invalid')
   let length = 0
@@ -18,7 +18,7 @@ async function boundedForm(req: Request) {
     const { done, value } = await reader.read()
     if (done) break
     length += value.byteLength
-    if (length > MAX_BODY) {
+    if (length > MAX_INQUIRY_BODY_BYTES) {
       await reader.cancel()
       throw new Error('large')
     }
@@ -49,14 +49,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: 'invalid' }, { status: 400 })
   const data = parsed.data
   const files = form.getAll('references').filter((f): f is File => f instanceof File && f.size > 0)
-  if (
-    files.length > 3 ||
-    files.some(
-      (f) =>
-        f.size > 5 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(f.type),
-    )
-  )
-    return NextResponse.json({ error: 'files' }, { status: 400 })
+  if (!validReferences(files)) return NextResponse.json({ error: 'files' }, { status: 400 })
   const payload = await cms()
   const existing = await payload.find({
     collection: 'requests',

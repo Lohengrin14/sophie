@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24.22.2"
+
+# Next.js is deployed by Netlify's automatic OpenNext adapter.
+# Set database, storage and OAuth variables through Netlify UI/API, including Functions scope.

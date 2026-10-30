@@ -19,6 +19,7 @@ import { artworkSlug, validStoredPrice } from './lib/admin-helpers'
 import sharp from 'sharp'
 import { databaseOptions } from './lib/database'
 import { storagePlugins } from './lib/storage'
+import { MAX_IMAGE_BYTES } from './lib/upload-limits'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const sectionAccess =
@@ -170,7 +171,7 @@ const Media: CollectionConfig = {
     useAsTitle: 'alt',
     group: 'Студия',
     description:
-      'Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 5 МБ.',
+      'Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 4 МБ.',
   },
   access: {
     read: () => true,
@@ -324,7 +325,7 @@ const Artworks: CollectionConfig = {
       required: true,
       admin: {
         description:
-          'Выберите фото из медиатеки или нажмите «Создать» в этом поле, чтобы загрузить новое. JPG, PNG или WebP, до 5 МБ. Лучше без обрезки краёв картины.',
+          'Выберите фото из медиатеки или нажмите «Создать» в этом поле, чтобы загрузить новое. JPG, PNG или WebP, до 4 МБ. Лучше без обрезки краёв картины.',
       },
     },
     {
@@ -993,5 +994,5 @@ export default buildConfig({
   }),
   sharp,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
-  upload: { limits: { fileSize: 5 * 1024 * 1024 } },
+  upload: { limits: { fileSize: MAX_IMAGE_BYTES } },
 })

@@ -232,7 +232,7 @@ function ArtistPhoto({
   return (
     <SaveBox
       title={t('Фотография художника')}
-      help={t('Появится на странице о художнике. JPG, PNG или WebP, до 5 МБ.')}
+      help={t('Появится на странице о художнике. JPG, PNG или WebP, до 4 МБ.')}
       changed={changed}
       onSave={async () => {
         if (busy) throw new Error(t('Дождитесь загрузки.'))

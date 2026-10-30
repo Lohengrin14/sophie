@@ -185,7 +185,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Catalogue photographs. Upload directly when adding an artwork. JPG, PNG or WebP, up to 5 MB.
+ * Catalogue photographs. Upload directly when adding an artwork. JPG, PNG or WebP, up to 4 MB.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -233,7 +233,7 @@ export interface Artwork {
    */
   title?: string | null;
   /**
-   * Select from the media library or create a new image. JPG, PNG or WebP, up to 5 MB. Keep the entire artwork visible.
+   * Select from the media library or create a new image. JPG, PNG or WebP, up to 4 MB. Keep the entire artwork visible.
    */
   image: number | Media;
   /**
