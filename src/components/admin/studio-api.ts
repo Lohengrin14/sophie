@@ -1,4 +1,5 @@
 import type { Artwork, Media } from '@/payload-types'
+import { MAX_IMAGE_BYTES, imageTypes } from '@/lib/upload-limits'
 
 export async function studioAPI<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, { credentials: 'same-origin', ...init })
@@ -33,8 +34,8 @@ export function galleryImages(work: Artwork): Media[] {
   return [...new Map(images.map((image) => [image.id, image])).values()]
 }
 export async function uploadArtImage(file: File, title: string, locale: string) {
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024)
-    throw new Error('Выберите JPG, PNG или WebP размером до 5 МБ.')
+  if (!imageTypes.includes(file.type) || file.size > MAX_IMAGE_BYTES)
+    throw new Error('Выберите JPG, PNG или WebP размером до 4 МБ.')
   const form = new FormData()
   form.set('_payload', JSON.stringify({ alt: title || file.name }))
   form.set('file', file)

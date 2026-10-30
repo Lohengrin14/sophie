@@ -28,8 +28,8 @@ export const technicalEnglish: Record<string, string> = {
   Изображение: 'Image',
   'Изображения работ': 'Artwork images',
   Студия: 'Studio',
-  'Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 5 МБ.':
-    'Catalogue photographs. Upload directly when adding an artwork. JPG, PNG or WebP, up to 5 MB.',
+  'Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 4 МБ.':
+    'Catalogue photographs. Upload directly when adding an artwork. JPG, PNG or WebP, up to 4 MB.',
   'Что изображено на фото': 'Image description',
   'Например: Портрет девушки у окна, масло на холсте':
     'For example: Oil portrait of a woman by a window',
@@ -49,8 +49,8 @@ export const technicalEnglish: Record<string, string> = {
   'Так посетитель увидит работу в каталоге. Для English укажите английское название.':
     'The public catalogue title. Add the English title for the English website.',
   'Фотография картины': 'Artwork photograph',
-  'Выберите фото из медиатеки или нажмите «Создать» в этом поле, чтобы загрузить новое. JPG, PNG или WebP, до 5 МБ. Лучше без обрезки краёв картины.':
-    'Select from the media library or create a new image. JPG, PNG or WebP, up to 5 MB. Keep the entire artwork visible.',
+  'Выберите фото из медиатеки или нажмите «Создать» в этом поле, чтобы загрузить новое. JPG, PNG или WebP, до 4 МБ. Лучше без обрезки краёв картины.':
+    'Select from the media library or create a new image. JPG, PNG or WebP, up to 4 MB. Keep the entire artwork visible.',
   'Изображения галереи': 'Gallery images',
   'До 10 изображений вместе с обложкой. Главное изображение выбирается отдельно.':
     'Up to 10 images including the cover. Choose the cover separately.',

@@ -1,4 +1,5 @@
 export const adminEnglish: Record<string, string> = {
+  'Выберите JPG, PNG или WebP размером до 4 МБ.': 'Choose a JPG, PNG or WebP image up to 4 MB.',
   Цены: 'Prices',
   'Цена, ₽': 'Price, ₽',
   'Цена, $': 'Price, $',
@@ -85,8 +86,8 @@ export const adminEnglish: Record<string, string> = {
   'Сделать обложкой': 'Set as cover',
   'Убрать изображение из галереи': 'Remove image from gallery',
   'Загружаем…': 'Uploading…',
-  'JPG, PNG или WebP · до 5 МБ каждый. После загрузки нажмите «Сохранить». Удаление здесь убирает фото из галереи, но сохраняет его в медиатеке.':
-    'JPG, PNG or WebP, up to 5 MB each. Save after uploading. Removing an image here keeps it in the media library.',
+  'JPG, PNG или WebP · до 4 МБ каждый. После загрузки нажмите «Сохранить». Удаление здесь убирает фото из галереи, но сохраняет его в медиатеке.':
+    'JPG, PNG or WebP, up to 4 MB each. Save after uploading. Removing an image here keeps it in the media library.',
   'К галереям': 'Back to galleries',
   'Открываем галерею…': 'Opening gallery…',
   'Все галереи': 'All galleries',
@@ -140,8 +141,8 @@ export const adminEnglish: Record<string, string> = {
     'Create a draft first. You can change the cover, translations and other settings afterwards.',
   'Например: Утро у моря': 'For example: Morning by the sea',
   'Изображения · от 1 до 10': 'Images · 1 to 10',
-  'Первое изображение станет обложкой. JPG, PNG или WebP, до 5 МБ каждый.':
-    'The first image becomes the cover. JPG, PNG or WebP, up to 5 MB each.',
+  'Первое изображение станет обложкой. JPG, PNG или WebP, до 4 МБ каждый.':
+    'The first image becomes the cover. JPG, PNG or WebP, up to 4 MB each.',
   'Например: 650': 'For example: 650',
   'Создаём галерею…': 'Creating gallery…',
   'Создать черновик': 'Create draft',
@@ -213,8 +214,8 @@ export const adminEnglish: Record<string, string> = {
   'Нет доступа к разделу. Выберите доступную вкладку в шапке.':
     'Access denied. Choose an available section in the header.',
   'Фотография художника': 'Artist portrait',
-  'Появится на странице о художнике. JPG, PNG или WebP, до 5 МБ.':
-    'Appears on the artist page. JPG, PNG or WebP, up to 5 MB.',
+  'Появится на странице о художнике. JPG, PNG или WebP, до 4 МБ.':
+    'Appears on the artist page. JPG, PNG or WebP, up to 4 MB.',
   'Дождитесь загрузки.': 'Wait for the upload to finish.',
   'Загрузить фотографию художника': 'Upload artist portrait',
   'Убрать фотографию': 'Remove portrait',
