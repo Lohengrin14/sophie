@@ -16,10 +16,17 @@ describe('database configuration', () => {
     expect(url.hostname).toBe(env.SUPABASE_DB_HOST)
     expect(decodeURIComponent(url.password)).toBe(env.SUPABASE_DB_PASSWORD)
     expect(url.pathname).toBe('/postgres')
+    expect(url.port).toBe('6543')
     expect(options.pool.ssl).toEqual({ ca: 'test certificate', rejectUnauthorized: true })
     expect(options.pool.max).toBe(3)
     expect(options.push).toBe(false)
     expect(options.disableCreateDatabase).toBe(true)
+  })
+  it('honors an explicitly selected session port for persistent processes and migrations', () => {
+    const options = databaseOptions({ ...env, SUPABASE_DB_PORT: '5432' })
+    expect(new URL(options.pool.connectionString!).port).toBe('5432')
+    expect(options.pool.max).toBe(3)
+    expect(() => databaseOptions({ ...env, DATABASE_POOL_MAX: '1' })).toThrow('at least 2')
   })
   it('refuses remote connections without credentials or a trusted CA', () => {
     expect(() => databaseOptions({ ...env, SUPABASE_DB_PASSWORD: '' })).toThrow(

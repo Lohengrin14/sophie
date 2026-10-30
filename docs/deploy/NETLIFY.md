@@ -45,8 +45,18 @@ SUPABASE_PUBLISHABLE_KEY
 ```
 
 Если названия buckets не заданы, по умолчанию используются `artworks` и `references`.
-Для DB port/name стандартные значения — 5432 / postgres. Пул — 3 соединения на экземпляр;
+Для Netlify используйте **SUPABASE_DB_PORT=6543** (Transaction pooler), имя БД — `postgres`.
+Session-порт 5432 закрепляет соединения за каждым serverless-экземпляром и может исчерпать
+небольшой пул Supabase с ошибкой `EMAXCONNSESSION` и HTTP 500. Если проект уже опубликован
+с портом 5432, замените значение в Netlify и запустите новый deploy.
+Пул приложения — 3 соединения на экземпляр;
 его можно задать через `DATABASE_POOL_MAX`, минимум 2.
+
+Не устанавливайте `DATABASE_POOL_MAX=1`: адаптер Payload резервирует служебное соединение.
+Запросы используют `node-postgres` без именованных prepared statements, что совместимо
+с transaction-пулом. Для долгоживущего локального процесса или миграций session-порт 5432
+можно оставить явно в отдельном preview-профиле. После деплоя перепроверьте `/ru`, `/admin/login`
+и авторизованный `/admin`, а не только зелёный статус сборки.
 
 Вместо локального `DATABASE_SSL_CA_FILE` добавьте **DATABASE_SSL_CA** с полным текстом
 `.local/prod-ca-2021.crt`, включая строки BEGIN/END CERTIFICATE и переносы строк.

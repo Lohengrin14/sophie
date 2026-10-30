@@ -84,6 +84,12 @@ try {
       console.log(`Migration completed. Public tables: ${(await inspect()).length}.`)
   }
 } catch (error) {
+  if (error instanceof Error && error.message.includes('EMAXCONNSESSION')) {
+    console.error(
+      'Database session pool exhausted. Use Supabase transaction pooler port 6543 for serverless runtime.',
+    )
+    process.exit(1)
+  }
   // Driver errors may contain connection details; report codes rather than serialized objects.
   const code =
     error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined
