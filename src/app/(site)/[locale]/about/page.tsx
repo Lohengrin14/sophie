@@ -24,10 +24,7 @@ export default async function About({ params }: { params: Promise<{ locale: stri
           </div>
         )}
         <div className="artist-info">
-          <h1>{studio.brand.name || studio.brand.alias || text(locale, 'Художник', 'Artist')}</h1>
-          {studio.brand.name && studio.brand.alias && studio.brand.name !== studio.brand.alias && (
-            <p className="artist-alias">{studio.brand.alias}</p>
-          )}
+          <h1>{studio.brand.name || text(locale, 'Художник', 'Artist')}</h1>
           <div id="contacts">
             <ContactLinks brand={studio.brand} className="artist-contacts" />
           </div>
