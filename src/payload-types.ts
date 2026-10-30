@@ -137,6 +137,29 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  role?: ('admin' | 'staff') | null;
+  permissions?: {
+    artist?: {
+      read?: boolean | null;
+      edit?: boolean | null;
+    };
+    gallery?: {
+      read?: boolean | null;
+      edit?: boolean | null;
+    };
+    users?: {
+      read?: boolean | null;
+      edit?: boolean | null;
+    };
+    quotes?: {
+      read?: boolean | null;
+      edit?: boolean | null;
+    };
+    requests?: {
+      read?: boolean | null;
+      edit?: boolean | null;
+    };
+  };
   /**
    * Имя для внутренней работы. Имя художника на сайте задаётся в разделе «Художник и настройки».
    */
@@ -216,7 +239,7 @@ export interface Artwork {
    */
   images?: (number | Media)[] | null;
   /**
-   * 1 — небольшой, 5 — самый крупный. Не меняет реальные размеры холста. Пусто — подобрать по размерам.
+   * 10 шагов от 1× до 4×. Сантиметры определяют только пропорции.
    */
   displaySize?: number | null;
   /**
@@ -248,9 +271,9 @@ export interface Artwork {
    */
   currency: string;
   /**
-   * «Доступна» — можно оставить заявку. «В резерве» — уже обсуждаете покупку. «Продана» — остаётся в портфолио без покупки.
+   * «Доступна» — можно оставить заявку. «Продана» — остаётся в портфолио без покупки.
    */
-  availability: 'available' | 'reserved' | 'sold';
+  availability: 'available' | 'sold';
   /**
    * Сохранено для совместимости API. Порядок теперь задаётся приоритетом галереи.
    */
@@ -264,7 +287,7 @@ export interface Artwork {
    */
   slug: string;
   /**
-   * Приоритет: меньшее число — раньше. Первая галерея закрепляется слева сверху. Например: 1, 2, 3.
+   * 1 — первое место, 50 — последнее. При равенстве: размер на доске по убыванию, затем название.
    */
   sortOrder?: number | null;
   /**
@@ -376,6 +399,7 @@ export interface Request {
    * Видны только сотрудникам. Можно записать договорённости, цену, сроки и следующий шаг.
    */
   notes?: string | null;
+  referenceCount?: number | null;
   consentVersion?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -499,6 +523,41 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
+  permissions?:
+    | T
+    | {
+        artist?:
+          | T
+          | {
+              read?: T;
+              edit?: T;
+            };
+        gallery?:
+          | T
+          | {
+              read?: T;
+              edit?: T;
+            };
+        users?:
+          | T
+          | {
+              read?: T;
+              edit?: T;
+            };
+        quotes?:
+          | T
+          | {
+              read?: T;
+              edit?: T;
+            };
+        requests?:
+          | T
+          | {
+              read?: T;
+              edit?: T;
+            };
+      };
   name?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -612,6 +671,7 @@ export interface RequestsSelect<T extends boolean = true> {
   references?: T;
   status?: T;
   notes?: T;
+  referenceCount?: T;
   consentVersion?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -682,6 +742,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Studio {
   id: number;
+  photo?: (number | null) | Media;
   /**
    * Имя на странице художника и внизу сайта. Это пример — укажите своё.
    */
@@ -718,6 +779,7 @@ export interface Studio {
  * via the `definition` "studio_select".
  */
 export interface StudioSelect<T extends boolean = true> {
+  photo?: T;
   name?: T;
   alias?: T;
   instagram?: T;

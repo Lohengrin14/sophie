@@ -14,11 +14,11 @@ export default async function About({ params }: { params: Promise<{ locale: stri
       <div className="about-layout">
         <div className="about-image">
           <Image
-            src="/art/olive-grove.png"
+            src={studio.photo && typeof studio.photo === 'object' && studio.photo.url ? studio.photo.url : '/art/olive-grove.png'}
             alt={text(
               locale,
-              'Фрагмент демонстрационной живописи',
-              'Detail of an AI-generated demonstration painting',
+              'Фотография художника',
+              'Artist portrait',
             )}
             fill
             sizes="(max-width: 800px) 90vw, 45vw"

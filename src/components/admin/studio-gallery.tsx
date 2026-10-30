@@ -1,8 +1,12 @@
 'use client'
+import { useAdminText } from './studio-locale'
 import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowLeft, ExternalLink, Plus, Search, Star, Trash2, Upload, Copy } from 'lucide-react'
 import type { Artwork, Media } from '@/payload-types'
-import { canvasSize } from '@/lib/canvas-size'
+import { useAuth } from '@payloadcms/ui'
+import { can } from '@/lib/studio-access'
+import type { User } from '@/payload-types'
+import { SortHeader } from './studio-sort'
 import { formatPriceInput, parsePriceInput } from '@/lib/admin-helpers'
 import { money, availabilityLabel } from '@/lib/i18n'
 import { relationID } from '@/lib/studio-admin'
@@ -14,13 +18,24 @@ import {
   uploadArtImage,
   type Page,
 } from './studio-api'
-import { BoardSize, CurrencySelect, DimensionFields, Pagination, SaveBox } from './studio-controls'
+import {
+  Priority,
+  BoardSize,
+  CurrencySelect,
+  DimensionFields,
+  Pagination,
+  SaveBox,
+} from './studio-controls'
 
 type Language = 'ru' | 'en'
 const publicPath = (work: Artwork, locale: Language) => `/${locale}/works/${work.slug}`
 const imageURL = (image: Media) => image.sizes?.card?.url || image.url || ''
 
 export function GalleryPanel({ locale }: { locale: Language }) {
+  const t = useAdminText()
+
+  const { user } = useAuth<User>()
+  const [sort, setSort] = useState('sortOrder')
   const [editing, setEditing] = useState<number | 'new' | null>(null)
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
@@ -39,7 +54,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
         depth: '1',
         limit: '20',
         page: String(page),
-        sort: 'sortOrder,id',
+        sort: sort === 'sortOrder' ? 'sortOrder,-displaySize,title,id' : `${sort},id`,
       })
       if (query.trim()) params.set('where[title][contains]', query.trim())
       studioAPI<Page<Artwork>>(`/api/artworks?${params}`, { signal: controller.signal })
@@ -55,7 +70,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
       clearTimeout(timer)
       controller.abort()
     }
-  }, [locale, page, query, editing])
+  }, [locale, page, query, editing, sort])
   if (editing === 'new')
     return (
       <NewGallery
@@ -77,21 +92,23 @@ export function GalleryPanel({ locale }: { locale: Language }) {
     <>
       <div className="studio-page-heading">
         <div>
-          <p className="studio-overline">ВАША КОЛЛЕКЦИЯ</p>
-          <h1>Галерея</h1>
-          <p>Одна галерея — одна работа и до 10 её изображений.</p>
+          <p className="studio-overline">{t('ВАША КОЛЛЕКЦИЯ')}</p>
+          <h1>{t('Галерея')}</h1>
+          <p>{t('Одна галерея — одна работа и до 10 её изображений.')}</p>
         </div>
-        <button className="studio-button" onClick={() => setEditing('new')}>
-          <Plus size={18} /> Добавить галерею
-        </button>
+        {can(user, 'gallery', 'edit') && (
+          <button className="studio-button" onClick={() => setEditing('new')}>
+            <Plus size={18} /> {t('Добавить галерею')}
+          </button>
+        )}
       </div>
       <div className="studio-card studio-table-card">
         <div className="studio-table-toolbar">
           <label className="studio-search">
             <Search size={18} />
             <input
-              placeholder="Найти по названию"
-              aria-label="Поиск галерей"
+              placeholder={t('Найти по названию')}
+              aria-label={t('Поиск галерей')}
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value)
@@ -99,7 +116,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
               }}
             />
           </label>
-          <span>По приоритету: меньшее число — раньше</span>
+          <span>{t('По приоритету: меньшее число — раньше')}</span>
         </div>
         {error && (
           <p className="studio-error" role="alert">
@@ -110,13 +127,69 @@ export function GalleryPanel({ locale }: { locale: Language }) {
           <table className="studio-table">
             <thead>
               <tr>
-                <th>Обложка</th>
-                <th>Название</th>
-                <th>Приоритет</th>
-                <th>Статус</th>
-                <th>Цена</th>
-                <th>Размер, см</th>
-                <th>Ссылка на сайте</th>
+                <SortHeader
+                  label={t('Обложка')}
+                  field="image"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Название')}
+                  field="title"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Приоритет')}
+                  field="sortOrder"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Статус')}
+                  field="availability"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Цена')}
+                  field="priceMinor"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Размер, см')}
+                  field="width"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Ссылка на сайте')}
+                  field="slug"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
               </tr>
             </thead>
             <tbody>
@@ -127,25 +200,31 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                     <td>
                       <button
                         className="studio-thumb-button"
-                        aria-label={`Открыть ${work.title || 'галерею'}`}
+                        aria-label={t(`Открыть ${work.title || t('галерею')}`)}
                         onClick={() => setEditing(work.id)}
                       >
-                        {image ? <img src={imageURL(image)} alt="" /> : <span>Нет фото</span>}
+                        {image ? (
+                          <img src={imageURL(image)} alt="" />
+                        ) : (
+                          <span>{t('Нет фото')}</span>
+                        )}
                       </button>
                     </td>
                     <td>
                       <button className="studio-title-button" onClick={() => setEditing(work.id)}>
-                        {work.title || 'Добавьте перевод названия'}
+                        {work.title || t('Добавьте перевод названия')}
                       </button>
-                      {!work.published && <small className="studio-draft">Черновик</small>}
+                      {!work.published && <small className="studio-draft">{t('Черновик')}</small>}
                     </td>
                     <td>{work.sortOrder ?? 0}</td>
                     <td>
                       <span className={`studio-badge ${work.availability}`}>
-                        {availabilityLabel(work.availability, 'ru')}
+                        {work.availability === 'sold' ? t('Продана') : t('Доступна')}
                       </span>
                     </td>
-                    <td className="studio-nowrap">{money(work.priceMinor, work.currency, 'ru')}</td>
+                    <td className="studio-nowrap">
+                      {money(work.priceMinor, work.currency, locale)}
+                    </td>
                     <td className="studio-nowrap">
                       {work.width} × {work.height}
                     </td>
@@ -161,7 +240,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                           {publicPath(work, locale)} <ExternalLink size={14} />
                         </a>
                       ) : (
-                        <span className="studio-hint">Появится после публикации</span>
+                        <span className="studio-hint">{t('Появится после публикации')}</span>
                       )}
                     </td>
                   </tr>
@@ -173,13 +252,13 @@ export function GalleryPanel({ locale }: { locale: Language }) {
         {!loading && !data?.docs.length && (
           <div className="studio-empty">
             {query
-              ? 'По этому названию ничего не найдено.'
-              : 'Здесь появятся ваши галереи. Добавьте первую работу.'}
+              ? t('По этому названию ничего не найдено.')
+              : t('Здесь появятся ваши галереи. Добавьте первую работу.')}
           </div>
         )}
         {loading && (
           <p className="studio-loading" role="status">
-            Загружаем галереи…
+            {t('Загружаем галереи…')}
           </p>
         )}
         {data && (
@@ -199,6 +278,8 @@ function ImageEditor({
   locale: Language
   onSave: (patch: unknown) => Promise<void>
 }) {
+  const t = useAdminText()
+
   const [images, setImages] = useState(() => galleryImages(work))
   const [cover, setCover] = useState(() => relationID(work.image))
   const [changed, setChanged] = useState(false)
@@ -206,14 +287,14 @@ function ImageEditor({
   const [error, setError] = useState('')
   async function upload(files: File[]) {
     if (images.length + files.length > 10) {
-      setError('В одной галерее может быть до 10 изображений.')
+      setError(t('В одной галерее может быть до 10 изображений.'))
       return
     }
     setError('')
     setUploading(true)
     try {
       for (const file of files) {
-        const image = await uploadArtImage(file, work.title || 'Изображение галереи', locale)
+        const image = await uploadArtImage(file, work.title || t('Изображение галереи'), locale)
         setImages((previous) => [...previous, image])
         setChanged(true)
         if (!cover) setCover(image.id)
@@ -226,13 +307,15 @@ function ImageEditor({
   }
   return (
     <SaveBox
-      title="Изображения"
-      help="Обложка видна на главной. Остальные изображения посетитель увидит, когда откроет работу."
+      title={t('Изображения')}
+      help={t(
+        'Обложка видна на главной. Остальные изображения посетитель увидит, когда откроет работу.',
+      )}
       changed={changed && !uploading}
       onSave={async () => {
-        if (uploading) throw new Error('Дождитесь загрузки изображений.')
+        if (uploading) throw new Error(t('Дождитесь загрузки изображений.'))
         if (!cover || !images.length)
-          throw new Error('Оставьте хотя бы одно изображение и выберите обложку.')
+          throw new Error(t('Оставьте хотя бы одно изображение и выберите обложку.'))
         await onSave({ images: images.map((image) => image.id), image: cover })
         setChanged(false)
       }}
@@ -249,17 +332,17 @@ function ImageEditor({
               }}
               aria-pressed={image.id === cover}
             >
-            <img src={imageURL(image)} alt={image.alt || work.title || ''} />
+              <img src={imageURL(image)} alt={image.alt || work.title || ''} />
               <span>
                 <Star size={14} />
-                {image.id === cover ? 'Обложка' : 'Сделать обложкой'}
+                {image.id === cover ? t('Обложка') : t('Сделать обложкой')}
               </span>
             </button>
             <button
               type="button"
               className="studio-image-remove"
               disabled={uploading}
-              aria-label="Убрать изображение из галереи"
+              aria-label={t('Убрать изображение из галереи')}
               onClick={() => {
                 const remaining = images.filter((item) => item.id !== image.id)
                 setImages(remaining)
@@ -274,7 +357,7 @@ function ImageEditor({
       </div>
       <label className="studio-upload">
         <Upload size={19} />
-        {uploading ? 'Загружаем…' : `Добавить изображения · ${images.length} из 10`}
+        {uploading ? t('Загружаем…') : t(`Добавить изображения · ${images.length} из 10`)}
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp"
@@ -287,8 +370,9 @@ function ImageEditor({
         />
       </label>
       <p className="studio-hint">
-        JPG, PNG или WebP · до 5 МБ каждый. После загрузки нажмите «Сохранить». Удаление здесь
-        убирает фото из галереи, но сохраняет его в медиатеке.
+        {t(
+          'JPG, PNG или WebP · до 5 МБ каждый. После загрузки нажмите «Сохранить». Удаление здесь убирает фото из галереи, но сохраняет его в медиатеке.',
+        )}
       </p>
       {error && (
         <p className="studio-error" role="alert">
@@ -308,6 +392,8 @@ function GalleryEditor({
   locale: Language
   onBack: () => void
 }) {
+  const t = useAdminText()
+
   const [work, setWork] = useState<Artwork | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -331,23 +417,28 @@ function GalleryEditor({
     return (
       <>
         <button className="studio-back" onClick={onBack}>
-          <ArrowLeft size={16} /> К галереям
+          <ArrowLeft size={16} /> {t('К галереям')}
         </button>
-        <p role={error ? 'alert' : 'status'}>{error || 'Открываем галерею…'}</p>
+        <p role={error ? 'alert' : 'status'}>{error || t('Открываем галерею…')}</p>
       </>
     )
   return (
     <>
       <button className="studio-back" onClick={onBack}>
-        <ArrowLeft size={16} /> Все галереи
+        <ArrowLeft size={16} /> {t('Все галереи')}
       </button>
       <div className="studio-page-heading">
         <div>
           <p className="studio-overline">
-            ГАЛЕРЕЯ · {locale === 'ru' ? 'РУССКАЯ ВЕРСИЯ' : 'ENGLISH'}
+            {t('ГАЛЕРЕЯ ·')}
+            {locale === 'ru' ? t('РУССКАЯ ВЕРСИЯ') : 'ENGLISH'}
           </p>
-          <h1>{work.title || 'Добавьте название'}</h1>
-          <p>Каждый блок сохраняется отдельно. Изменения в остальных блоках останутся на месте.</p>
+          <h1>{work.title || t('Добавьте название')}</h1>
+          <p>
+            {t(
+              'Каждый блок сохраняется отдельно. Изменения в остальных блоках останутся на месте.',
+            )}
+          </p>
         </div>
         {work.published && work.title && (
           <a
@@ -356,7 +447,8 @@ function GalleryEditor({
             target="_blank"
             rel="noreferrer"
           >
-            На сайте <ExternalLink size={16} />
+            {t('На сайте')}
+            <ExternalLink size={16} />
           </a>
         )}
       </div>
@@ -364,38 +456,40 @@ function GalleryEditor({
         <div>
           <ImageEditor work={work} locale={locale} onSave={patch} />
           <SaveBox
-            title="Название"
-            help={`Название для ${locale === 'ru' ? 'русской' : 'английской'} версии сайта.`}
+            title={t('Название')}
+            help={t(
+              `Название для ${locale === 'ru' ? t('русской') : t('английской')} версии сайта.`,
+            )}
             onSave={async (data) => patch({ title: String(data.get('title')).trim() })}
           >
             <label>
-              Название картины
+              {t('Название картины')}
               <input
                 name="title"
                 defaultValue={work.title || ''}
                 required
                 maxLength={200}
-                placeholder="Например: Вечер у моря"
+                placeholder={t('Например: Вечер у моря')}
               />
             </label>
           </SaveBox>
           <SaveBox
-            title="Описание"
-            help="Текст для этой языковой версии. Можно оставить пустым."
+            title={t('Описание')}
+            help={t('Текст для этой языковой версии. Можно оставить пустым.')}
             onSave={async (data) => patch({ description: String(data.get('description') || '') })}
           >
             <label>
-              Описание картины
+              {t('Описание картины')}
               <textarea
                 name="description"
                 rows={5}
                 defaultValue={work.description || ''}
-                placeholder="Несколько слов о работе, материалах и настроении"
+                placeholder={t('Несколько слов о работе, материалах и настроении')}
               />
             </label>
           </SaveBox>
           <SaveBox
-            title="Реальный размер"
+            title={t('Реальный размер')}
             onSave={async (data) =>
               patch({ width: Number(data.get('width')), height: Number(data.get('height')) })
             }
@@ -405,74 +499,68 @@ function GalleryEditor({
         </div>
         <div>
           <SaveBox
-            title="Публикация и наличие"
+            title={t('Публикация и наличие')}
             onSave={async (data) =>
               patch({ availability: data.get('availability'), published: data.has('published') })
             }
           >
             <label>
-              Наличие
+              {t('Наличие')}
               <select name="availability" defaultValue={work.availability}>
-                <option value="available">Доступна</option>
-                <option value="reserved">В резерве</option>
-                <option value="sold">Продана</option>
+                <option value="available">{t('Доступна')}</option>
+                <option value="sold">{t('Продана')}</option>
               </select>
             </label>
             <label className="studio-check">
               <input name="published" type="checkbox" defaultChecked={work.published || false} />{' '}
-              Показывать галерею на сайте
+              {t('Показывать галерею на сайте')}
             </label>
             <p className="studio-hint">
-              Для каждого языка нужно название. Цена и изображения общие для RU / EN.
+              {t('Для каждого языка нужно название. Цена и изображения общие для RU / EN.')}
             </p>
           </SaveBox>
           <SaveBox
-            title="Цена"
-            help="Обычная сумма — ничего не нужно умножать на 100. Смена валюты не пересчитывает цену."
+            title={t('Цена')}
+            help={t(
+              'Обычная сумма — ничего не нужно умножать на 100. Смена валюты не пересчитывает цену.',
+            )}
             onSave={async (data) => {
               const amount = parsePriceInput(String(data.get('price')))
-              if (amount === null) throw new Error('Укажите цену, например 650 или 650,50.')
+              if (amount === null) throw new Error(t('Укажите цену, например 650 или 650,50.'))
               await patch({ priceMinor: amount, currency: data.get('currency') })
             }}
           >
             <label>
-              Стоимость
+              {t('Стоимость')}
               <input
                 name="price"
                 inputMode="decimal"
                 defaultValue={formatPriceInput(work.priceMinor)}
                 required
-                placeholder="Например: 650,50"
+                placeholder={t('Например: 650,50')}
               />
             </label>
             <CurrencySelect value={work.currency} />
           </SaveBox>
           <SaveBox
-            title="Приоритет"
-            help="Меньшее число — раньше. Первая галерея закреплена слева сверху. Например: 1, 2, 3."
+            title={t('Приоритет')}
+            help={t(
+              '1 — первое место, 50 — последнее. Размер холста не влияет на размер на главной.',
+            )}
             onSave={async (data) => patch({ sortOrder: Number(data.get('sortOrder')) })}
           >
-            <label>
-              Порядок на главной
-              <input
-                name="sortOrder"
-                type="number"
-                step="1"
-                defaultValue={work.sortOrder ?? 0}
-                required
-              />
-            </label>
+            <Priority value={work.sortOrder} />
           </SaveBox>
           <SaveBox
-            title="Размер на доске"
+            title={t('Размер на доске')}
             onSave={async (data) => patch({ displaySize: Number(data.get('displaySize')) })}
           >
-            <BoardSize value={work.displaySize ?? canvasSize(work.width, work.height).tier} />
+            <BoardSize value={work.displaySize ?? 4} />
           </SaveBox>
           <section className="studio-card">
             <div className="studio-card-heading">
-              <h2>Ссылка на работу</h2>
-              <p>Адрес сохраняется даже после смены названия.</p>
+              <h2>{t('Ссылка на работу')}</h2>
+              <p>{t('Адрес сохраняется даже после смены названия.')}</p>
             </div>
             <a
               className="studio-share-url"
@@ -498,11 +586,11 @@ function GalleryEditor({
               }}
             >
               <Copy size={15} />
-              {copied ? 'Скопировано' : 'Скопировать ссылку'}
+              {copied ? t('Скопировано') : t('Скопировать ссылку')}
             </button>
             {!work.published && (
               <p className="studio-hint">
-                Сейчас это черновик: ссылка заработает после публикации.
+                {t('Сейчас это черновик: ссылка заработает после публикации.')}
               </p>
             )}
           </section>
@@ -521,6 +609,8 @@ function NewGallery({
   onBack: () => void
   onCreated: (id: number) => void
 }) {
+  const t = useAdminText()
+
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -531,12 +621,12 @@ function NewGallery({
       .getAll('files')
       .filter((value): value is File => value instanceof File && value.size > 0)
     if (!files.length || files.length > 10) {
-      setError('Добавьте от 1 до 10 изображений.')
+      setError(t('Добавьте от 1 до 10 изображений.'))
       return
     }
     const price = parsePriceInput(String(data.get('price')))
     if (price === null) {
-      setError('Укажите обычную цену, например 650 или 650,50.')
+      setError(t('Укажите обычную цену, например 650 или 650,50.'))
       return
     }
     setBusy(true)
@@ -573,24 +663,26 @@ function NewGallery({
   return (
     <>
       <button className="studio-back" onClick={onBack}>
-        <ArrowLeft size={16} /> Все галереи
+        <ArrowLeft size={16} /> {t('Все галереи')}
       </button>
       <div className="studio-page-heading">
         <div>
-          <h1>Новая галерея</h1>
+          <h1>{t('Новая галерея')}</h1>
           <p>
-            Сначала создадим черновик. Обложку, переводы и остальные параметры можно изменить после.
+            {t(
+              'Сначала создадим черновик. Обложку, переводы и остальные параметры можно изменить после.',
+            )}
           </p>
         </div>
       </div>
       <form className="studio-card studio-create" onSubmit={submit}>
         <fieldset disabled={busy}>
           <label>
-            Название
-            <input name="title" required placeholder="Например: Утро у моря" />
+            {t('Название')}
+            <input name="title" required placeholder={t('Например: Утро у моря')} />
           </label>
           <label>
-            Изображения · от 1 до 10
+            {t('Изображения · от 1 до 10')}
             <input
               name="files"
               type="file"
@@ -600,23 +692,20 @@ function NewGallery({
             />
           </label>
           <p className="studio-hint">
-            Первое изображение станет обложкой. JPG, PNG или WebP, до 5 МБ каждый.
+            {t('Первое изображение станет обложкой. JPG, PNG или WebP, до 5 МБ каждый.')}
           </p>
           <DimensionFields />
           <div className="studio-form-row">
             <label>
-              Цена
-              <input name="price" required inputMode="decimal" placeholder="Например: 650" />
+              {t('Цена')}
+              <input name="price" required inputMode="decimal" placeholder={t('Например: 650')} />
             </label>
             <CurrencySelect />
           </div>
-          <label>
-            Приоритет
-            <input type="number" step="1" name="sortOrder" defaultValue={0} required />
-          </label>
+          <Priority />
           <BoardSize value={3} />
           <button className="studio-button" type="submit" disabled={busy}>
-            {busy ? 'Создаём галерею…' : 'Создать черновик'}
+            {busy ? t('Создаём галерею…') : t('Создать черновик')}
           </button>
         </fieldset>
         {error && (
