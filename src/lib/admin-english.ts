@@ -1,4 +1,35 @@
+import { techniques, surfaces } from './artwork-materials'
 export const adminEnglish: Record<string, string> = {
+  ...Object.fromEntries([...techniques, ...surfaces].map((item) => [item.ru, item.en])),
+  'Вид работы': 'Artwork type',
+  'Физическая работа': 'Physical artwork',
+  'Цифровая работа': 'Digital artwork',
+  'Цифровая графика': 'Digital art',
+  'Краски / техника': 'Paint / medium',
+  Основа: 'Support',
+  'Формат бумаги': 'Paper format',
+  'Размер основы': 'Support dimensions',
+  'Материалы и размер': 'Materials and dimensions',
+  Материалы: 'Materials',
+  'Горизонтальная ориентация': 'Landscape orientation',
+  'Ширина, px': 'Width, px',
+  'Высота, px': 'Height, px',
+  'Размер цифровой работы указывается в пикселях, без холста и сантиметров.':
+    'Enter digital artwork dimensions in pixels, without a canvas or centimeters.',
+  'Размер без рамы. Для бумаги и картона можно выбрать A1–A5 или ввести свой размер.':
+    'Unframed dimensions. Choose A1–A5 for paper and cardboard, or enter a custom size.',
+  'A1–A5 или оставьте пустым для произвольного размера.':
+    'Choose A1–A5 or leave blank for custom dimensions.',
+  'Краски или техника выполнения. Основа выбирается отдельно.':
+    'The paint or medium used. The support is selected separately.',
+  'Сантиметры для физической работы, пиксели для цифровой.':
+    'Centimeters for physical artwork, pixels for digital artwork.',
+  'Для цифровой работы укажите ширину и высоту в целых пикселях.':
+    'Enter positive whole-pixel dimensions for digital artwork.',
+  'Для физической работы выберите краски или технику.':
+    'Choose a paint or medium for physical artwork.',
+  'Размеры не совпадают с выбранным форматом бумаги. Выберите произвольный размер.':
+    'The dimensions do not match the paper format. Choose custom dimensions.',
   'Выберите JPG, PNG или WebP размером до 4 МБ.': 'Choose a JPG, PNG or WebP image up to 4 MB.',
   Цены: 'Prices',
   'Цена, ₽': 'Price, ₽',

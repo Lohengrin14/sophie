@@ -19,7 +19,11 @@ const payload = await getPayload({ config })
 const db = new pg.Client({ connectionString: process.env.DATABASE_URL })
 try {
   await db.connect()
-  await payload.db.migrate({ migrations: qaMigrations.slice(0, -1) })
+  const priceMigration = migrations.findIndex((migration) =>
+    migration.name.endsWith('optional_artwork_prices'),
+  )
+  assert.ok(priceMigration > 0)
+  await payload.db.migrate({ migrations: qaMigrations.slice(0, priceMigration) })
   const media = await db.query('INSERT INTO media DEFAULT VALUES RETURNING id')
   const image = media.rows[0].id
   for (const [currency, price] of [
@@ -45,6 +49,7 @@ try {
     collection: 'artworks',
     locale: 'ru',
     data: {
+      workKind: 'physical',
       title: 'Проверка цен',
       description: 'Русское описание',
       image,

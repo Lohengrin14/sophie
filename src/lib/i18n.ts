@@ -9,10 +9,7 @@ export const money = (amountMinor: number, currency: string, locale: Locale) =>
     maximumFractionDigits: 2,
     minimumFractionDigits: amountMinor % 100 === 0 ? 0 : 2,
   }).format(amountMinor / 100)
-export const mediumLabel = (medium: string, locale: Locale) =>
-  medium === 'acrylic'
-    ? text(locale, 'Акрил, холст', 'Acrylic on canvas')
-    : text(locale, 'Масло, холст', 'Oil on canvas')
+export { techniqueLabel as mediumLabel } from './artwork-materials'
 export const availabilityLabel = (status: string, locale: Locale) =>
   ({
     available: text(locale, 'Доступна', 'Available'),

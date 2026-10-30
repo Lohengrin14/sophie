@@ -20,6 +20,13 @@ import sharp from 'sharp'
 import { databaseOptions } from './lib/database'
 import { storagePlugins } from './lib/storage'
 import { MAX_IMAGE_BYTES } from './lib/upload-limits'
+import {
+  techniques,
+  surfaces,
+  paperSizes,
+  normalizeArtworkMaterials,
+  ArtworkMaterialError,
+} from './lib/artwork-materials'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const sectionAccess =
@@ -252,6 +259,16 @@ const Artworks: CollectionConfig = {
     beforeValidate: [
       ({ data, originalDoc }) => {
         if (!data) return data
+        try {
+          return normalizeArtworkMaterials(data, originalDoc)
+        } catch (error) {
+          if (error instanceof ArtworkMaterialError)
+            throw new ValidationError({ errors: [{ path: error.field, message: error.message }] })
+          throw error
+        }
+      },
+      ({ data, originalDoc }) => {
+        if (!data) return data
         if (data.image !== undefined || data.images !== undefined) {
           try {
             data.images = galleryImageIDs(
@@ -368,12 +385,48 @@ const Artworks: CollectionConfig = {
       },
     },
     {
+      name: 'workKind',
+      type: 'select',
+      label: 'Вид работы',
+      required: true,
+      defaultValue: 'physical',
+      options: [
+        { label: 'Физическая работа', value: 'physical' },
+        { label: 'Цифровая работа', value: 'digital' },
+      ],
+    },
+    {
+      name: 'surface',
+      type: 'select',
+      label: 'Основа',
+      defaultValue: 'canvas',
+      options: surfaces.map((item) => ({ label: item.ru, value: item.value })),
+      admin: { condition: (data) => data.workKind !== 'digital' },
+    },
+    {
+      name: 'paperFormat',
+      type: 'select',
+      label: 'Формат бумаги',
+      options: paperSizes.map((item) => ({ label: item.format, value: item.format })),
+      admin: {
+        condition: (data) =>
+          data.workKind !== 'digital' && ['paper', 'cardboard'].includes(data.surface),
+        description: 'A1–A5 или оставьте пустым для произвольного размера.',
+      },
+    },
+    {
       name: 'medium',
       type: 'select',
-      label: 'Техника',
+      label: 'Краски / техника',
       defaultValue: 'oil',
-      options: mediumOptions,
-      admin: { description: 'Материал самой работы. Например: «Масло, холст».' },
+      options: [
+        ...techniques.map((item) => ({ label: item.ru, value: item.value })),
+        { label: 'Цифровая графика', value: 'digital' },
+      ],
+      admin: {
+        description: 'Краски или техника выполнения. Основа выбирается отдельно.',
+        condition: (data) => data.workKind !== 'digital',
+      },
       required: true,
     },
     {
@@ -382,18 +435,24 @@ const Artworks: CollectionConfig = {
         {
           name: 'width',
           type: 'number',
-          label: 'Ширина, см',
+          label: 'Ширина',
           required: true,
           min: 1,
-          admin: { placeholder: '40', description: 'Слева направо, без рамы. Например: 40.' },
+          admin: {
+            placeholder: '40',
+            description: 'Сантиметры для физической работы, пиксели для цифровой.',
+          },
         },
         {
           name: 'height',
           type: 'number',
-          label: 'Высота, см',
+          label: 'Высота',
           required: true,
           min: 1,
-          admin: { placeholder: '60', description: 'Снизу вверх, без рамы. Например: 60.' },
+          admin: {
+            placeholder: '60',
+            description: 'Сантиметры для физической работы, пиксели для цифровой.',
+          },
         },
         {
           name: 'year',

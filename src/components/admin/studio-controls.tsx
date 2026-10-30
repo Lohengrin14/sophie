@@ -1,11 +1,12 @@
 'use client'
-import { useAdminText } from './studio-locale'
+import { useAdminText, useAdminLocale } from './studio-locale'
 import { useEffect, useState, type ReactNode, type FormEvent } from 'react'
 import { Check, LoaderCircle, Save } from 'lucide-react'
 import { useAuth } from '@payloadcms/ui'
 import { useSearchParams } from 'next/navigation'
 import { can, type Section } from '@/lib/studio-access'
-import type { User } from '@/payload-types'
+import type { User, Artwork } from '@/payload-types'
+import { techniques, surfaces, paperSizes, supportsPaperFormat } from '@/lib/artwork-materials'
 import { boardSize } from '@/lib/canvas-size'
 import { canvasPresets } from '@/lib/studio-admin'
 
@@ -92,71 +93,171 @@ export function SaveBox({
   )
 }
 
-export function DimensionFields({ width = 40, height = 40 }: { width?: number; height?: number }) {
+export function ArtworkMaterialFields({ work }: { work?: Partial<Artwork> }) {
   const t = useAdminText()
-
-  const [size, setSize] = useState({ width, height })
-  const [preset, setPreset] = useState(
-    canvasPresets.some(([key]) => key === `${width}x${height}`) ? `${width}x${height}` : 'custom',
+  const locale = useAdminLocale()
+  const [kind, setKind] = useState(work?.workKind || 'physical')
+  const [medium, setMedium] = useState(work?.medium === 'digital' ? 'oil' : work?.medium || 'oil')
+  const [surface, setSurface] = useState(work?.surface || 'canvas')
+  const [physicalSize, setPhysicalSize] = useState({
+    width: work?.workKind === 'digital' ? 40 : (work?.width ?? 40),
+    height: work?.workKind === 'digital' ? 40 : (work?.height ?? 40),
+  })
+  const image = work?.image && typeof work.image === 'object' ? work.image : null
+  const [digitalSize, setDigitalSize] = useState({
+    width: work?.workKind === 'digital' ? (work.width ?? 2400) : (image?.width ?? 2400),
+    height: work?.workKind === 'digital' ? (work.height ?? 2400) : (image?.height ?? 2400),
+  })
+  const [preset, setPreset] = useState<string>(() =>
+    supportsPaperFormat(work?.surface)
+      ? work?.paperFormat || 'custom'
+      : canvasPresets.some(([key]) => key === `${work?.width ?? 40}x${work?.height ?? 40}`)
+        ? `${work?.width ?? 40}x${work?.height ?? 40}`
+        : 'custom',
   )
+  const digital = kind === 'digital'
+  const paper = supportsPaperFormat(surface)
+  const size = digital ? digitalSize : physicalSize
+  const setSize = digital ? setDigitalSize : setPhysicalSize
   return (
     <>
       <label>
-        {t('Размер холста')}
+        {t('Вид работы')}
         <select
-          value={preset}
-          onChange={(event) => {
-            const value = event.target.value
-            setPreset(value)
-            if (value !== 'custom') {
-              const [width, height] = value.split('x').map(Number)
-              setSize({ width, height })
-            }
-          }}
+          name="workKind"
+          value={kind}
+          onChange={(event) => setKind(event.target.value as 'physical' | 'digital')}
         >
-          {canvasPresets.map(([key, label]) => (
-            <option key={key} value={key}>
-              {t(label)}
-            </option>
-          ))}
-          <option value="custom">{t('Другой размер — ввести вручную')}</option>
+          <option value="physical">{t('Физическая работа')}</option>
+          <option value="digital">{t('Цифровая работа')}</option>
         </select>
       </label>
+      {!digital ? (
+        <>
+          <div className="studio-form-row">
+            <label>
+              {t('Краски / техника')}
+              <select
+                name="medium"
+                value={medium}
+                onChange={(event) => setMedium(event.target.value as typeof medium)}
+              >
+                {techniques.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item[locale]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              {t('Основа')}
+              <select
+                name="surface"
+                value={surface}
+                onChange={(event) => {
+                  setSurface(event.target.value as typeof surface)
+                  setPreset('custom')
+                }}
+              >
+                {surfaces.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item[locale]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <label>
+            {paper ? t('Формат бумаги') : t('Размер основы')}
+            <select
+              value={preset}
+              onChange={(event) => {
+                const value = event.target.value
+                setPreset(value)
+                if (value === 'custom') return
+                const sheet = paperSizes.find((item) => item.format === value)
+                if (sheet) setPhysicalSize({ width: sheet.width, height: sheet.height })
+                else {
+                  const [width, height] = value.split('x').map(Number)
+                  setPhysicalSize({ width, height })
+                }
+              }}
+            >
+              {paper
+                ? paperSizes.map((item) => (
+                    <option key={item.format} value={item.format}>
+                      {item.format} · {item.width} × {item.height} {t('см')}
+                    </option>
+                  ))
+                : canvasPresets.map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {t(label)}
+                    </option>
+                  ))}
+              <option value="custom">{t('Другой размер — ввести вручную')}</option>
+            </select>
+          </label>
+        </>
+      ) : (
+        <>
+          <input type="hidden" name="medium" value="digital" />
+          <input type="hidden" name="surface" value="" />
+          <p className="studio-hint">
+            {t('Размер цифровой работы указывается в пикселях, без холста и сантиметров.')}
+          </p>
+        </>
+      )}
+      <input
+        type="hidden"
+        name="paperFormat"
+        value={!digital && paper && preset !== 'custom' ? preset : ''}
+      />
       <div className="studio-form-row">
         <label>
-          {t('Ширина, см')}
+          {digital ? t('Ширина, px') : t('Ширина, см')}
           <input
             name="width"
             type="number"
             min="1"
-            step="0.1"
+            step={digital ? '1' : '0.1'}
             required
             value={size.width}
             onChange={(event) => {
-              setPreset('custom')
+              if (!digital) setPreset('custom')
               setSize({ ...size, width: Number(event.target.value) })
             }}
           />
         </label>
         <label>
-          {t('Высота, см')}
+          {digital ? t('Высота, px') : t('Высота, см')}
           <input
             name="height"
             type="number"
             min="1"
-            step="0.1"
+            step={digital ? '1' : '0.1'}
             required
             value={size.height}
             onChange={(event) => {
-              setPreset('custom')
+              if (!digital) setPreset('custom')
               setSize({ ...size, height: Number(event.target.value) })
             }}
           />
         </label>
       </div>
-      <p className="studio-hint">
-        {t('Ширина × высота без рамы. 60 × 40 — горизонтально, 40 × 60 — вертикально.')}
-      </p>
+      <label className="studio-check">
+        <input
+          type="checkbox"
+          checked={size.width > size.height}
+          disabled={size.width === size.height}
+          onChange={() => setSize({ width: size.height, height: size.width })}
+        />
+        {t('Горизонтальная ориентация')}
+      </label>
+      {!digital && (
+        <p className="studio-hint">
+          {t('Размер без рамы. Для бумаги и картона можно выбрать A1–A5 или ввести свой размер.')}
+        </p>
+      )}
     </>
   )
 }

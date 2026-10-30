@@ -85,6 +85,7 @@ try {
       collection: 'artworks',
       locale: 'ru',
       data: {
+        workKind: 'physical',
         slug,
         title: `Тест холста ${number} · ${fixture.width} × ${fixture.height}`,
         description: `Технический пример для проверки расположения. Не настоящая картина. Масштаб ${tier.scale}×, категория ${tier.tier} из 5. Изображение создано программно, без ИИ. Цена условная.`,

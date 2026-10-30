@@ -27,14 +27,30 @@ try {
   token = (await login.json()).token
   const adminCookie = { Cookie: `payload-token=${token}` }
   const listHTML = await (await fetch(base + '/admin?tab=gallery', { headers: adminCookie })).text()
-  assert.ok(listHTML.includes('Добавить галерею'), 'The gallery list always exposes creation to an administrator')
-  assert.ok(listHTML.includes('href="/admin?tab=gallery"'), 'The gallery tab explicitly links back to the list')
-  const createHTML = await (await fetch(base + '/admin?tab=gallery&gallery=new', { headers: adminCookie })).text()
-  assert.ok(createHTML.includes('Новая галерея'), 'The URL opens creation directly, including after reload')
+  assert.ok(
+    listHTML.includes('Добавить галерею'),
+    'The gallery list always exposes creation to an administrator',
+  )
+  assert.ok(
+    listHTML.includes('href="/admin?tab=gallery"'),
+    'The gallery tab explicitly links back to the list',
+  )
+  const createHTML = await (
+    await fetch(base + '/admin?tab=gallery&gallery=new', { headers: adminCookie })
+  ).text()
+  assert.ok(
+    createHTML.includes('Новая галерея'),
+    'The URL opens creation directly, including after reload',
+  )
   assert.ok(createHTML.includes('name="description"'))
-  const returnedHTML = await (await fetch(base + '/admin?tab=gallery', { headers: adminCookie })).text()
+  const returnedHTML = await (
+    await fetch(base + '/admin?tab=gallery', { headers: adminCookie })
+  ).text()
   assert.ok(returnedHTML.includes('Добавить галерею'))
-  assert.ok(!returnedHTML.includes('name="files"'), 'Returning to the list must not retain the creation form')
+  assert.ok(
+    !returnedHTML.includes('name="files"'),
+    'Returning to the list must not retain the creation form',
+  )
   const originals = (await get('/api/artworks?limit=1000&depth=0')).docs.map(
     ({ id, updatedAt }) => ({ id, updatedAt }),
   )
@@ -143,7 +159,10 @@ try {
     assert.ok(detail.includes('work-lightbox'))
     assert.ok(!detail.includes('id="purchase"'))
     assert.ok(!detail.includes('class="request-form"'))
-    assert.ok(detail.includes('aria-haspopup="dialog"'), 'The image opens the lazily rendered fullscreen viewer')
+    assert.ok(
+      detail.includes('aria-haspopup="dialog"'),
+      'The image opens the lazily rendered fullscreen viewer',
+    )
     const priceBlock = detail.match(/<div class="detail-price">([^<]*)<\/div>/)?.[1]
     assert.ok(
       priceBlock?.includes(locale === 'ru' ? '650,50' : '$700.25'),
@@ -176,6 +195,39 @@ try {
     !hiddenPrice.includes('<div class="detail-price">'),
     'Clearing RUB hides its price without falling back to USD',
   )
+  assert.equal(
+    (
+      await api(`/api/artworks/${work.id}`, 'PATCH', {
+        workKind: 'physical',
+        medium: 'watercolor',
+        surface: 'paper',
+        paperFormat: 'A3',
+        width: 29.7,
+        height: 42,
+      })
+    ).status,
+    200,
+  )
+  const paperPage = await (await fetch(`${base}/ru/works/${work.slug}`)).text()
+  assert.ok(paperPage.includes('Акварель'))
+  assert.ok(paperPage.includes('Бумага'))
+  assert.ok(paperPage.includes('A3 · 29,7 × 42 см'))
+  assert.equal(
+    (
+      await api(`/api/artworks/${work.id}`, 'PATCH', {
+        workKind: 'digital',
+        width: 2400,
+        height: 1600,
+      })
+    ).status,
+    200,
+  )
+  const digitalPage = await (await fetch(`${base}/ru/works/${work.slug}`)).text()
+  const specs = digitalPage.match(/<dl class="work-specs">([\s\S]*?)<\/dl>/)?.[1]
+  assert.ok(specs?.includes('Цифровая работа'))
+  assert.ok(specs?.includes('px'))
+  assert.ok(!specs?.includes('см') && !specs?.includes('Холст'))
+  assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { width: 20.5 })).status, 400)
   console.log(
     'PASS: upload, ten images, cover selection, overflow rejection, independent fields, RU/EN, priority, board size, public thumbnails',
   )

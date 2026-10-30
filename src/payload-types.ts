@@ -248,16 +248,23 @@ export interface Artwork {
    * Optional. Describe the subject and materials. This text is not shown under homepage images.
    */
   description?: string | null;
+  workKind: 'physical' | 'digital';
+  surface?: ('canvas' | 'paper' | 'cardboard' | 'wood' | 'other') | null;
   /**
-   * The artwork medium, for example oil on canvas.
+   * Choose A1–A5 or leave blank for custom dimensions.
    */
-  medium: 'oil' | 'acrylic';
+  paperFormat?: ('A1' | 'A2' | 'A3' | 'A4' | 'A5') | null;
   /**
-   * Left to right, without the frame. For example: 40.
+   * The paint or medium used. The support is selected separately.
+   */
+  medium?:
+    ('oil' | 'acrylic' | 'watercolor' | 'gouache' | 'pastel' | 'ink' | 'pencil' | 'mixed' | 'other' | 'digital') | null;
+  /**
+   * Centimeters for physical artwork, pixels for digital artwork.
    */
   width: number;
   /**
-   * Bottom to top, without the frame. For example: 60.
+   * Centimeters for physical artwork, pixels for digital artwork.
    */
   height: number;
   /**
@@ -630,6 +637,9 @@ export interface ArtworksSelect<T extends boolean = true> {
   images?: T;
   displaySize?: T;
   description?: T;
+  workKind?: T;
+  surface?: T;
+  paperFormat?: T;
   medium?: T;
   width?: T;
   height?: T;
