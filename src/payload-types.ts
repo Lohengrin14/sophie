@@ -196,6 +196,8 @@ export interface Media {
    * A short description for people who cannot see the image. This is not a filename. Add the English translation separately.
    */
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -416,6 +418,8 @@ export interface Reference {
    * For example: ART-EC804CF3 — portrait reference. Find the request in Requests.
    */
   note?: string | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -583,6 +587,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -682,6 +688,8 @@ export interface RequestsSelect<T extends boolean = true> {
  */
 export interface ReferencesSelect<T extends boolean = true> {
   note?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

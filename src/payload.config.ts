@@ -18,6 +18,7 @@ import { ru } from '@payloadcms/translations/languages/ru'
 import { artworkSlug, validStoredPrice } from './lib/admin-helpers'
 import sharp from 'sharp'
 import { databaseOptions } from './lib/database'
+import { storagePlugins } from './lib/storage'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const sectionAccess =
@@ -941,6 +942,7 @@ if (!process.env.PAYLOAD_SECRET)
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET,
+  plugins: storagePlugins(),
   admin: {
     user: 'users',
     importMap: { baseDir: path.resolve(dirname) },

@@ -21,13 +21,18 @@
     "db:preview:check": "tsx scripts/preview-db.ts check",
     "db:preview:status": "tsx scripts/preview-db.ts status",
     "db:preview:migrate": "tsx scripts/preview-db.ts migrate",
-    "test:migrations": "node scripts/migration-smoke.mjs"
+    "test:migrations": "node scripts/migration-smoke.mjs",
+    "storage:preview:check": "tsx scripts/storage-check.ts",
+    "preview:dev": "tsx scripts/preview-app.ts dev",
+    "test:storage:preview": "tsx scripts/preview-app.ts storage-test"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.1160.0",
     "@fontsource/lora": "^5.2.6",
     "@fontsource/manrope": "^5.2.8",
     "@payloadcms/db-postgres": "3.92.1",
     "@payloadcms/next": "3.92.1",
+    "@payloadcms/storage-s3": "3.92.1",
     "@payloadcms/translations": "3.92.1",
     "@payloadcms/ui": "3.92.1",
     "graphql": "^16.11.0",

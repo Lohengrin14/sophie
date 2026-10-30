@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { parseEnv } from 'node:util'
 import { spawn } from 'node:child_process'
 import pg from 'pg'
@@ -51,7 +51,11 @@ async function verify() {
   try {
     await db.connect()
     const history = await db.query('SELECT count(*)::int AS count FROM payload_migrations')
-    assert.equal(history.rows[0].count, 1)
+    assert.equal(
+      history.rows[0].count,
+      readdirSync('src/migrations').filter((file) => file.endsWith('.ts') && file !== 'index.ts')
+        .length,
+    )
     for (const table of ['users', 'media', 'artworks', 'quote_rules', 'requests', 'references']) {
       const result = await db.query(`SELECT count(*)::int AS count FROM "${table}"`)
       assert.equal(result.rows[0].count, 0, table)

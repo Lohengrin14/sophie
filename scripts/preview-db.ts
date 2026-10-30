@@ -22,6 +22,8 @@ function redact(output: string) {
   for (const value of [
     preview.SUPABASE_DB_PASSWORD,
     preview.PAYLOAD_SECRET,
+    preview.S3_ACCESS_KEY_ID,
+    preview.S3_SECRET_ACCESS_KEY,
     options.pool.connectionString,
   ]) {
     if (value) {
