@@ -1,7 +1,14 @@
 'use client'
-import { useEffect, useRef, useState, type TouchEvent, type KeyboardEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type TouchEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+} from 'react'
 import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Expand, X, Maximize2, Minimize2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Expand, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import { GalleryFrames } from './gallery-frames'
 import { galleryIndex } from '@/lib/gallery-view'
@@ -85,6 +92,29 @@ export function WorkImages({
       suppressClickUntil.current = Date.now() + 450
     }
   }
+  function imageClick(event: MouseEvent<HTMLButtonElement>) {
+    if (Date.now() <= suppressClickUntil.current) return
+    // A contained image can leave wide empty gutters inside its element.
+    // Only the painted image toggles zoom; its left/right gutters navigate.
+    const image = event.currentTarget.querySelector<HTMLImageElement>(
+      '.gallery-frame[data-visible="true"] img',
+    )
+    if (!image?.naturalWidth) return
+    const rect = image.getBoundingClientRect()
+    const style = getComputedStyle(image)
+    const width = rect.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+    const height = rect.height - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
+    const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight)
+    const left =
+      rect.left + parseFloat(style.paddingLeft) + (width - image.naturalWidth * scale) / 2
+    const right = left + image.naturalWidth * scale
+    const top = rect.top + parseFloat(style.paddingTop) + (height - image.naturalHeight * scale) / 2
+    const bottom = top + image.naturalHeight * scale
+    if (event.detail !== 0 && event.clientX < left) move(-1)
+    else if (event.detail !== 0 && event.clientX > right) move(1)
+    else if (event.detail === 0 || (event.clientY >= top && event.clientY <= bottom))
+      setExpanded((value) => !value)
+  }
   function keys(event: KeyboardEvent) {
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault()
@@ -135,7 +165,10 @@ export function WorkImages({
           className="work-open-image"
           aria-label={text(locale, 'Открыть изображение крупнее', 'Open full-size image')}
           onClick={() => {
-            if (Date.now() > suppressClickUntil.current) setOpen(true)
+            if (Date.now() > suppressClickUntil.current) {
+              setExpanded(false)
+              setOpen(true)
+            }
           }}
         >
           <GalleryFrames
@@ -198,19 +231,6 @@ export function WorkImages({
                 <button
                   type="button"
                   className="lightbox-close"
-                  aria-label={text(
-                    locale,
-                    expanded ? 'Вернуть поля' : 'Увеличить изображение',
-                    expanded ? 'Restore margins' : 'Expand image',
-                  )}
-                  aria-pressed={expanded}
-                  onClick={() => setExpanded((value) => !value)}
-                >
-                  {expanded ? <Minimize2 size={21} /> : <Maximize2 size={21} />}
-                </button>
-                <button
-                  type="button"
-                  className="lightbox-close"
                   onClick={closeViewer}
                   aria-label={text(locale, 'Закрыть просмотр', 'Close viewer')}
                 >
@@ -226,16 +246,28 @@ export function WorkImages({
                 origin.current = null
               }}
             >
-              <Image
-                className="lightbox-poster"
-                src={current.url}
-                alt=""
-                aria-hidden="true"
-                fill
-                loading="eager"
-                sizes="(max-width: 800px) 96vw, 70vw"
-              />
-              <GalleryFrames images={urls} index={selected} title={title} sizes="100vw" warm />
+              <button
+                type="button"
+                className="lightbox-image"
+                aria-label={text(
+                  locale,
+                  expanded ? 'Уменьшить изображение' : 'Увеличить изображение',
+                  expanded ? 'Reduce image' : 'Expand image',
+                )}
+                aria-pressed={expanded}
+                onClick={imageClick}
+              >
+                <Image
+                  className="lightbox-poster"
+                  src={current.url}
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  loading="eager"
+                  sizes="(max-width: 800px) 96vw, 70vw"
+                />
+                <GalleryFrames images={urls} index={selected} title={title} sizes="100vw" warm />
+              </button>
               {arrows()}
             </div>
             {images.length > 1 && (
