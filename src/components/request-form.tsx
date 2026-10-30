@@ -162,7 +162,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
       <div className="success-panel" role="status">
         <CheckCircle2 size={38} strokeWidth={1.2} />
         <p className="eyebrow">{reference}</p>
-        <h2>{text(locale, 'Начало положено.', 'A lovely beginning.')}</h2>
+        <h2>{text(locale, 'Заявка отправлена', 'Request submitted')}</h2>
         <p>
           {text(
             locale,
@@ -183,7 +183,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
   if (kind === 'commission' && !commissionsOpen)
     return (
       <div className="empty-state">
-        <h2>{text(locale, 'Немного творческой паузы.', 'A little creative pause.')}</h2>
+        <h2>{text(locale, 'Заказы временно закрыты', 'Commissions are closed')}</h2>
         <p>
           {text(
             locale,
@@ -202,12 +202,12 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
         <div className="form-stepper">
           <span className={step === 1 ? 'active' : 'done'}>
             <i>{step > 1 ? <Check size={12} /> : '1'}</i>
-            {text(locale, 'Ваша идея', 'Your idea')}
+            {text(locale, 'Параметры', 'Details')}
           </span>
           <span className="stepper-line" />
           <span className={step === 2 ? 'active' : ''}>
             <i>2</i>
-            {text(locale, 'Давайте знакомиться', 'Let’s connect')}
+            {text(locale, 'Контакт', 'Contact')}
           </span>
         </div>
       )}
@@ -224,16 +224,8 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
       </div>
       {kind === 'commission' && (
         <div hidden={step !== 1}>
-          <h2 className="form-title">
-            {text(locale, 'Что хочется сохранить?', 'What would you like to capture?')}
-          </h2>
-          <p className="form-intro">
-            {text(
-              locale,
-              'Несколько деталей помогут найти отправную точку.',
-              'A few details will help us find a starting point.',
-            )}
-          </p>
+          <h2 className="form-title">{text(locale, 'Параметры картины', 'Painting details')}</h2>
+
           <fieldset className="subject-options">
             <legend>{text(locale, 'Сюжет', 'Subject')}</legend>
             {[
@@ -355,36 +347,23 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
             type="submit"
             disabled={loadingQuote || quoteError}
           >
-            {text(locale, 'Мне подходит, продолжить', 'Sounds good, continue')}{' '}
-            <ArrowRight size={17} />
+            {text(locale, 'Далее', 'Continue')} <ArrowRight size={17} />
           </button>
         </div>
       )}
       <div hidden={step !== 2}>
         {kind === 'commission' && (
           <button type="button" className="back-button" onClick={() => setStep(1)}>
-            ← {text(locale, 'Изменить идею', 'Edit your idea')}
+            ← {text(locale, 'Изменить параметры', 'Edit details')}
           </button>
         )}
         <h2 className="form-title">
           {text(
             locale,
-            kind === 'question' ? 'О чём поговорим?' : 'Как с вами связаться?',
-            kind === 'question' ? 'What’s on your mind?' : 'Where can we reach you?',
+            kind === 'question' ? 'Сообщение' : 'Контакт для ответа',
+            kind === 'question' ? 'Message' : 'Reply contact',
           )}
         </h2>
-        <p className="form-intro">
-          {text(
-            locale,
-            'Один удобный контакт — больше ничего обязательного.',
-            'Just one convenient way to reach you.',
-          )}
-        </p>
-        <label>
-          {text(locale, 'Как вас зовут', 'Your name')}{' '}
-          <span className="optional">{text(locale, '(необязательно)', '(optional)')}</span>
-          <input name="name" autoComplete="given-name" maxLength={100} />
-        </label>
         <div className="form-row contact-row">
           <label>
             {text(locale, 'Удобнее общаться', 'Preferred channel')}

@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { ArrowDownRight } from 'lucide-react'
 import { getStudio } from '@/lib/data'
 import { isLocale, text } from '@/lib/i18n'
 import { RequestForm } from '@/components/request-form'
@@ -12,27 +11,14 @@ export default async function Commission({ params }: { params: Promise<{ locale:
     <main id="main" className="container page-main">
       <div className="commission-page">
         <div className="commission-intro">
-          <p className="eyebrow">{text(locale, 'НЕЧТО ЛИЧНОЕ', 'SOMETHING PERSONAL')}</p>
-          <h1>
-            {text(locale, 'Ваша идея.', 'Your idea.')}
-            <br />
-            <em>{text(locale, 'Ваша картина.', 'Your painting.')}</em>
-          </h1>
-          <p className="lead">
-            {text(
-              locale,
-              'Сюжет, размер, настроение. Выберите детали — узнайте примерную цену и срок.',
-              'Subject, size, mood. Choose the details for an estimated price and timeline.',
-            )}
-          </p>
+          <h1>{text(locale, 'Картина на заказ', 'Commission a painting')}</h1>
           <p className="muted">
             {text(
               locale,
-              'Пока только идея? Этого достаточно.',
-              'Just an idea so far? That’s enough to begin.',
+              'Выберите сюжет, технику и размер.',
+              'Choose a subject, medium and size.',
             )}
           </p>
-          <ArrowDownRight className="intro-arrow" size={82} strokeWidth={0.8} />
         </div>
         <div className="form-shell">
           <RequestForm
@@ -44,8 +30,7 @@ export default async function Commission({ params }: { params: Promise<{ locale:
         </div>
       </div>
       <section className="faq-section">
-        <p className="eyebrow">{text(locale, 'ЧТО СТОИТ ЗНАТЬ', 'A FEW THINGS TO KNOW')}</p>
-        <h2>{text(locale, 'Перед заказом', 'Before you begin')}</h2>
+        <h2>{text(locale, 'Вопросы о заказе', 'Commission questions')}</h2>
         {[
           [
             text(locale, 'Цена окончательная?', 'Is the price final?'),

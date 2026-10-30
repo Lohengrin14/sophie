@@ -1,4 +1,22 @@
 export const technicalEnglish: Record<string, string> = {
+  'Куда ведёт кнопка «Купить»': 'Buy button destination',
+  Автоматически: 'Automatic',
+  'Укажите контакт выбранного канала. Без него используем другой заполненный контакт.':
+    'Provide the selected contact. If unavailable, another configured contact is used.',
+  'Продавец: ФИО или наименование': 'Seller name',
+  'Страна продавца': 'Seller country',
+  'Статус продавца': 'Seller status',
+  'Физическое лицо': 'Individual',
+  Самозанятый: 'Self-employed',
+  ИП: 'Sole proprietor',
+  Компания: 'Company',
+  'Другой статус': 'Other status',
+  'ИНН / налоговый номер': 'Tax ID',
+  'ОГРН / ОГРНИП / регистрационный номер': 'Registration number',
+  'Адрес продавца': 'Seller address',
+  'Email для обращений': 'Contact email',
+  'Телефон продавца': 'Seller phone',
+  'Условия покупки, доставки и обращений': 'Purchase, delivery and enquiries',
   Настройки: 'Settings',
   'Учётные записи для входа в мастерскую. Это сотрудники, а не покупатели сайта.':
     'Staff accounts for signing into the studio. These are not customer accounts.',

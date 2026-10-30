@@ -130,12 +130,21 @@ try {
     const detail = await page.text()
     assert.ok(detail.includes('work-thumbnails'))
     assert.ok(detail.includes('work-lightbox'))
+    assert.ok(!detail.includes('id="purchase"'))
+    assert.ok(!detail.includes('class="request-form"'))
     assert.ok(detail.includes('viewer-arrow'))
     const home = await (await fetch(`${base}/${locale}`)).text()
     const main = home.match(/<main\b[\s\S]*?<\/main>/)?.[0]
     const card = main.match(new RegExp(`<a[^>]*id="work-${work.id}"[\\s\\S]*?</a>`))?.[0]
     assert.ok(card?.includes('data-canvas-tier="10"'))
     assert.ok(main.indexOf(`id="work-${work.id}"`) < main.indexOf('layout-study-v1-01'))
+  }
+  for (const locale of ['ru', 'en']) {
+    const contact = await (await fetch(`${base}/${locale}/contact`)).text()
+    assert.ok(!contact.includes('class="request-form"'))
+    const commission = await (await fetch(`${base}/${locale}/commission`)).text()
+    assert.ok(commission.includes('class="request-form"'))
+    assert.ok(!commission.includes('name="name"'))
   }
   const latest = await get(`/api/artworks/${work.id}`)
   assert.equal(latest.width, 40)

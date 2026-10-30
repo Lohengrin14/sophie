@@ -814,6 +814,53 @@ const Studio: GlobalConfig = {
   },
   access: { read: () => true, update: sectionAccess('artist', 'edit') },
   fields: [
+    {
+      name: 'purchaseChannel',
+      type: 'select',
+      defaultValue: 'auto',
+      label: 'Куда ведёт кнопка «Купить»',
+      options: [
+        { value: 'auto', label: 'Автоматически' },
+        { value: 'telegram', label: 'Telegram' },
+        { value: 'instagram', label: 'Instagram' },
+        { value: 'email', label: 'Электронная почта' },
+      ],
+      admin: {
+        description:
+          'Укажите контакт выбранного канала. Без него используем другой заполненный контакт.',
+      },
+    },
+    { name: 'sellerName', type: 'text', label: 'Продавец: ФИО или наименование', maxLength: 200 },
+    { name: 'sellerCountry', type: 'text', label: 'Страна продавца', maxLength: 100 },
+    {
+      name: 'sellerStatus',
+      type: 'select',
+      label: 'Статус продавца',
+      options: [
+        { value: 'individual', label: 'Физическое лицо' },
+        { value: 'self-employed', label: 'Самозанятый' },
+        { value: 'entrepreneur', label: 'ИП' },
+        { value: 'company', label: 'Компания' },
+        { value: 'other', label: 'Другой статус' },
+      ],
+    },
+    { name: 'sellerTaxId', type: 'text', label: 'ИНН / налоговый номер', maxLength: 40 },
+    {
+      name: 'sellerRegistration',
+      type: 'text',
+      label: 'ОГРН / ОГРНИП / регистрационный номер',
+      maxLength: 40,
+    },
+    { name: 'sellerAddress', type: 'text', label: 'Адрес продавца', maxLength: 500 },
+    { name: 'sellerEmail', type: 'email', label: 'Email для обращений' },
+    { name: 'sellerPhone', type: 'text', label: 'Телефон продавца', maxLength: 50 },
+    {
+      name: 'sellerTerms',
+      type: 'textarea',
+      localized: true,
+      label: 'Условия покупки, доставки и обращений',
+      maxLength: 6000,
+    },
     { name: 'photo', type: 'upload', relationTo: 'media', label: 'Фотография художника' },
     {
       name: 'name',

@@ -1,8 +1,9 @@
 'use client'
 import { useEffect, useRef, useState, type TouchEvent, type KeyboardEvent } from 'react'
 import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Expand, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Expand, X, Maximize2, Minimize2 } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
+import { GalleryFrames } from './gallery-frames'
 import { galleryIndex } from '@/lib/gallery-view'
 
 export function WorkImages({
@@ -16,6 +17,27 @@ export function WorkImages({
 }) {
   const [selected, setSelected] = useState(0)
   const [open, setOpen] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const [closing, setClosing] = useState(false)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current)
+    },
+    [],
+  )
+  function closeViewer() {
+    if (closing) return
+    setClosing(true)
+    closeTimer.current = setTimeout(
+      () => {
+        setOpen(false)
+        setClosing(false)
+      },
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180,
+    )
+  }
+  const urls = images.map((image) => image.url)
   const dialog = useRef<HTMLDialogElement>(null)
   const thumbnailStrip = useRef<HTMLDivElement>(null)
   const origin = useRef<{ x: number; y: number } | null>(null)
@@ -116,13 +138,13 @@ export function WorkImages({
             if (Date.now() > suppressClickUntil.current) setOpen(true)
           }}
         >
-          <Image
-            key={current.id}
-            src={current.url}
-            alt={title}
-            fill
+          <GalleryFrames
+            images={urls}
+            index={selected}
+            title={title}
             priority
             sizes="(max-width: 800px) 96vw, 70vw"
+            warm
           />
           <span className="zoom-label">
             <Expand size={16} />
@@ -155,52 +177,83 @@ export function WorkImages({
       </span>
       <dialog
         ref={dialog}
-        className="work-lightbox"
+        className={`work-lightbox ${expanded ? 'is-expanded' : ''} ${closing ? 'is-closing' : ''}`}
         aria-label={text(locale, `Картина «${title}»`, `Artwork “${title}”`)}
         onClose={() => setOpen(false)}
-        onCancel={() => setOpen(false)}
+        onCancel={(event) => {
+          event.preventDefault()
+          closeViewer()
+        }}
         onClick={(event) => {
-          if (event.target === event.currentTarget) setOpen(false)
+          if (event.target === event.currentTarget) closeViewer()
         }}
       >
-        <div className="lightbox-toolbar">
-          <span>
-            {title} · {selected + 1} / {images.length}
-          </span>
-          <button
-            type="button"
-            className="lightbox-close"
-            onClick={() => setOpen(false)}
-            aria-label={text(locale, 'Закрыть просмотр', 'Close viewer')}
-          >
-            <X size={25} />
-          </button>
-        </div>
-        <div
-          className="lightbox-stage"
-          onTouchStart={touchStart}
-          onTouchEnd={touchEnd}
-          onTouchCancel={() => {
-            origin.current = null
-          }}
-        >
-          <Image key={current.id} src={current.url} alt={title} fill sizes="100vw" />
-          {arrows()}
-        </div>
-        {images.length > 1 && (
-          <div className="work-thumbnails lightbox-thumbnails">
-            {images.map((image, index) => (
-              <button
-                key={image.id}
-                type="button"
-                aria-label={text(locale, `Изображение ${index + 1}`, `Image ${index + 1}`)}
-                aria-pressed={selected === index}
-                onClick={() => setSelected(index)}
-              >
-                <Image src={image.url} alt="" fill sizes="80px" />
-              </button>
-            ))}
-          </div>
+        {open && (
+          <>
+            <div className="lightbox-toolbar">
+              <span>
+                {title} · {selected + 1} / {images.length}
+              </span>
+              <div className="lightbox-actions">
+                <button
+                  type="button"
+                  className="lightbox-close"
+                  aria-label={text(
+                    locale,
+                    expanded ? 'Вернуть поля' : 'Увеличить изображение',
+                    expanded ? 'Restore margins' : 'Expand image',
+                  )}
+                  aria-pressed={expanded}
+                  onClick={() => setExpanded((value) => !value)}
+                >
+                  {expanded ? <Minimize2 size={21} /> : <Maximize2 size={21} />}
+                </button>
+                <button
+                  type="button"
+                  className="lightbox-close"
+                  onClick={closeViewer}
+                  aria-label={text(locale, 'Закрыть просмотр', 'Close viewer')}
+                >
+                  <X size={25} />
+                </button>
+              </div>
+            </div>
+            <div
+              className="lightbox-stage"
+              onTouchStart={touchStart}
+              onTouchEnd={touchEnd}
+              onTouchCancel={() => {
+                origin.current = null
+              }}
+            >
+              <Image
+                className="lightbox-poster"
+                src={current.url}
+                alt=""
+                aria-hidden="true"
+                fill
+                loading="eager"
+                sizes="(max-width: 800px) 96vw, 70vw"
+              />
+              <GalleryFrames images={urls} index={selected} title={title} sizes="100vw" warm />
+              {arrows()}
+            </div>
+            {images.length > 1 && (
+              <div className="work-thumbnails lightbox-thumbnails">
+                {images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    type="button"
+                    aria-label={text(locale, `Изображение ${index + 1}`, `Image ${index + 1}`)}
+                    aria-pressed={selected === index}
+                    onClick={() => setSelected(index)}
+                  >
+                    <Image src={image.url} alt="" fill sizes="80px" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </dialog>
     </div>

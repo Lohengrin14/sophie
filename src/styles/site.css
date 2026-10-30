@@ -2287,3 +2287,361 @@ p {
     touch-action: pan-y pinch-zoom;
   }
 }
+
+/* A single persistent image surface: transforms for enlargement, opacity for frames. */
+.gallery-frames,
+.gallery-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.gallery-frame {
+  opacity: 0;
+  transition: opacity 480ms ease;
+  pointer-events: none;
+}
+.gallery-frame[data-visible='true'] {
+  opacity: 1;
+}
+.gallery-frame img {
+  object-fit: contain;
+}
+.mosaic-work {
+  z-index: 1;
+  transition: z-index 0s 520ms;
+}
+.mosaic-work.is-previewing {
+  z-index: 20;
+  transition-delay: 0s;
+}
+.mosaic-visual {
+  position: absolute;
+  inset: 0;
+  transform-origin: top left;
+  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mosaic-visual .gallery-frame img {
+  transform: none;
+  transition: none;
+}
+.mosaic-visual .mosaic-preview-count {
+  opacity: 0;
+  transition: opacity 240ms;
+}
+.is-previewing .mosaic-preview-count {
+  opacity: 1;
+}
+.work-open-image .gallery-frame img {
+  animation: none;
+  padding: 0;
+}
+.work-stage .viewer-arrow {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 180ms,
+    background 180ms;
+}
+.work-stage:hover .viewer-arrow:not(:disabled),
+.work-stage:focus-within .viewer-arrow:not(:disabled) {
+  opacity: 1;
+  pointer-events: auto;
+}
+.viewer-arrow {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  background: #ffffffd9;
+  backdrop-filter: blur(12px);
+}
+.viewer-arrow:disabled {
+  visibility: hidden;
+}
+.viewer-arrow.previous {
+  left: 12px;
+}
+.viewer-arrow.next {
+  right: 12px;
+}
+.work-stage {
+  isolation: isolate;
+}
+.work-viewer .zoom-label {
+  opacity: 0;
+  transition: opacity 180ms;
+  font-size: 0;
+  background: #ffffffc9;
+}
+.work-stage:hover .zoom-label,
+.work-stage:focus-within .zoom-label {
+  opacity: 1;
+}
+.work-open-image {
+  cursor: zoom-in;
+}
+.lightbox-actions {
+  display: flex;
+  gap: 8px;
+}
+.lightbox-stage .gallery-frame img {
+  padding: 16px 64px;
+  transition: padding 240ms ease;
+}
+.work-lightbox.is-expanded .lightbox-stage .gallery-frame img {
+  padding: 0;
+}
+.work-lightbox.is-expanded .lightbox-thumbnails {
+  display: none;
+}
+.work-lightbox .viewer-arrow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms;
+}
+.lightbox-stage:hover .viewer-arrow:not(:disabled),
+.lightbox-stage:focus-within .viewer-arrow:not(:disabled) {
+  opacity: 1;
+  pointer-events: auto;
+}
+.work-lightbox {
+  background: #111315;
+  padding: 14px 20px;
+}
+.lightbox-toolbar {
+  color: #ccd0d5;
+}
+.lightbox-close {
+  border: 0;
+  background: transparent;
+}
+.lightbox-close:hover {
+  background: #ffffff18;
+}
+.work-lightbox .work-thumbnails button {
+  border-radius: 3px;
+  opacity: 0.55;
+  border-width: 1px;
+}
+.work-lightbox .work-thumbnails button[aria-pressed='true'] {
+  opacity: 1;
+}
+.buy-link {
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+}
+.buy-channel {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+.purchase-unconfigured {
+  display: block;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.work-description > h1 {
+  margin-top: 0;
+}
+.contact-page {
+  min-height: 65svh;
+  max-width: 900px;
+  padding-block: 60px 90px;
+}
+.contact-page h1,
+.artist-page h1,
+.commission-intro h1 {
+  font-family: var(--sans);
+  font-size: clamp(32px, 4.5vw, 60px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+.contact-page .contact-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  margin-top: 45px;
+  font-size: clamp(20px, 3vw, 30px);
+}
+.artist-page .about-layout {
+  gap: clamp(32px, 6vw, 100px);
+  align-items: center;
+}
+.about-layout.without-photo {
+  grid-template-columns: minmax(0, 700px);
+  min-height: 50svh;
+}
+.artist-page .about-image {
+  aspect-ratio: 4/5;
+  max-height: 70svh;
+  background: transparent;
+}
+.artist-page .about-image img {
+  object-fit: contain;
+}
+.artist-page .about-text {
+  white-space: pre-line;
+  margin-block: 28px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.artist-alias {
+  color: var(--muted);
+  margin-top: 14px;
+}
+.commission-intro > .muted {
+  margin-top: 20px;
+  max-width: 320px;
+}
+.commission-page {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+}
+.faq-section {
+  margin-top: 50px;
+}
+.faq-section h2 {
+  font-family: var(--sans);
+  font-size: 26px;
+}
+.site-footer.container {
+  width: calc(100% - 48px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 32px;
+  padding-block: 26px;
+  font-size: 11px;
+}
+.footer-seller {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  color: var(--muted);
+}
+.footer-seller:empty {
+  display: none;
+}
+.seller-details {
+  position: relative;
+}
+.seller-details summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  list-style: none;
+}
+.seller-details summary::-webkit-details-marker {
+  display: none;
+}
+.seller-details[open] {
+  flex-basis: 100%;
+}
+.seller-details-body {
+  padding-top: 18px;
+  max-width: 760px;
+  font-size: 12px;
+}
+.seller-details-body dl {
+  margin: 0;
+}
+.seller-details-body dl > div {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.4fr) minmax(0, 1fr);
+  gap: 20px;
+  padding: 5px 0;
+}
+.seller-details-body dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.seller-details-body p {
+  white-space: pre-line;
+  margin: 18px 0 0;
+}
+@media (hover: none), (pointer: coarse) {
+  .work-stage .viewer-arrow:not(:disabled),
+  .work-lightbox .viewer-arrow:not(:disabled) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .viewer-arrow {
+    width: 40px;
+    height: 40px;
+  }
+  .viewer-arrow.previous {
+    left: 4px;
+  }
+  .viewer-arrow.next {
+    right: 4px;
+  }
+}
+@media (max-width: 800px) {
+  .commission-page {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .site-footer.container {
+    width: calc(100% - 24px);
+    gap: 18px;
+  }
+  .lightbox-stage .gallery-frame img {
+    padding: 4px 16px;
+  }
+  .seller-details-body dl > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .contact-page {
+    padding-block: 30px 70px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mosaic-visual,
+  .mosaic-work,
+  .gallery-frame,
+  .viewer-arrow {
+    transition: none;
+  }
+}
+.work-lightbox[open] {
+  animation: lightbox-enter 200ms ease-out;
+  transition: opacity 180ms ease;
+}
+.work-lightbox.is-closing {
+  opacity: 0;
+}
+@keyframes lightbox-enter {
+  from {
+    opacity: 0.96;
+    transform: scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.lightbox-stage > .lightbox-poster {
+  object-fit: contain;
+  padding: 16px 64px;
+}
+.work-lightbox.is-expanded .lightbox-poster {
+  padding: 0;
+}
+@media (max-width: 800px) {
+  .lightbox-stage > .lightbox-poster {
+    padding: 4px 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-lightbox[open] {
+    animation: none;
+    transition: none;
+  }
+}
