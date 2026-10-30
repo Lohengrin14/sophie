@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import { GalleryFrames } from './gallery-frames'
+import { ShareArtwork } from './share-artwork'
 import { galleryIndex } from '@/lib/gallery-view'
 
 export function WorkImages({
@@ -160,7 +161,7 @@ export function WorkImages({
   }
   if (!current) return null
   return (
-    <div className="work-viewer" onKeyDown={keys}>
+    <div className="work-viewer" onKeyDown={keys} onDragStart={(event) => event.preventDefault()}>
       <div
         className="work-stage"
         style={{ aspectRatio: ratios[selected] || 4 / 3 }}
@@ -214,6 +215,9 @@ export function WorkImages({
           ))}
         </div>
       )}
+      <div className="work-gallery-actions">
+        <ShareArtwork title={title} locale={locale} />
+      </div>
       <dialog
         ref={dialog}
         className={`work-lightbox ${expanded ? 'is-expanded' : ''} ${closing ? 'is-closing' : ''}`}
@@ -234,6 +238,7 @@ export function WorkImages({
                 {title} · {selected + 1} / {images.length}
               </span>
               <div className="lightbox-actions">
+                <ShareArtwork title={title} locale={locale} />
                 <button
                   type="button"
                   className="lightbox-close"

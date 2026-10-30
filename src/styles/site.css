@@ -2069,6 +2069,8 @@ p {
   min-width: 0;
 }
 .work-viewer {
+  -webkit-user-select: none;
+  user-select: none;
   position: relative;
   min-width: 0;
 }
@@ -2187,6 +2189,8 @@ p {
   margin: 8px 0;
 }
 .work-lightbox {
+  -webkit-user-select: none;
+  user-select: none;
   position: fixed;
   inset: 0;
   width: 100%;
@@ -2374,7 +2378,10 @@ p {
   isolation: isolate;
 }
 .work-open-image {
-  cursor: zoom-in;
+  cursor:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M9 3H3v6M15 3h6v6M21 15v6h-6M9 21H3v-6' stroke='%23fff' stroke-width='4'/><path d='M9 3H3v6M15 3h6v6M21 15v6h-6M9 21H3v-6' stroke='%23111315' stroke-width='2'/></svg>")
+      12 12,
+    pointer;
 }
 .lightbox-image {
   position: absolute;
@@ -2385,10 +2392,16 @@ p {
   border: 0;
   background: transparent;
   color: inherit;
-  cursor: zoom-in;
+  cursor:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M9 3H3v6M15 3h6v6M21 15v6h-6M9 21H3v-6' stroke='%23fff' stroke-width='4'/><path d='M9 3H3v6M15 3h6v6M21 15v6h-6M9 21H3v-6' stroke='%23111315' stroke-width='2'/></svg>")
+      12 12,
+    pointer;
 }
 .work-lightbox.is-expanded .lightbox-image {
-  cursor: zoom-out;
+  cursor:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M3 9h6V3M15 3v6h6M21 15h-6v6M9 21v-6H3' stroke='%23fff' stroke-width='4'/><path d='M3 9h6V3M15 3v6h6M21 15h-6v6M9 21v-6H3' stroke='%23111315' stroke-width='2'/></svg>")
+      12 12,
+    pointer;
 }
 .lightbox-actions {
   display: flex;
@@ -2504,6 +2517,8 @@ p {
   min-height: 50svh;
 }
 .artist-page .about-image {
+  width: 100%;
+  justify-self: center;
   aspect-ratio: 4/5;
   max-height: 70svh;
   background: transparent;
@@ -2731,4 +2746,39 @@ html {
     padding: 10px 14px;
     font-size: 14px;
   }
+}
+
+.work-gallery-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+.artwork-share {
+  position: relative;
+}
+.artwork-share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+.artwork-share-button:hover {
+  background: #88888818;
+}
+.artwork-share-status {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.lightbox-actions {
+  align-items: center;
 }
