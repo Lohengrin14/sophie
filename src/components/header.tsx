@@ -36,27 +36,22 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
           aria-label={text(locale, 'Основное меню', 'Main navigation')}
           className={`main-nav ${open ? 'is-open' : ''}`}
         >
-          {links.map(([path, label]) => (
-            <Link
-              key={path}
-              href={path ? `/${locale}/${path}` : `/${locale}`}
-              onClick={() => setOpen(false)}
-              className={
-                (
-                  path
-                    ? pathname.startsWith(`/${locale}/${path}`)
-                    : pathname === `/${locale}` || pathname.startsWith(`/${locale}/works/`)
-                )
-                  ? 'active'
-                  : ''
-              }
-              aria-current={
-                pathname === (path ? `/${locale}/${path}` : `/${locale}`) ? 'page' : undefined
-              }
-            >
-              {label}
-            </Link>
-          ))}
+          {links.map(([path, label]) => {
+            const active = path
+              ? pathname.startsWith(`/${locale}/${path}`)
+              : pathname === `/${locale}` || pathname.startsWith(`/${locale}/works/`)
+            return (
+              <Link
+                key={path}
+                href={path ? `/${locale}/${path}` : `/${locale}`}
+                onClick={() => setOpen(false)}
+                className={active ? 'active' : ''}
+                aria-current={active ? 'page' : undefined}
+              >
+                {label}
+              </Link>
+            )
+          })}
         </nav>
         <div className="header-actions">
           <Link

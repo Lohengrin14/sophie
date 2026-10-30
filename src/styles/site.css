@@ -2646,3 +2646,75 @@ p {
     transition: none;
   }
 }
+
+/* Compact navigation, visually separate from the gallery wall. */
+html {
+  scroll-padding-top: calc(var(--site-header-height) + 18px);
+}
+.site-header {
+  background: var(--header-bg);
+}
+.header-inner.container {
+  min-height: var(--site-header-height);
+  width: calc(100% - 48px);
+  gap: 20px;
+}
+.wordmark > span {
+  font-size: 22px;
+}
+.main-nav {
+  gap: 4px;
+  margin-right: 0;
+}
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+  transition:
+    background 160ms,
+    color 160ms;
+}
+.main-nav a:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+.main-nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.header-actions {
+  gap: 18px;
+}
+@media (max-width: 800px) {
+  .header-inner.container {
+    width: calc(100% - 24px);
+    gap: 10px;
+  }
+  .wordmark {
+    max-width: 45%;
+  }
+  .wordmark > span {
+    font-size: 20px;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+  .main-nav {
+    top: 100%;
+    background: var(--header-bg);
+    padding: 12px;
+    gap: 4px;
+  }
+  .main-nav a {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
