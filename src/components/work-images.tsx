@@ -24,6 +24,8 @@ export function WorkImages({
 }) {
   const [selected, setSelected] = useState(0)
   const [open, setOpen] = useState(false)
+  const [hasOpened, setHasOpened] = useState(false)
+  const [ratios, setRatios] = useState<Record<number, number>>({})
   const [expanded, setExpanded] = useState(false)
   const [closing, setClosing] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -33,6 +35,13 @@ export function WorkImages({
     },
     [],
   )
+  function openViewer(index = selected) {
+    if (Date.now() <= suppressClickUntil.current) return
+    setSelected(index)
+    setHasOpened(true)
+    setExpanded(true)
+    setOpen(true)
+  }
   function closeViewer() {
     if (closing) return
     setClosing(true)
@@ -154,6 +163,7 @@ export function WorkImages({
     <div className="work-viewer" onKeyDown={keys}>
       <div
         className="work-stage"
+        style={{ aspectRatio: ratios[selected] || 4 / 3 }}
         onTouchStart={touchStart}
         onTouchEnd={touchEnd}
         onTouchCancel={() => {
@@ -164,18 +174,19 @@ export function WorkImages({
           type="button"
           className="work-open-image"
           aria-label={text(locale, 'Открыть изображение крупнее', 'Open full-size image')}
-          onClick={() => {
-            if (Date.now() > suppressClickUntil.current) {
-              setExpanded(true)
-              setOpen(true)
-            }
-          }}
+          aria-haspopup="dialog"
+          onClick={() => openViewer()}
         >
           <GalleryFrames
             images={urls}
             index={selected}
             title={title}
             priority
+            onDimensions={(index, ratio) =>
+              setRatios((previous) =>
+                previous[index] === ratio ? previous : { ...previous, [index]: ratio },
+              )
+            }
             sizes="(max-width: 800px) 96vw, 70vw"
             warm
           />
@@ -196,11 +207,7 @@ export function WorkImages({
                 `Open photo ${index + 1}`,
               )}
               aria-haspopup="dialog"
-              onClick={() => {
-                setSelected(index)
-                setExpanded(true)
-                setOpen(true)
-              }}
+              onClick={() => openViewer(index)}
             >
               <Image src={image.url} alt="" fill sizes="72px" />
             </button>
@@ -220,7 +227,7 @@ export function WorkImages({
           if (event.target === event.currentTarget) closeViewer()
         }}
       >
-        {open && (
+        {hasOpened && (
           <>
             <div className="lightbox-toolbar">
               <span>
@@ -256,27 +263,23 @@ export function WorkImages({
                 aria-pressed={expanded}
                 onClick={imageClick}
               >
-                <Image
-                  className="lightbox-poster"
-                  src={current.url}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  loading="eager"
-                  sizes="(max-width: 800px) 96vw, 70vw"
-                />
                 <GalleryFrames images={urls} index={selected} title={title} sizes="100vw" warm />
               </button>
               {arrows()}
             </div>
             {images.length > 1 && (
-              <div className="work-thumbnails lightbox-thumbnails" ref={thumbnailStrip}>
+              <div
+                className="work-thumbnails lightbox-thumbnails"
+                ref={thumbnailStrip}
+                aria-hidden={expanded}
+              >
                 {images.map((image, index) => (
                   <button
                     key={image.id}
                     type="button"
                     aria-label={text(locale, `Изображение ${index + 1}`, `Image ${index + 1}`)}
                     aria-pressed={selected === index}
+                    tabIndex={expanded ? -1 : 0}
                     onClick={() => setSelected(index)}
                   >
                     <Image src={image.url} alt="" fill sizes="80px" />

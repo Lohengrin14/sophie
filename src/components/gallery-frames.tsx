@@ -11,6 +11,7 @@ export function GalleryFrames({
   sizes,
   priority = false,
   warm = false,
+  onDimensions,
 }: {
   images: string[]
   index: number
@@ -18,6 +19,7 @@ export function GalleryFrames({
   sizes: string
   priority?: boolean
   warm?: boolean
+  onDimensions?: (index: number, ratio: number) => void
 }) {
   const [visible, setVisible] = useState(index)
   const [mounted, setMounted] = useState<Set<number>>(() => new Set([index]))
@@ -70,8 +72,10 @@ export function GalleryFrames({
                   try {
                     await image.decode()
                   } catch {}
-                  if (alive.current && image.naturalWidth > 0)
+                  if (alive.current && image.naturalWidth > 0) {
                     setReady((previous) => new Set(previous).add(position))
+                    onDimensions?.(position, image.naturalWidth / image.naturalHeight)
+                  }
                 }}
               />
             </span>

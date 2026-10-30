@@ -2074,7 +2074,8 @@ p {
 }
 .work-stage {
   position: relative;
-  height: clamp(280px, calc(100svh - 350px), 680px);
+  height: auto;
+  max-height: clamp(280px, calc(100svh - 350px), 680px);
   touch-action: pan-y pinch-zoom;
 }
 .work-open-image {
@@ -2267,7 +2268,7 @@ p {
     min-height: 0;
   }
   .work-stage {
-    height: clamp(260px, 55svh, 600px);
+    max-height: 55svh;
   }
   .work-open-image img {
     padding: 4px 22px;
@@ -2393,14 +2394,29 @@ p {
   gap: 8px;
 }
 .lightbox-stage .gallery-frame img {
-  padding: 16px 64px;
+  padding: 16px 64px 96px;
   transition: padding 240ms ease;
 }
 .work-lightbox.is-expanded .lightbox-stage .gallery-frame img {
   padding: 0;
 }
+.work-lightbox .lightbox-thumbnails {
+  position: absolute;
+  z-index: 3;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: max(clamp(48px, 7vw, 128px), env(safe-area-inset-left));
+  right: max(clamp(48px, 7vw, 128px), env(safe-area-inset-right));
+  transition: opacity 180ms ease;
+}
 .work-lightbox.is-expanded .lightbox-thumbnails {
-  display: none;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox-stage .gallery-frame {
+    transition-duration: 240ms;
+  }
 }
 .work-lightbox .viewer-arrow {
   opacity: 0;
@@ -2602,7 +2618,7 @@ p {
     gap: 18px;
   }
   .lightbox-stage .gallery-frame img {
-    padding: 4px 16px;
+    padding: 4px 16px 88px;
   }
   .seller-details-body dl > div {
     grid-template-columns: 1fr;
@@ -2635,18 +2651,6 @@ p {
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-.lightbox-image > .lightbox-poster {
-  object-fit: contain;
-  padding: 16px 64px;
-}
-.work-lightbox.is-expanded .lightbox-poster {
-  padding: 0;
-}
-@media (max-width: 800px) {
-  .lightbox-image > .lightbox-poster {
-    padding: 4px 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
