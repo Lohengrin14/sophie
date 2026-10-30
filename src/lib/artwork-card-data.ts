@@ -7,6 +7,15 @@ export function toCardItem(work: Artwork): CatalogItem {
     slug: String(work.slug),
     title: String(work.title),
     image: artworkImage(work),
+    images: [
+      ...new Set(
+        [work.image, ...(work.images || [])].flatMap((image) =>
+          image && typeof image === 'object' && image.url
+            ? [image.sizes?.card?.url || image.url]
+            : [],
+        ),
+      ),
+    ],
     width: Number(work.width),
     height: Number(work.height),
     priceMinor: Number(work.priceMinor),

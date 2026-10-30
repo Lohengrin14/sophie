@@ -1,9 +1,7 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { MosaicPreview } from './mosaic-preview'
 import type { CSSProperties } from 'react'
 import { mosaicLayout } from '@/lib/mosaic-layout'
-import { canvasSize } from '@/lib/canvas-size'
-import { text, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import type { CatalogItem } from '@/lib/catalog-item'
 
 export function MosaicGallery({ works, locale }: { works: CatalogItem[]; locale: Locale }) {
@@ -28,27 +26,13 @@ export function MosaicGallery({ works, locale }: { works: CatalogItem[]; locale:
           }),
         ) as CSSProperties
         return (
-          <Link
+          <MosaicPreview
             key={work.id}
-            id={`work-${work.id}`}
-            href={`/${locale}/works/${work.slug}`}
-            className="mosaic-work"
+            work={work}
+            locale={locale}
             style={style}
-            data-canvas-tier={work.displaySize ?? canvasSize(work.width, work.height).tier}
-            aria-label={text(locale, `Посмотреть картину «${work.title}»`, `View “${work.title}”`)}
-          >
-            <div className="mosaic-image">
-              {work.image && (
-                <Image
-                  src={work.image}
-                  alt={work.title}
-                  fill
-                  priority={index < 3}
-                  sizes="(max-width: 700px) 94vw, (max-width: 1100px) 62vw, 50vw"
-                />
-              )}
-            </div>
-          </Link>
+            priority={index < 3}
+          />
         )
       })}
     </div>

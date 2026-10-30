@@ -97,7 +97,10 @@ try {
   for (const locale of ['ru', 'en']) {
     const page = await fetch(`${base}/${locale}/works/${work.slug}`)
     assert.equal(page.status, 200)
-    assert.ok((await page.text()).includes('work-thumbnails'))
+    const detail = await page.text()
+    assert.ok(detail.includes('work-thumbnails'))
+    assert.ok(detail.includes('work-lightbox'))
+    assert.ok(detail.includes('viewer-arrow'))
     const home = await (await fetch(`${base}/${locale}`)).text()
     const main = home.match(/<main\b[\s\S]*?<\/main>/)?.[0]
     const card = main.match(new RegExp(`<a[^>]*id="work-${work.id}"[\\s\\S]*?</a>`))?.[0]

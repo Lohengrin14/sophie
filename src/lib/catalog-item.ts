@@ -3,6 +3,7 @@ export type CatalogItem = {
   id: string | number
   slug: string
   title: string
+  images?: string[]
   image: string
   width: number
   height: number
