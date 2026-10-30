@@ -120,7 +120,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
         </div>
         {error && (
           <p className="studio-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="studio-table-scroll" aria-busy={loading}>
@@ -376,7 +376,7 @@ function ImageEditor({
       </p>
       {error && (
         <p className="studio-error" role="alert">
-          {error}
+          {t(error)}
         </p>
       )}
     </SaveBox>
@@ -612,6 +612,7 @@ function NewGallery({
   const t = useAdminText()
 
   const [busy, setBusy] = useState(false)
+  const [dirty, setDirty] = useState(false)
   const [error, setError] = useState('')
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -675,7 +676,12 @@ function NewGallery({
           </p>
         </div>
       </div>
-      <form className="studio-card studio-create" onSubmit={submit}>
+      <form
+        className="studio-card studio-create studio-savebox"
+        data-dirty={dirty}
+        onChange={() => setDirty(true)}
+        onSubmit={submit}
+      >
         <fieldset disabled={busy}>
           <label>
             {t('Название')}
@@ -710,7 +716,7 @@ function NewGallery({
         </fieldset>
         {error && (
           <p className="studio-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
       </form>

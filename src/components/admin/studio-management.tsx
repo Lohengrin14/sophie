@@ -61,12 +61,16 @@ export function StaffPanel() {
           <p>{t('Учётные записи и доступ к разделам мастерской.')}</p>
         </div>
         {can(user, 'users', 'edit') && (
-          <button className="studio-button studio-back" onClick={() => setSelected('new')}>
+          <button
+            data-studio-navigation
+            className="studio-button"
+            onClick={() => setSelected('new')}
+          >
             {t('Добавить сотрудника')}
           </button>
         )}
       </div>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{t(error)}</p>}
       {selected ? (
         <>
           <button className="studio-back" onClick={() => setSelected(null)}>
@@ -252,12 +256,16 @@ export function QuotesPanel() {
           </p>
         </div>
         {can(user, 'quotes', 'edit') && (
-          <button className="studio-button studio-back" onClick={() => setSelected('new')}>
+          <button
+            data-studio-navigation
+            className="studio-button"
+            onClick={() => setSelected('new')}
+          >
             {t('Добавить расценку')}
           </button>
         )}
       </div>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{t(error)}</p>}
       {selected ? (
         <>
           <button className="studio-back" onClick={() => setSelected(null)}>

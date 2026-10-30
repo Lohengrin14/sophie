@@ -1,4 +1,8 @@
 export const adminEnglish: Record<string, string> = {
+  'Сессия закончилась. Войдите в мастерскую ещё раз.':
+    'Your session expired. Please sign in again.',
+  'Недостаточно прав. Обратитесь к администратору.':
+    'Insufficient permissions. Please contact an administrator.',
   Сохранено: 'Saved',
   'Сохраняем…': 'Saving…',
   'Есть несохранённые изменения': 'Unsaved changes',

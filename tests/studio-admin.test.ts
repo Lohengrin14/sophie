@@ -29,6 +29,12 @@ describe('artist-controlled presentation', () => {
       resolveBrand({ name: 'Имя из админки', alias: 'STUDIO', email: 'studio@example.com' }),
     ).toMatchObject({ name: 'Имя из админки', alias: 'STUDIO', email: 'studio@example.com' })
   })
+  it('keeps artwork titles intact when translating request details', () => {
+    expect(
+      requestSummary({ title: 'Пейзаж', priceMinor: 10000, currency: 'EUR' }, 'en')[0],
+    ).toEqual(['Gallery', 'Пейзаж'])
+    expect(requestSummary({ subject: 'landscape' }, 'en')).toContainEqual(['Subject', 'Landscape'])
+  })
   it('shows readable request details without exposing internal quote tokens', () => {
     const rows = requestSummary({
       subject: 'portrait',

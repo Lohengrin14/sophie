@@ -1,10 +1,13 @@
 'use client'
+import { useAdminLocale, useAdminText } from './studio-locale'
 import { useEffect, useState } from 'react'
 import { FieldDescription, FieldError, FieldLabel, useField } from '@payloadcms/ui'
 import type { NumberFieldClientComponent, DefaultCellComponentProps } from 'payload'
 import { formatPriceInput, parsePriceInput, validStoredPrice } from '@/lib/admin-helpers'
 
 export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }) => {
+  const t = useAdminText()
+  const locale = useAdminLocale()
   const { value, setValue, showError, disabled } = useField<number | null>({
     path,
     validate: validStoredPrice,
@@ -15,6 +18,7 @@ export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }
       parsePriceInput(current) === (value ?? null) ? current : formatPriceInput(value),
     )
   }, [value])
+  const placeholder = field.admin?.placeholder as string | Record<string, string> | undefined
   const inputID = `field-${path.replace(/\./g, '__')}`
   return (
     <div className={`field-type number ${showError ? 'error' : ''}`}>
@@ -29,7 +33,9 @@ export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }
           value={draft}
           disabled={Boolean(readOnly || disabled)}
           placeholder={
-            typeof field.admin?.placeholder === 'string' ? field.admin.placeholder : 'Например: 650'
+            typeof placeholder === 'string'
+              ? t(placeholder)
+              : placeholder?.[locale] || t('Например: 650')
           }
           aria-invalid={showError}
           aria-describedby={`field-description-${path.replace(/\./g, '__')}`}
@@ -44,10 +50,11 @@ export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }
   )
 }
 export function MoneyCell({ cellData, rowData }: DefaultCellComponentProps) {
+  const locale = useAdminLocale()
   const currency = typeof rowData?.currency === 'string' ? rowData.currency : 'EUR'
   return typeof cellData === 'number' ? (
     <span>
-      {new Intl.NumberFormat('ru-RU', {
+      {new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'ru-RU', {
         style: 'currency',
         currency,
         maximumFractionDigits: 2,

@@ -15,6 +15,8 @@ export function mosaicLayout(
   columns: MosaicColumns,
 ): MosaicTile[] {
   const occupied: number[] = []
+  let cursorRow = 0
+  let cursorColumn = -1
   const maximumEdge = columns === 24 ? 12 : columns === 16 ? 10 : 12
   return works.map((work) => {
     const size = boardSize(work.displaySize)
@@ -25,8 +27,12 @@ export function mosaicLayout(
     const tileColumns = Math.max(1, Math.round((edge * width) / longest))
     const tileRows = Math.max(1, Math.round((edge * height) / longest))
 
-    for (let row = 0; ; row++) {
-      for (let column = 0; column <= columns - tileColumns; column++) {
+    for (let row = cursorRow; ; row++) {
+      for (
+        let column = row === cursorRow ? cursorColumn + 1 : 0;
+        column <= columns - tileColumns;
+        column++
+      ) {
         const mask = ((1 << tileColumns) - 1) << column
         let fits = true
         for (let offset = 0; offset < tileRows; offset++) {
@@ -38,6 +44,8 @@ export function mosaicLayout(
         if (!fits) continue
         for (let offset = 0; offset < tileRows; offset++)
           occupied[row + offset] = (occupied[row + offset] ?? 0) | mask
+        cursorRow = row
+        cursorColumn = column
         return { column: column + 1, row: row + 1, columns: tileColumns, rows: tileRows }
       }
     }

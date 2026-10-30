@@ -114,6 +114,9 @@ export function RequestsPanel() {
       controller.abort()
     }
   }, [query, status, page, revision, archive, sort])
+  const canFilter = () =>
+    !document.querySelector('.studio-savebox[data-dirty="true"]') ||
+    window.confirm(t('Есть несохранённые изменения. Уйти без сохранения?'))
   function saved(request: StudioRequest) {
     setSelected((previous) => (previous?.id === request.id ? request : previous))
     setData((previous) =>
@@ -134,7 +137,7 @@ export function RequestsPanel() {
     const references = (selected.references || []).filter((value): value is Reference =>
       Boolean(value && typeof value === 'object'),
     )
-    const rows = requestSummary(details)
+    const rows = requestSummary(details, locale)
     const link =
       typeof details.referenceLink === 'string' && /^https?:\/\//.test(details.referenceLink)
         ? details.referenceLink
@@ -194,7 +197,7 @@ export function RequestsPanel() {
                   {rows.map(([label, value]) => (
                     <div key={t(label)}>
                       <dt>{t(label)}</dt>
-                      <dd>{t(value)}</dd>
+                      <dd>{value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -319,6 +322,7 @@ export function RequestsPanel() {
               placeholder={t('Номер, имя или контакт')}
               value={query}
               onChange={(event) => {
+                if (!canFilter()) return
                 setQuery(event.target.value)
                 setPage(1)
               }}
@@ -329,6 +333,7 @@ export function RequestsPanel() {
             <select
               value={status}
               onChange={(event) => {
+                if (!canFilter()) return
                 setStatus(event.target.value)
                 setPage(1)
               }}
@@ -344,7 +349,7 @@ export function RequestsPanel() {
         </div>
         {error && (
           <p className="studio-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="studio-table-scroll" aria-busy={loading}>
@@ -411,7 +416,11 @@ export function RequestsPanel() {
               {data?.docs.map((request) => (
                 <tr key={request.id}>
                   <td>
-                    <button className="studio-title-button" onClick={() => setSelected(request)}>
+                    <button
+                      data-studio-navigation
+                      className="studio-title-button"
+                      onClick={() => setSelected(request)}
+                    >
                       {request.reference}
                     </button>
                   </td>

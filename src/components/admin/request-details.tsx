@@ -1,53 +1,16 @@
 'use client'
 import { FieldLabel, useField } from '@payloadcms/ui'
 import type { JSONFieldClientComponent } from 'payload'
-const words: Record<string, string> = {
-  portrait: 'Портрет',
-  landscape: 'Пейзаж',
-  'still-life': 'Натюрморт',
-  other: 'Другая идея',
-  oil: 'Масло, холст',
-  acrylic: 'Акрил, холст',
-  unsure: 'Нужна помощь с выбором',
-  custom: 'Свой размер',
-}
-const price = (amount: unknown, currency: unknown) =>
-  typeof amount === 'number' && typeof currency === 'string'
-    ? new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 2,
-      }).format(amount / 100)
-    : '—'
-
+import { requestSummary } from '@/lib/studio-admin'
+import { useAdminLocale, useAdminText } from './studio-locale'
 export const RequestDetails: JSONFieldClientComponent = ({ path, field }) => {
+  const t = useAdminText()
+  const locale = useAdminLocale()
   const { value } = useField<Record<string, unknown> | null>({ path })
   const data = value || {}
   const quote =
     data.quote && typeof data.quote === 'object' ? (data.quote as Record<string, unknown>) : null
-  const rows: [string, string][] = []
-  if (data.title)
-    rows.push(
-      ['Картина', String(data.title)],
-      ['Цена на момент заявки', price(data.priceMinor, data.currency)],
-    )
-  if (data.subject) rows.push(['Сюжет', words[String(data.subject)] || String(data.subject)])
-  if (data.medium) rows.push(['Техника', words[String(data.medium)] || String(data.medium)])
-  if (data.size)
-    rows.push([
-      'Размер',
-      data.size === 'custom'
-        ? `${data.customWidth} × ${data.customHeight} см`
-        : words[String(data.size)] || `${String(data.size).replace('x', ' × ')} см`,
-    ])
-  if ('quote' in data)
-    rows.push([
-      'Предварительная цена',
-      quote
-        ? `${price(quote.minPrice, quote.currency)} — ${price(quote.maxPrice, quote.currency)}`
-        : 'Нужно уточнить лично',
-    ])
-  if (quote) rows.push(['Готовность', `${quote.minDays}–${quote.maxDays} дней, включая просушку`])
+  const rows = requestSummary(data, locale)
   return (
     <div className="field-type">
       <FieldLabel label={field.label} path={path} />
@@ -71,18 +34,18 @@ export const RequestDetails: JSONFieldClientComponent = ({ path, field }) => {
             ))}
           </dl>
         ) : (
-          <p style={{ margin: 0 }}>Это общий вопрос. Текст и контакт находятся выше.</p>
+          <p style={{ margin: 0 }}>{t('Это общий вопрос. Текст и контакт находятся выше.')}</p>
         )}
         {typeof data.referenceLink === 'string' && /^https?:\/\//.test(data.referenceLink) && (
           <p>
             <a href={data.referenceLink} target="_blank" rel="noreferrer">
-              Открыть ссылку на референс ↗
+              {t('Открыть ссылку на референс ↗')}
             </a>
           </p>
         )}
         {quote?.demo === true && (
           <p style={{ color: 'var(--theme-elevation-600)', fontSize: 12 }}>
-            В заявке использованы демонстрационные расценки.
+            {t('В заявке использованы демонстрационные расценки.')}
           </p>
         )}
       </div>

@@ -7,7 +7,9 @@ import {
   type Access,
   type NumberField,
   ValidationError,
+  APIError,
 } from 'payload'
+import { localizeAdminMetadata } from './lib/admin-metadata'
 import { galleryImageIDs, requestStatuses } from './lib/studio-admin'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { en } from '@payloadcms/translations/languages/en'
@@ -56,8 +58,18 @@ const Users: CollectionConfig = {
   access: {
     create: sectionAccess('users', 'edit'),
     read: sectionAccess('users'),
-    update: sectionAccess('users', 'edit'),
-    delete: ({ req }) => isAdmin(req.user),
+    update: ({ req }) =>
+      isAdmin(req.user)
+        ? true
+        : can(req.user, 'users', 'edit')
+          ? { role: { equals: 'staff' } }
+          : false,
+    delete: ({ req }) =>
+      isAdmin(req.user)
+        ? true
+        : can(req.user, 'users', 'edit')
+          ? { role: { equals: 'staff' } }
+          : false,
   },
   hooks: {
     beforeChange: [
@@ -71,9 +83,23 @@ const Users: CollectionConfig = {
         }
         if (operation === 'create' && !data.role) data.role = 'staff'
         if (!isAdmin(req.user)) {
-          if (isAdmin(originalDoc) || data.role === 'admin' || data.permissions !== undefined)
-            throw new Error(
+          const changedPermissions =
+            data.permissions !== undefined &&
+            sections.some((section) =>
+              (['read', 'edit'] as const).some(
+                (action) =>
+                  Boolean(data.permissions?.[section]?.[action]) !==
+                  Boolean(originalDoc?.permissions?.[section]?.[action]),
+              ),
+            )
+          if (
+            (operation === 'update' && isAdmin(originalDoc)) ||
+            data.role === 'admin' ||
+            changedPermissions
+          )
+            throw new APIError(
               'Только администратор может назначать доступы или менять администратора.',
+              403,
             )
           data.role = originalDoc?.role || 'staff'
         }
@@ -83,13 +109,14 @@ const Users: CollectionConfig = {
           data.role !== 'admin' &&
           isAdmin(originalDoc)
         )
-          throw new Error('Нельзя снять права администратора у себя.')
+          throw new APIError('Нельзя снять права администратора у себя.', 400)
         return data
       },
     ],
     beforeDelete: [
       ({ id, req }) => {
-        if (String(id) === String(req.user?.id)) throw new Error('Нельзя удалить свой аккаунт.')
+        if (String(id) === String(req.user?.id))
+          throw new APIError('Нельзя удалить свой аккаунт.', 400)
       },
     ],
   },
@@ -496,6 +523,29 @@ const QuoteRules: CollectionConfig = {
     update: sectionAccess('quotes', 'edit'),
     delete: sectionAccess('quotes', 'edit'),
   },
+  hooks: {
+    beforeValidate: [
+      ({ data, originalDoc }) => {
+        if (!data) return data
+        const value = { ...originalDoc, ...data }
+        const errors: { path: string; message: string }[] = []
+        if (
+          typeof value.minPrice === 'number' &&
+          typeof value.maxPrice === 'number' &&
+          value.maxPrice < value.minPrice
+        )
+          errors.push({ path: 'maxPrice', message: 'Цена «до» не может быть меньше цены «от».' })
+        if (
+          typeof value.minDays === 'number' &&
+          typeof value.maxDays === 'number' &&
+          value.maxDays < value.minDays
+        )
+          errors.push({ path: 'maxDays', message: 'Срок «до» не может быть меньше срока «от».' })
+        if (errors.length) throw new ValidationError({ errors })
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'label',
@@ -854,8 +904,10 @@ export default buildConfig({
     },
   },
   i18n: { supportedLanguages: { ru, en }, fallbackLanguage: 'ru' },
-  collections: [Users, Media, Artworks, QuoteRules, Requests, References],
-  globals: [Studio],
+  collections: [Users, Media, Artworks, QuoteRules, Requests, References].map((collection) =>
+    localizeAdminMetadata(collection),
+  ),
+  globals: [localizeAdminMetadata(Studio)],
   localization: {
     locales: [
       { label: 'Русский', code: 'ru' },
