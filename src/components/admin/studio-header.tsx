@@ -27,7 +27,7 @@ export function StudioHeader() {
   const tabs = [
     ['artist', t('Художник'), '/admin?tab=artist'],
     ['users', t('Сотрудники'), '/admin?tab=users'],
-    ['gallery', t('Галерея'), '/admin'],
+    ['gallery', t('Галерея'), '/admin?tab=gallery'],
     ['quotes', t('Цены и сроки'), '/admin?tab=quotes'],
     ['requests', t('Заявки'), '/admin?tab=requests'],
   ]
