@@ -7,6 +7,11 @@ for (const [locale, theme, background] of [
   ['ru', 'mist', '#f5f7f9'],
   ['en', 'sage', '#f3f5f0'],
   ['ru', 'graphite', '#1b1d1f'],
+  ['ru', 'cream', '#f5f1e3'],
+  ['en', 'mineral', '#dcdcd7'],
+  ['ru', 'blush', '#eee3e1'],
+  ['en', 'olive', '#20251e'],
+  ['ru', 'ink', '#1a2130'],
   ['en', 'invalid', '#1b1d1f'],
 ]) {
   const response = await fetch(`http://127.0.0.1:3000/${locale}`, {

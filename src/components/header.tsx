@@ -38,19 +38,6 @@ export function Header({
         >
           <span>
             <span className="artist-name">{brand.alias || brand.name || 'Artist'}</span>
-            <svg
-              className="artist-mark"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <path d="M12 2v20M2 12h20M5 5l14 14M5 19 19 5" />
-            </svg>
           </span>
         </Link>
         <nav
@@ -71,11 +58,6 @@ export function Header({
                 aria-current={active ? 'page' : undefined}
               >
                 <span className="nav-label">{label}</span>
-                {path === 'contact' && (
-                  <span className="nav-outbound" aria-hidden="true">
-                    ↗
-                  </span>
-                )}
               </Link>
             )
           })}
@@ -89,9 +71,6 @@ export function Header({
             aria-label={other === 'en' ? 'Switch to English' : 'Переключить на русский'}
           >
             <span>{other.toUpperCase()}</span>
-            <span className="language-arrow" aria-hidden="true">
-              ↗
-            </span>
           </Link>
           <button
             className="menu-button"

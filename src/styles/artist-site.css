@@ -1,4 +1,19 @@
-/* A small personal masthead, rather than a studio navigation bar. */
+/* Editorial grid and straight grotesk, inspired by the supplied portfolio references. */
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest/Onest-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --sans: 'Onest', Arial, sans-serif;
+  --serif: 'Onest', Arial, sans-serif;
+}
+body {
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
 .site-header {
   --nav-accent: var(--accent);
   border-bottom: 0;
@@ -8,8 +23,8 @@
 }
 .header-inner.container {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 1.3fr) auto;
+  gap: 40px;
 }
 .site-header .wordmark {
   display: inline-flex;
@@ -18,63 +33,67 @@
   overflow-wrap: normal;
 }
 .site-header .wordmark > span {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 27px;
-  letter-spacing: -0.06em;
-}
-.artist-mark {
-  display: inline-block;
-  flex-shrink: 0;
+  display: flex;
+  min-width: 0;
   font-family: var(--sans);
-  font-size: 19px;
   font-style: normal;
-  color: var(--nav-accent);
-  transform: translateY(-5px) rotate(-12deg);
+  font-weight: 550;
+  font-size: 25px;
+  letter-spacing: -0.065em;
+  line-height: 1;
+}
+.site-header .artist-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .site-header .main-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, 20px);
   margin: 0;
-  gap: 20px;
+  gap: 0 32px;
 }
 .site-header .main-nav a {
-  gap: 5px;
-  padding: 8px 0;
+  position: relative;
+  justify-content: flex-start;
+  width: fit-content;
+  padding: 0;
   border-radius: 0;
-  font-size: 13px;
-  letter-spacing: -0.025em;
+  font-size: 10px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 .site-header .main-nav a:hover,
 .site-header .main-nav a.active {
   background: transparent;
   color: var(--nav-accent);
 }
-.site-header .main-nav a.active .nav-label::before {
+.site-header .main-nav a.active::before {
   content: '';
-  display: inline-block;
+  position: absolute;
+  left: -9px;
+  top: 8px;
   width: 4px;
   height: 4px;
-  margin: 0 6px 3px 0;
   border-radius: 50%;
   background: currentColor;
 }
-.nav-outbound {
-  font-size: 16px;
-}
 .site-header .header-actions {
   justify-self: end;
-  gap: 12px;
+  gap: 14px;
 }
 .site-header .language {
-  gap: 4px;
-  font-size: 10px;
-  color: var(--muted);
-}
-.language-arrow {
-  font-size: 13px;
+  justify-content: center;
+  min-width: 32px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink);
 }
 .site-header .theme-trigger {
   color: var(--muted);
@@ -85,31 +104,59 @@
 .page-main > h1,
 .artist-page h1,
 .commission-intro h1 {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.055em;
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 450;
+  font-size: clamp(36px, 5.5vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.065em;
 }
-.contact-page .contact-links a {
-  font-size: clamp(20px, 3vw, 36px);
-  font-weight: 400;
-  letter-spacing: -0.035em;
+.artist-page .about-layout {
+  align-items: start;
+}
+.artist-page .about-text {
+  max-width: 40ch;
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.5;
+  letter-spacing: -0.025em;
 }
 .contact-page .contact-links {
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 48px;
+}
+.contact-page .contact-links a {
+  font-size: clamp(22px, 3.2vw, 40px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
 }
 .faq-section h2 {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 450;
+  letter-spacing: -0.045em;
+}
+.form-title {
+  font-weight: 450;
+  letter-spacing: -0.04em;
+}
+.site-footer {
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.theme-panel {
+  width: min(620px, calc(100vw - 48px));
+}
+.theme-panel [role='radiogroup'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 @media (max-width: 1000px) and (min-width: 801px) {
   .header-inner.container {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    gap: 18px;
-  }
-  .site-header .main-nav {
-    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 1.4fr) auto;
+    gap: 24px;
   }
 }
 @media (max-width: 800px) {
@@ -118,32 +165,45 @@
     gap: 10px;
   }
   .site-header .wordmark > span {
-    font-size: 24px;
+    font-size: 23px;
   }
   .site-header .header-actions {
     gap: 6px;
   }
   .site-header .main-nav {
-    gap: 0;
-    padding: 12px 20px 20px;
+    display: none;
+    padding: 20px 24px 24px;
     border-bottom: 1px solid var(--line);
   }
-  .site-header .main-nav a {
-    min-height: 48px;
-    font-size: 24px;
-    font-family: var(--serif);
-    font-style: italic;
+  .site-header .main-nav.is-open {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 44px);
+    gap: 0 24px;
   }
-  .site-header .main-nav a.active .nav-label::before {
-    width: 5px;
-    height: 5px;
-    margin-right: 9px;
+  .site-header .main-nav a {
+    min-height: 44px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .site-header .main-nav a.active::before {
+    top: 20px;
+  }
+  .theme-panel {
+    width: min(340px, calc(100vw - 24px));
+  }
+  .theme-panel [role='radiogroup'] {
+    grid-template-columns: 1fr;
   }
 }
 
-.site-header .artist-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.mosaic-main {
+  --mosaic-side: clamp(24px, 3vw, 56px);
+  padding-top: clamp(24px, 3vw, 44px);
+}
+@media (max-width: 700px) {
+  .mosaic-main {
+    --mosaic-side: 16px;
+    padding-top: 16px;
+  }
 }
