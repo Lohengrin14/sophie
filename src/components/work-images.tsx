@@ -8,7 +8,7 @@ import {
   type MouseEvent,
 } from 'react'
 import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Expand, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import { GalleryFrames } from './gallery-frames'
 import { galleryIndex } from '@/lib/gallery-view'
@@ -75,7 +75,7 @@ export function WorkImages({
       else if (left + active.offsetWidth > strip.scrollLeft + strip.clientWidth)
         strip.scrollTo({ left: left + active.offsetWidth - strip.clientWidth, behavior: 'instant' })
     }
-  }, [selected])
+  }, [selected, open, expanded])
 
   function touchStart(event: TouchEvent) {
     if (event.touches.length === 1)
@@ -179,35 +179,8 @@ export function WorkImages({
             sizes="(max-width: 800px) 96vw, 70vw"
             warm
           />
-          <span className="zoom-label">
-            <Expand size={16} />
-            {text(locale, 'Рассмотреть ближе', 'A closer look')}
-          </span>
         </button>
-        {arrows()}
       </div>
-      {images.length > 1 && (
-        <div
-          className="work-thumbnails"
-          ref={thumbnailStrip}
-          aria-label={text(locale, 'Изображения галереи', 'Gallery images')}
-        >
-          {images.map((image, index) => (
-            <button
-              key={image.id}
-              type="button"
-              aria-pressed={index === selected}
-              aria-label={text(locale, `Изображение ${index + 1}`, `Image ${index + 1}`)}
-              onClick={() => setSelected(index)}
-            >
-              <Image src={image.url} alt="" fill sizes="80px" />
-            </button>
-          ))}
-        </div>
-      )}
-      <span className="viewer-position" role="status" aria-live="polite">
-        {selected + 1} / {images.length}
-      </span>
       <dialog
         ref={dialog}
         className={`work-lightbox ${expanded ? 'is-expanded' : ''} ${closing ? 'is-closing' : ''}`}
@@ -271,7 +244,7 @@ export function WorkImages({
               {arrows()}
             </div>
             {images.length > 1 && (
-              <div className="work-thumbnails lightbox-thumbnails">
+              <div className="work-thumbnails lightbox-thumbnails" ref={thumbnailStrip}>
                 {images.map((image, index) => (
                   <button
                     key={image.id}
