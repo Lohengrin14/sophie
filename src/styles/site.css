@@ -2053,14 +2053,14 @@ p {
 
 /* The photograph, thumbnails and artwork details share the first viewport. */
 .work-page {
-  width: min(1760px, calc(100% - 48px));
+  width: min(1520px, calc(100% - clamp(48px, 10vw, 192px)));
   padding-top: 22px;
 }
 .work-page > .back-link {
   margin-bottom: 16px;
 }
 .work-page .work-detail {
-  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.75fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.85fr);
   gap: clamp(24px, 4vw, 64px);
   align-items: center;
   min-height: calc(100svh - 172px);
@@ -2074,7 +2074,7 @@ p {
 }
 .work-stage {
   position: relative;
-  height: clamp(280px, calc(100svh - 270px), 850px);
+  height: clamp(280px, calc(100svh - 350px), 680px);
   touch-action: pan-y pinch-zoom;
 }
 .work-open-image {
@@ -2141,6 +2141,22 @@ p {
   height: 64px;
   border-radius: 8px;
   overflow: hidden;
+}
+.work-viewer .work-preview-thumbnails {
+  gap: 12px;
+  margin-top: 18px;
+}
+.work-viewer .work-preview-thumbnails button {
+  flex-basis: 72px;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: transparent;
+}
+.work-preview-thumbnails img {
+  object-fit: contain;
+  padding: 4px;
 }
 .viewer-position {
   display: block;
@@ -2398,9 +2414,9 @@ p {
 }
 .work-lightbox {
   background: #111315;
-  padding: 16px clamp(36px, 5vw, 96px);
-  padding-right: max(clamp(36px, 5vw, 96px), env(safe-area-inset-right));
-  padding-left: max(clamp(36px, 5vw, 96px), env(safe-area-inset-left));
+  padding: 16px clamp(48px, 7vw, 128px);
+  padding-right: max(clamp(48px, 7vw, 128px), env(safe-area-inset-right));
+  padding-left: max(clamp(48px, 7vw, 128px), env(safe-area-inset-left));
 }
 .lightbox-toolbar {
   color: #ccd0d5;

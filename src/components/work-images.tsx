@@ -181,6 +181,32 @@ export function WorkImages({
           />
         </button>
       </div>
+      {images.length > 1 && (
+        <div
+          className="work-thumbnails work-preview-thumbnails"
+          aria-label={text(locale, 'Другие фотографии картины', 'More artwork photos')}
+        >
+          {images.map((image, index) => (
+            <button
+              key={image.id}
+              type="button"
+              aria-label={text(
+                locale,
+                `Открыть фотографию ${index + 1}`,
+                `Open photo ${index + 1}`,
+              )}
+              aria-haspopup="dialog"
+              onClick={() => {
+                setSelected(index)
+                setExpanded(false)
+                setOpen(true)
+              }}
+            >
+              <Image src={image.url} alt="" fill sizes="72px" />
+            </button>
+          ))}
+        </div>
+      )}
       <dialog
         ref={dialog}
         className={`work-lightbox ${expanded ? 'is-expanded' : ''} ${closing ? 'is-closing' : ''}`}
