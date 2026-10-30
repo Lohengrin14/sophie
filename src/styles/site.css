@@ -2323,6 +2323,7 @@ p {
 .mosaic-visual .gallery-frame img {
   transform: none;
   transition: none;
+  filter: drop-shadow(0 2px 3px #15151c1a) drop-shadow(0 9px 16px #15151c1c);
 }
 .mosaic-visual .mosaic-preview-count {
   opacity: 0;

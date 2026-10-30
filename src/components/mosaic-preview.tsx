@@ -74,8 +74,8 @@ export function MosaicPreview({
     let interval: ReturnType<typeof setInterval> | undefined
     const timer = setTimeout(() => {
       setCurrent((index) => (index + 1) % images.length)
-      interval = setInterval(() => setCurrent((index) => (index + 1) % images.length), 2600)
-    }, 1300)
+      interval = setInterval(() => setCurrent((index) => (index + 1) % images.length), 2000)
+    }, 1000)
     return () => {
       clearTimeout(timer)
       if (interval) clearInterval(interval)
