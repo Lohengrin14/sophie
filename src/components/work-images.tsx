@@ -166,7 +166,7 @@ export function WorkImages({
           aria-label={text(locale, 'Открыть изображение крупнее', 'Open full-size image')}
           onClick={() => {
             if (Date.now() > suppressClickUntil.current) {
-              setExpanded(false)
+              setExpanded(true)
               setOpen(true)
             }
           }}
@@ -198,7 +198,7 @@ export function WorkImages({
               aria-haspopup="dialog"
               onClick={() => {
                 setSelected(index)
-                setExpanded(false)
+                setExpanded(true)
                 setOpen(true)
               }}
             >
