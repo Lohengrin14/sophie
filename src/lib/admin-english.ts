@@ -83,6 +83,10 @@ export const adminEnglish: Record<string, string> = {
   Описание: 'Description',
   'Текст для этой языковой версии. Можно оставить пустым.': 'Text for this language. Optional.',
   'Описание картины': 'Artwork description',
+  'Текст появится на странице картины. Для русского и английского языков он заполняется отдельно.':
+    'Shown on the artwork page. Enter the Russian and English descriptions separately.',
+  'Например: Вечерний свет на воде. Работа написана с натуры на берегу моря.':
+    'For example: Evening light on the water. Painted from life by the sea.',
   'Несколько слов о работе, материалах и настроении':
     'A few words about the artwork, materials and mood',
   'Реальный размер': 'Physical dimensions',

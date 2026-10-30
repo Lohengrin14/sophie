@@ -475,7 +475,9 @@ function GalleryEditor({
           </SaveBox>
           <SaveBox
             title={t('Описание')}
-            help={t('Текст для этой языковой версии. Можно оставить пустым.')}
+            help={t(
+              'Текст появится на странице картины. Для русского и английского языков он заполняется отдельно.',
+            )}
             onSave={async (data) => patch({ description: String(data.get('description') || '') })}
           >
             <label>
@@ -484,7 +486,9 @@ function GalleryEditor({
                 name="description"
                 rows={5}
                 defaultValue={work.description || ''}
-                placeholder={t('Несколько слов о работе, материалах и настроении')}
+                placeholder={t(
+                  'Например: Вечерний свет на воде. Работа написана с натуры на берегу моря.',
+                )}
               />
             </label>
           </SaveBox>
@@ -639,7 +643,7 @@ function NewGallery({
         `/api/artworks?${contentQuery(locale)}`,
         jsonRequest('POST', {
           title: String(data.get('title')).trim(),
-          description: '',
+          description: String(data.get('description') || '').trim(),
           image: images[0],
           images,
           width: Number(data.get('width')),
@@ -687,6 +691,21 @@ function NewGallery({
             {t('Название')}
             <input name="title" required placeholder={t('Например: Утро у моря')} />
           </label>
+          <label>
+            {t('Описание картины')}
+            <textarea
+              name="description"
+              rows={5}
+              placeholder={t(
+                'Например: Вечерний свет на воде. Работа написана с натуры на берегу моря.',
+              )}
+            />
+          </label>
+          <p className="studio-hint">
+            {t(
+              'Текст появится на странице картины. Для русского и английского языков он заполняется отдельно.',
+            )}
+          </p>
           <label>
             {t('Изображения · от 1 до 10')}
             <input

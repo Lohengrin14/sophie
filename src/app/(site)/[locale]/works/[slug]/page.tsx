@@ -60,6 +60,7 @@ export default async function Work({
             <i />
             {availabilityLabel(String(work.availability), locale)}
           </span>
+          {work.description?.trim() && <p className="work-story">{work.description.trim()}</p>}
           <dl className="work-specs">
             <div>
               <dt>{text(locale, 'Материал', 'Medium')}</dt>
