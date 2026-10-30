@@ -2280,3 +2280,10 @@ p {
     animation: none;
   }
 }
+@media (pointer: coarse) {
+  .mosaic-work {
+    -webkit-touch-callout: none;
+    user-select: none;
+    touch-action: pan-y pinch-zoom;
+  }
+}
