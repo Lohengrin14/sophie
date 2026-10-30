@@ -3,9 +3,9 @@ import { SellerDetails } from './seller-details'
 import { ArrowUpRight } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import type { Brand } from '@/lib/brand'
-export function ContactLinks({ brand }: { brand: Brand }) {
+export function ContactLinks({ brand, className = '' }: { brand: Brand; className?: string }) {
   return (
-    <div className="contact-links">
+    <div className={`contact-links ${className}`.trim()}>
       {brand.instagram && (
         <a href={brand.instagram} target="_blank" rel="noreferrer">
           Instagram <ArrowUpRight size={15} />

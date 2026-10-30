@@ -191,7 +191,7 @@ export function RequestForm({ locale, brand, kind, artworkId, commissionsOpen = 
             'Commissions are currently closed. Explore available works or ask a question.',
           )}
         </p>
-        <Link className="text-link" href={`/${locale}/contact`}>
+        <Link className="text-link" href={`/${locale}/about#contacts`}>
           {text(locale, 'Задать вопрос', 'Ask a question')} <ArrowUpRight size={16} />
         </Link>
       </div>

@@ -11,6 +11,15 @@ export default async function About({ params }: { params: Promise<{ locale: stri
   const photo = studio.photo && typeof studio.photo === 'object' ? studio.photo : null
   return (
     <main id="main" className="container page-main artist-page">
+      <div className="artist-info">
+        <h1>{studio.brand.name || studio.brand.alias || text(locale, 'Художник', 'Artist')}</h1>
+        <div id="contacts">
+          <ContactLinks brand={studio.brand} className="artist-contacts" />
+        </div>
+        {studio.brand.name && studio.brand.alias && studio.brand.name !== studio.brand.alias && (
+          <p className="artist-alias">{studio.brand.alias}</p>
+        )}
+      </div>
       <div className={`about-layout ${photo?.url ? '' : 'without-photo'}`}>
         {photo?.url && (
           <div className="about-image">
@@ -23,14 +32,7 @@ export default async function About({ params }: { params: Promise<{ locale: stri
             />
           </div>
         )}
-        <div>
-          <h1>{studio.brand.name || studio.brand.alias || text(locale, 'Художник', 'Artist')}</h1>
-          {studio.brand.name && studio.brand.alias && studio.brand.name !== studio.brand.alias && (
-            <p className="artist-alias">{studio.brand.alias}</p>
-          )}
-          {studio.about && <p className="about-text">{studio.about}</p>}
-          <ContactLinks brand={studio.brand} />
-        </div>
+        {studio.about && <p className="about-text">{studio.about}</p>}
       </div>
     </main>
   )

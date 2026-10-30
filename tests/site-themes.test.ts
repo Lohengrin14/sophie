@@ -16,12 +16,16 @@ function contrast(a: string, b: string) {
   return (values[0] + 0.05) / (values[1] + 0.05)
 }
 describe('public site palettes', () => {
-  it('offers ten distinct preferences and safely handles invalid cookies', () => {
-    expect(new Set(siteThemes.map((theme) => theme.id)).size).toBe(10)
+  it('offers four seasonal preferences and safely handles invalid cookies', () => {
+    expect(new Set(siteThemes.map((theme) => theme.id)).size).toBe(4)
     for (const value of [undefined, null, '', '__proto__', '<script>', 'unknown']) {
-      expect(resolveTheme(value).id).toBe('graphite')
+      expect(resolveTheme(value).id).toBe('winter')
     }
     for (const theme of siteThemes) expect(resolveTheme(theme.id)).toBe(theme)
+    expect(resolveTheme('graphite').id).toBe('winter')
+    expect(resolveTheme('paper').id).toBe('autumn')
+    expect(resolveTheme('cream').id).toBe('summer')
+    expect(resolveTheme('sage').id).toBe('spring')
   })
   for (const theme of siteThemes)
     it(`${theme.id}: keeps text readable on its surfaces`, () => {

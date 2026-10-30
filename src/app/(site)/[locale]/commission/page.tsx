@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getStudio } from '@/lib/data'
 import { isLocale, text } from '@/lib/i18n'
+import { ContactLinks } from '@/components/footer'
 import { RequestForm } from '@/components/request-form'
 export const metadata = { title: 'Картина на заказ / Commissions' }
 export default async function Commission({ params }: { params: Promise<{ locale: string }> }) {
@@ -15,6 +16,14 @@ export default async function Commission({ params }: { params: Promise<{ locale:
           <p className="muted">
             {text(locale, 'Начнём с сюжета и размера.', 'Start with a subject and size.')}
           </p>
+          {(studio.brand.instagram || studio.brand.telegram || studio.brand.email) && (
+            <div className="commission-direct">
+              <p className="muted">
+                {text(locale, 'Или напишите напрямую', 'Or message me directly')}
+              </p>
+              <ContactLinks brand={studio.brand} className="artist-contacts" />
+            </div>
+          )}
         </div>
         <div className="form-shell">
           <RequestForm
