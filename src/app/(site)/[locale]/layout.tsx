@@ -28,8 +28,8 @@ export async function generateMetadata({
     title: { default: name, template: `%s · ${name}` },
     description: text(
       locale,
-      'Оригинальные картины и живопись на заказ. Найдите свою картину.',
-      'Original paintings and personal commissions. Find your painting.',
+      'Картины, работы на заказ и контакты художника.',
+      'Paintings, commissions and artist contact details.',
     ),
     robots: { index: false, follow: false },
   }

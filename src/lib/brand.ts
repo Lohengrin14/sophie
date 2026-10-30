@@ -26,6 +26,18 @@ export function resolveBrand(studio: Record<string, unknown> = {}) {
     ]),
     email:
       typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : undefined,
+    purchaseChannel: typeof studio.purchaseChannel === 'string' ? studio.purchaseChannel : 'auto',
+    seller: {
+      name: configured(studio.sellerName, undefined),
+      country: configured(studio.sellerCountry, undefined),
+      status: configured(studio.sellerStatus, undefined),
+      taxId: configured(studio.sellerTaxId, undefined),
+      registration: configured(studio.sellerRegistration, undefined),
+      address: configured(studio.sellerAddress, undefined),
+      email: configured(studio.sellerEmail, undefined),
+      phone: configured(studio.sellerPhone, undefined),
+      terms: configured(studio.sellerTerms, undefined),
+    },
     demo: process.env.NEXT_PUBLIC_DEMO_MODE !== 'false',
   }
 }

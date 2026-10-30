@@ -742,6 +742,19 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Studio {
   id: number;
+  /**
+   * Provide the selected contact. If unavailable, another configured contact is used.
+   */
+  purchaseChannel?: ('auto' | 'telegram' | 'instagram' | 'email') | null;
+  sellerName?: string | null;
+  sellerCountry?: string | null;
+  sellerStatus?: ('individual' | 'self-employed' | 'entrepreneur' | 'company' | 'other') | null;
+  sellerTaxId?: string | null;
+  sellerRegistration?: string | null;
+  sellerAddress?: string | null;
+  sellerEmail?: string | null;
+  sellerPhone?: string | null;
+  sellerTerms?: string | null;
   photo?: (number | null) | Media;
   /**
    * Public name on the artist page and footer. Replace the example with your name.
@@ -779,6 +792,16 @@ export interface Studio {
  * via the `definition` "studio_select".
  */
 export interface StudioSelect<T extends boolean = true> {
+  purchaseChannel?: T;
+  sellerName?: T;
+  sellerCountry?: T;
+  sellerStatus?: T;
+  sellerTaxId?: T;
+  sellerRegistration?: T;
+  sellerAddress?: T;
+  sellerEmail?: T;
+  sellerPhone?: T;
+  sellerTerms?: T;
   photo?: T;
   name?: T;
   alias?: T;

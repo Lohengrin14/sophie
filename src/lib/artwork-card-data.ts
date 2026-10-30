@@ -11,7 +11,7 @@ export function toCardItem(work: Artwork): CatalogItem {
       ...new Set(
         [work.image, ...(work.images || [])].flatMap((image) =>
           image && typeof image === 'object' && image.url
-            ? [image.sizes?.card?.url || image.url]
+            ? [image.url]
             : [],
         ),
       ),

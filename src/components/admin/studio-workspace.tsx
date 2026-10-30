@@ -11,6 +11,7 @@ import type { Studio } from '@/payload-types'
 import { GalleryPanel } from './studio-gallery'
 import { RequestsPanel } from './studio-requests'
 import { SaveBox } from './studio-controls'
+import { SellerSettings } from './studio-seller'
 import { studioAPI, jsonRequest, contentQuery, uploadArtImage } from './studio-api'
 
 function ArtistPanel({ locale }: { locale: 'ru' | 'en' }) {
@@ -141,6 +142,7 @@ function ArtistPanel({ locale }: { locale: 'ru' | 'en' }) {
                 {t('Если выключить, форма на сайте покажет, что приём временно закрыт.')}
               </p>
             </SaveBox>
+            <SellerSettings artist={artist} locale={locale} onSave={save} />
           </div>
         </div>
       )}

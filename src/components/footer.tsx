@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SellerDetails } from './seller-details'
 import { ArrowUpRight } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
 import type { Brand } from '@/lib/brand'
@@ -30,6 +31,15 @@ export function Footer({ locale, brand }: { locale: Locale; brand: Brand }) {
         © {new Date().getFullYear()} {brand.name || brand.alias || 'Artist Studio'}
       </span>
       <ContactLinks brand={brand} />
+      <div className="footer-seller">
+        {brand.seller.name && <span>{brand.seller.name}</span>}
+        {brand.seller.taxId && (
+          <span>
+            {text(locale, 'ИНН', 'Tax ID')} {brand.seller.taxId}
+          </span>
+        )}
+        <SellerDetails seller={brand.seller} locale={locale} />
+      </div>
       <Link href={`/${locale}/privacy`}>{text(locale, 'Конфиденциальность', 'Privacy')}</Link>
     </footer>
   )

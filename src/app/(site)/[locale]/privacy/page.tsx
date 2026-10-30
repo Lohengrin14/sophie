@@ -7,9 +7,7 @@ export default async function Privacy({ params }: { params: Promise<{ locale: st
   return (
     <main id="main" className="container page-main prose">
       <p className="eyebrow">{text(locale, 'ЛОКАЛЬНАЯ ПРЕДВАРИТЕЛЬНАЯ ВЕРСИЯ', 'LOCAL PREVIEW')}</p>
-      <h1>
-        {text(locale, 'О ваших', 'Your')} <em>{text(locale, 'данных.', 'details.')}</em>
-      </h1>
+      <h1>{text(locale, 'Конфиденциальность', 'Privacy')}</h1>
       <p>
         {text(
           locale,
