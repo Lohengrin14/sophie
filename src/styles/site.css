@@ -2177,6 +2177,15 @@ p {
 .work-page .work-specs {
   margin-block: 18px;
 }
+.work-page .work-story {
+  margin-block: 20px;
+  max-width: 60ch;
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.65;
+  color: var(--muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .work-page .work-specs > div {
   padding-block: 8px;
 }
