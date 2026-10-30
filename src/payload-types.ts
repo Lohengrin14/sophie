@@ -265,13 +265,18 @@ export interface Artwork {
    */
   year: number;
   /**
-   * Regular amount in the chosen currency, for example 650 or 650.50, excluding shipping.
+   * For the Russian site. Leave blank to hide the price.
    */
-  priceMinor: number;
+  priceRubMinor?: number | null;
+  /**
+   * For the English site. Leave blank to hide the price.
+   */
+  priceUsdMinor?: number | null;
+  priceMinor?: number | null;
   /**
    * The artwork currency stays the same in both website languages. Automatic conversion is not enabled.
    */
-  currency: string;
+  currency?: string | null;
   /**
    * Available allows purchase enquiries. Sold keeps the work in the portfolio without a purchase option.
    */
@@ -629,6 +634,8 @@ export interface ArtworksSelect<T extends boolean = true> {
   width?: T;
   height?: T;
   year?: T;
+  priceRubMinor?: T;
+  priceUsdMinor?: T;
   priceMinor?: T;
   currency?: T;
   availability?: T;

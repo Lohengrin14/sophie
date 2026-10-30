@@ -23,6 +23,7 @@
     "db:preview:migrate": "tsx scripts/preview-db.ts migrate",
     "test:migrations": "node scripts/migration-smoke.mjs",
     "test:google-auth": "node scripts/migration-smoke.mjs --google-auth",
+    "test:artwork-prices": "node scripts/migration-smoke.mjs --artwork-prices",
     "storage:preview:check": "tsx scripts/storage-check.ts",
     "preview:dev": "tsx scripts/preview-app.ts dev",
     "test:storage:preview": "tsx scripts/preview-app.ts storage-test"

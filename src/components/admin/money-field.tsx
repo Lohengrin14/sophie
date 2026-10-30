@@ -1,6 +1,6 @@
 'use client'
 import { useAdminLocale, useAdminText } from './studio-locale'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FieldDescription, FieldError, FieldLabel, useField } from '@payloadcms/ui'
 import type { NumberFieldClientComponent, DefaultCellComponentProps } from 'payload'
 import { formatPriceInput, parsePriceInput, validStoredPrice } from '@/lib/admin-helpers'
@@ -8,9 +8,13 @@ import { formatPriceInput, parsePriceInput, validStoredPrice } from '@/lib/admin
 export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }) => {
   const t = useAdminText()
   const locale = useAdminLocale()
+  const invalidInput = useRef(false)
   const { value, setValue, showError, disabled } = useField<number | null>({
     path,
-    validate: validStoredPrice,
+    validate: (value: unknown) =>
+      invalidInput.current
+        ? validStoredPrice(NaN)
+        : (!field.required && value == null) || validStoredPrice(value),
   })
   const [draft, setDraft] = useState(() => formatPriceInput(value))
   useEffect(() => {
@@ -41,7 +45,9 @@ export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }
           aria-describedby={`field-description-${path.replace(/\./g, '__')}`}
           onChange={(event) => {
             setDraft(event.target.value)
-            setValue(parsePriceInput(event.target.value))
+            const amount = parsePriceInput(event.target.value)
+            invalidInput.current = Boolean(event.target.value.trim()) && amount === null
+            setValue(amount)
           }}
         />
         <FieldDescription path={path} description={field.admin?.description} />
@@ -49,9 +55,17 @@ export const MoneyField: NumberFieldClientComponent = ({ field, path, readOnly }
     </div>
   )
 }
-export function MoneyCell({ cellData, rowData }: DefaultCellComponentProps) {
+export function MoneyCell({ cellData, rowData, field }: DefaultCellComponentProps) {
   const locale = useAdminLocale()
-  const currency = typeof rowData?.currency === 'string' ? rowData.currency : 'EUR'
+  const name = 'name' in field ? field.name : ''
+  const currency =
+    name === 'priceRubMinor'
+      ? 'RUB'
+      : name === 'priceUsdMinor'
+        ? 'USD'
+        : typeof rowData?.currency === 'string'
+          ? rowData.currency
+          : 'EUR'
   return typeof cellData === 'number' ? (
     <span>
       {new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'ru-RU', {

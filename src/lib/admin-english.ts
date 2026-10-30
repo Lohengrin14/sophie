@@ -1,4 +1,24 @@
 export const adminEnglish: Record<string, string> = {
+  Цены: 'Prices',
+  'Цена, ₽': 'Price, ₽',
+  'Цена, $': 'Price, $',
+  'Цена в рублях ₽': 'Price in rubles ₽',
+  'Цена в долларах $': 'Price in US dollars $',
+  'Рубли ₽ · русская версия': 'Rubles ₽ · Russian version',
+  'Доллары $ · английская версия': 'US dollars $ · English version',
+  'Не показывать цену': 'Hide price',
+  'Две независимые цены без пересчёта. Оставьте поле пустым, чтобы скрыть цену в этой версии сайта.':
+    'Two independent prices without conversion. Leave a field blank to hide the price in that site version.',
+  'Обе цены необязательны. Если цена не заполнена, на сайте она не показывается.':
+    'Both prices are optional. An empty price is not shown on the website.',
+  'Для русской версии сайта. Не заполнено — цена не показывается.':
+    'For the Russian site. Leave blank to hide the price.',
+  'Для английской версии сайта. Не заполнено — цена не показывается.':
+    'For the English site. Leave blank to hide the price.',
+  'Для каждого языка нужно название. Изображения общие для RU / EN.':
+    'Each language needs a title. Images are shared across RU / EN.',
+  'Укажите цену, например 650 или 650,50, либо оставьте поле пустым.':
+    'Enter a price such as 650 or 650.50, or leave the field blank.',
   'Сессия закончилась. Войдите в мастерскую ещё раз.':
     'Your session expired. Please sign in again.',
   'Недостаточно прав. Обратитесь к администратору.':

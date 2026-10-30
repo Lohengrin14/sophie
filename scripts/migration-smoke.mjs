@@ -77,12 +77,15 @@ try {
   await admin.connect()
   await admin.query(`CREATE DATABASE "${name}"`)
   created = true
-  await cli('migrate')
+  if (process.argv.includes('--artwork-prices')) await cli('run', 'scripts/artwork-prices-smoke.ts')
+  else await cli('migrate')
   await verify()
   if (process.argv.includes('--google-auth')) {
     await cli('run', 'scripts/google-auth-smoke.ts')
     await verify()
-    console.log('PASS: Google session bridge, employee permissions, denied access, refresh, logout, and password fallback.')
+    console.log(
+      'PASS: Google session bridge, employee permissions, denied access, refresh, logout, and password fallback.',
+    )
   }
   await cli('migrate')
   await verify()

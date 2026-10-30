@@ -10,16 +10,12 @@ export function toCardItem(work: Artwork): CatalogItem {
     images: [
       ...new Set(
         [work.image, ...(work.images || [])].flatMap((image) =>
-          image && typeof image === 'object' && image.url
-            ? [image.url]
-            : [],
+          image && typeof image === 'object' && image.url ? [image.url] : [],
         ),
       ),
     ],
     width: Number(work.width),
     height: Number(work.height),
-    priceMinor: Number(work.priceMinor),
-    currency: String(work.currency),
     medium: String(work.medium),
     availability: String(work.availability),
     demo: Boolean(work.demo),

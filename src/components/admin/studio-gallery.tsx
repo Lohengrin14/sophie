@@ -7,7 +7,8 @@ import { useAuth } from '@payloadcms/ui'
 import { can } from '@/lib/studio-access'
 import type { User } from '@/payload-types'
 import { SortHeader } from './studio-sort'
-import { formatPriceInput, parsePriceInput } from '@/lib/admin-helpers'
+import { formatPriceInput } from '@/lib/admin-helpers'
+import { readArtworkPrices } from '@/lib/artwork-prices'
 import { money, availabilityLabel } from '@/lib/i18n'
 import { relationID } from '@/lib/studio-admin'
 import {
@@ -18,14 +19,7 @@ import {
   uploadArtImage,
   type Page,
 } from './studio-api'
-import {
-  Priority,
-  BoardSize,
-  CurrencySelect,
-  DimensionFields,
-  Pagination,
-  SaveBox,
-} from './studio-controls'
+import { Priority, BoardSize, DimensionFields, Pagination, SaveBox } from './studio-controls'
 
 type Language = 'ru' | 'en'
 const publicPath = (work: Artwork, locale: Language) => `/${locale}/works/${work.slug}`
@@ -164,8 +158,17 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                   }}
                 />
                 <SortHeader
-                  label={t('Цена')}
-                  field="priceMinor"
+                  label={t('Цена, ₽')}
+                  field="priceRubMinor"
+                  sort={sort}
+                  onSort={(value) => {
+                    setSort(value)
+                    setPage(1)
+                  }}
+                />
+                <SortHeader
+                  label={t('Цена, $')}
+                  field="priceUsdMinor"
                   sort={sort}
                   onSort={(value) => {
                     setSort(value)
@@ -223,7 +226,14 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                       </span>
                     </td>
                     <td className="studio-nowrap">
-                      {money(work.priceMinor, work.currency, locale)}
+                      {typeof work.priceRubMinor === 'number'
+                        ? money(work.priceRubMinor, 'RUB', locale)
+                        : '—'}
+                    </td>
+                    <td className="studio-nowrap">
+                      {typeof work.priceUsdMinor === 'number'
+                        ? money(work.priceUsdMinor, 'USD', locale)
+                        : '—'}
                     </td>
                     <td className="studio-nowrap">
                       {work.width} × {work.height}
@@ -520,31 +530,19 @@ function GalleryEditor({
               {t('Показывать галерею на сайте')}
             </label>
             <p className="studio-hint">
-              {t('Для каждого языка нужно название. Цена и изображения общие для RU / EN.')}
+              {t('Для каждого языка нужно название. Изображения общие для RU / EN.')}
             </p>
           </SaveBox>
           <SaveBox
-            title={t('Цена')}
+            title={t('Цены')}
             help={t(
-              'Обычная сумма — ничего не нужно умножать на 100. Смена валюты не пересчитывает цену.',
+              'Две независимые цены без пересчёта. Оставьте поле пустым, чтобы скрыть цену в этой версии сайта.',
             )}
             onSave={async (data) => {
-              const amount = parsePriceInput(String(data.get('price')))
-              if (amount === null) throw new Error(t('Укажите цену, например 650 или 650,50.'))
-              await patch({ priceMinor: amount, currency: data.get('currency') })
+              await patch(readArtworkPrices(data))
             }}
           >
-            <label>
-              {t('Стоимость')}
-              <input
-                name="price"
-                inputMode="decimal"
-                defaultValue={formatPriceInput(work.priceMinor)}
-                required
-                placeholder={t('Например: 650,50')}
-              />
-            </label>
-            <CurrencySelect value={work.currency} />
+            <ArtworkPriceFields work={work} />
           </SaveBox>
           <SaveBox
             title={t('Приоритет')}
@@ -604,6 +602,32 @@ function GalleryEditor({
   )
 }
 
+function ArtworkPriceFields({ work }: { work?: Artwork }) {
+  const t = useAdminText()
+  return (
+    <div className="studio-form-row">
+      <label>
+        {t('Рубли ₽ · русская версия')}
+        <input
+          name="priceRub"
+          inputMode="decimal"
+          defaultValue={formatPriceInput(work?.priceRubMinor)}
+          placeholder={t('Не показывать цену')}
+        />
+      </label>
+      <label>
+        {t('Доллары $ · английская версия')}
+        <input
+          name="priceUsd"
+          inputMode="decimal"
+          defaultValue={formatPriceInput(work?.priceUsdMinor)}
+          placeholder={t('Не показывать цену')}
+        />
+      </label>
+    </div>
+  )
+}
+
 function NewGallery({
   locale,
   onBack,
@@ -629,9 +653,11 @@ function NewGallery({
       setError(t('Добавьте от 1 до 10 изображений.'))
       return
     }
-    const price = parsePriceInput(String(data.get('price')))
-    if (price === null) {
-      setError(t('Укажите обычную цену, например 650 или 650,50.'))
+    let prices
+    try {
+      prices = readArtworkPrices(data)
+    } catch (error) {
+      setError(t((error as Error).message))
       return
     }
     setBusy(true)
@@ -648,8 +674,7 @@ function NewGallery({
           images,
           width: Number(data.get('width')),
           height: Number(data.get('height')),
-          priceMinor: price,
-          currency: data.get('currency'),
+          ...prices,
           displaySize: Number(data.get('displaySize')),
           sortOrder: Number(data.get('sortOrder')),
           availability: 'available',
@@ -720,13 +745,10 @@ function NewGallery({
             {t('Первое изображение станет обложкой. JPG, PNG или WebP, до 5 МБ каждый.')}
           </p>
           <DimensionFields />
-          <div className="studio-form-row">
-            <label>
-              {t('Цена')}
-              <input name="price" required inputMode="decimal" placeholder={t('Например: 650')} />
-            </label>
-            <CurrencySelect />
-          </div>
+          <ArtworkPriceFields />
+          <p className="studio-hint">
+            {t('Обе цены необязательны. Если цена не заполнена, на сайте она не показывается.')}
+          </p>
           <Priority />
           <BoardSize value={3} />
           <button className="studio-button" type="submit" disabled={busy}>

@@ -7,8 +7,6 @@ export type CatalogItem = {
   image: string
   width: number
   height: number
-  priceMinor: number
-  currency: string
   medium: string
   availability: string
   demo: boolean
