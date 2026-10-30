@@ -17,7 +17,11 @@
     "payload": "payload",
     "db:up": "docker compose up -d db",
     "db:stop": "docker compose stop db",
-    "test:access": "node --env-file=.env.local scripts/access-smoke.mjs"
+    "test:access": "node --env-file=.env.local scripts/access-smoke.mjs",
+    "db:preview:check": "tsx scripts/preview-db.ts check",
+    "db:preview:status": "tsx scripts/preview-db.ts status",
+    "db:preview:migrate": "tsx scripts/preview-db.ts migrate",
+    "test:migrations": "node scripts/migration-smoke.mjs"
   },
   "dependencies": {
     "@fontsource/lora": "^5.2.6",
@@ -30,6 +34,7 @@
     "lucide-react": "^0.468.0",
     "next": "16.4.3",
     "payload": "3.92.1",
+    "pg": "8.20.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sharp": "^0.34.0",

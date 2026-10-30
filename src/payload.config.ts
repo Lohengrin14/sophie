@@ -17,6 +17,7 @@ import { can, isAdmin, sections, sectionNames, type Section } from './lib/studio
 import { ru } from '@payloadcms/translations/languages/ru'
 import { artworkSlug, validStoredPrice } from './lib/admin-helpers'
 import sharp from 'sharp'
+import { databaseOptions } from './lib/database'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const sectionAccess =
@@ -963,7 +964,10 @@ export default buildConfig({
     defaultLocale: 'ru',
     fallback: false,
   },
-  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URL } }),
+  db: postgresAdapter({
+    ...databaseOptions(),
+    migrationDir: path.resolve(dirname, 'migrations'),
+  }),
   sharp,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   upload: { limits: { fileSize: 5 * 1024 * 1024 } },
