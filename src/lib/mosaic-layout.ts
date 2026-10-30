@@ -1,4 +1,4 @@
-import { canvasSize, canvasSizes } from './canvas-size'
+import { boardSize } from './canvas-size'
 
 export type MosaicColumns = 12 | 16 | 24
 export type MosaicTile = {
@@ -17,13 +17,11 @@ export function mosaicLayout(
   const occupied: number[] = []
   const maximumEdge = columns === 24 ? 12 : columns === 16 ? 10 : 12
   return works.map((work) => {
-    const size =
-      canvasSizes.find((size) => size.tier === work.displaySize) ??
-      canvasSize(work.width, work.height)
+    const size = boardSize(work.displaySize)
     const width = Number.isFinite(work.width) && work.width > 0 ? work.width : 1
     const height = Number.isFinite(work.height) && work.height > 0 ? work.height : 1
     const longest = Math.max(width, height)
-    const edge = Math.round((maximumEdge * size.scale) / 2)
+    const edge = Math.max(2, Math.round((maximumEdge * size.scale) / 4))
     const tileColumns = Math.max(1, Math.round((edge * width) / longest))
     const tileRows = Math.max(1, Math.round((edge * height) / longest))
 

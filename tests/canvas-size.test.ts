@@ -1,25 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import { canvasSize } from '../src/lib/canvas-size'
-
-describe('physical canvas display tiers', () => {
-  it('uses physical size and keeps a rotated canvas in the same tier', () => {
-    expect(canvasSize(29.7, 42).scale).toBe(1)
-    expect(canvasSize(42, 29.7)).toEqual(canvasSize(29.7, 42))
-    expect(canvasSize(40, 60).scale).toBe(1.5)
-    expect(canvasSize(60, 40)).toEqual(canvasSize(40, 60))
+import { canvasSize, boardSize, canvasSizes } from '../src/lib/canvas-size'
+import { mosaicLayout } from '../src/lib/mosaic-layout'
+describe('independent board scale', () => {
+  it('has ten steps from 1x to 4x', () => {
+    expect(canvasSizes).toHaveLength(10)
+    expect(boardSize(1).scale).toBe(1)
+    expect(boardSize(10).scale).toBe(4)
   })
-  it('keeps boundary sizes in their tier and caps oversized canvases', () => {
-    expect(canvasSize(30, 42).tier).toBe(1)
-    expect(canvasSize(30, 42.1).tier).toBe(2)
-    expect(canvasSize(50, 75).tier).toBe(4)
-    expect(canvasSize(60, 90).scale).toBe(2)
-    expect(canvasSize(120, 120)).toEqual(canvasSize(60, 90))
-    expect(canvasSize(300, 500).scale).toBe(2)
+  it('uses dimensions only for aspect ratio', () => {
+    expect(mosaicLayout([{ width: 20, height: 40 }], 24)).toEqual(
+      mosaicLayout([{ width: 200, height: 400 }], 24),
+    )
+    expect(canvasSize(1, 2)).toEqual(canvasSize(100, 200))
   })
-  it('falls back safely for invalid legacy dimensions', () => {
-    for (const invalid of [0, -1, NaN, Infinity]) {
-      expect(canvasSize(invalid, 60).scale).toBe(1)
-      expect(canvasSize(60, invalid).scale).toBe(1)
-    }
+  it('uses a fixed fallback for legacy entries', () => {
+    expect(boardSize(null).tier).toBe(4)
+    expect(boardSize(50)).toEqual(boardSize())
   })
 })

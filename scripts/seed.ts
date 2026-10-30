@@ -98,7 +98,7 @@ for (const [index, example] of examples.entries()) {
       published: true,
       featured: true,
       demo: true,
-      sortOrder: index,
+      sortOrder: index + 1,
     },
   })
   await payload.update({

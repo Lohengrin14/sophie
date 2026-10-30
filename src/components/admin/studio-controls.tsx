@@ -1,6 +1,12 @@
 'use client'
+import { useAdminText } from './studio-locale'
 import { useEffect, useState, type ReactNode, type FormEvent } from 'react'
 import { Check, LoaderCircle, Save } from 'lucide-react'
+import { useAuth } from '@payloadcms/ui'
+import { useSearchParams } from 'next/navigation'
+import { can, type Section } from '@/lib/studio-access'
+import type { User } from '@/payload-types'
+import { boardSize } from '@/lib/canvas-size'
 import { canvasPresets } from '@/lib/studio-admin'
 
 export function SaveBox({
@@ -16,6 +22,11 @@ export function SaveBox({
   changed?: boolean
   onSave: (data: FormData) => Promise<void>
 }) {
+  const t = useAdminText()
+
+  const { user } = useAuth<User>()
+  const section = (useSearchParams().get('tab') || 'gallery') as Section
+  const editable = can(user, section, 'edit')
   const [dirty, setDirty] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -38,7 +49,7 @@ export function SaveBox({
     try {
       await onSave(data)
       setDirty(false)
-      setMessage('Сохранено')
+      setMessage(t('Сохранено'))
     } catch (error) {
       setError((error as Error).message)
     } finally {
@@ -59,13 +70,13 @@ export function SaveBox({
         <h2>{title}</h2>
         {help && <p>{help}</p>}
       </div>
-      <fieldset disabled={busy}>{children}</fieldset>
+      <fieldset disabled={busy || !editable}>{children}</fieldset>
       <div className="studio-savebar">
         <span role="status">
           {busy
-            ? 'Сохраняем…'
+            ? t('Сохраняем…')
             : dirty || changed
-              ? 'Есть несохранённые изменения'
+              ? t('Есть несохранённые изменения')
               : message && (
                   <>
                     <Check size={16} />
@@ -73,8 +84,12 @@ export function SaveBox({
                   </>
                 )}
         </span>
-        <button className="studio-button" type="submit" disabled={busy || !(dirty || changed)}>
-          {busy ? <LoaderCircle size={16} /> : <Save size={16} />} Сохранить
+        <button
+          className="studio-button"
+          type="submit"
+          disabled={busy || !editable || !(dirty || changed)}
+        >
+          {busy ? <LoaderCircle size={16} /> : <Save size={16} />} {t('Сохранить')}
         </button>
       </div>
       {error && (
@@ -87,6 +102,8 @@ export function SaveBox({
 }
 
 export function DimensionFields({ width = 40, height = 40 }: { width?: number; height?: number }) {
+  const t = useAdminText()
+
   const [size, setSize] = useState({ width, height })
   const [preset, setPreset] = useState(
     canvasPresets.some(([key]) => key === `${width}x${height}`) ? `${width}x${height}` : 'custom',
@@ -94,7 +111,7 @@ export function DimensionFields({ width = 40, height = 40 }: { width?: number; h
   return (
     <>
       <label>
-        Размер холста
+        {t('Размер холста')}
         <select
           value={preset}
           onChange={(event) => {
@@ -108,15 +125,15 @@ export function DimensionFields({ width = 40, height = 40 }: { width?: number; h
         >
           {canvasPresets.map(([key, label]) => (
             <option key={key} value={key}>
-              {label}
+              {t(label)}
             </option>
           ))}
-          <option value="custom">Другой размер — ввести вручную</option>
+          <option value="custom">{t('Другой размер — ввести вручную')}</option>
         </select>
       </label>
       <div className="studio-form-row">
         <label>
-          Ширина, см
+          {t('Ширина, см')}
           <input
             name="width"
             type="number"
@@ -131,7 +148,7 @@ export function DimensionFields({ width = 40, height = 40 }: { width?: number; h
           />
         </label>
         <label>
-          Высота, см
+          {t('Высота, см')}
           <input
             name="height"
             type="number"
@@ -147,27 +164,31 @@ export function DimensionFields({ width = 40, height = 40 }: { width?: number; h
         </label>
       </div>
       <p className="studio-hint">
-        Ширина × высота без рамы. 60 × 40 — горизонтально, 40 × 60 — вертикально.
+        {t('Ширина × высота без рамы. 60 × 40 — горизонтально, 40 × 60 — вертикально.')}
       </p>
     </>
   )
 }
 
 export function CurrencySelect({ value = 'EUR' }: { value?: string }) {
+  const t = useAdminText()
+
   return (
     <label>
-      Валюта
+      {t('Валюта')}
       <select name="currency" defaultValue={value}>
         {!['RUB', 'USD', 'EUR'].includes(value) && <option value={value}>{value}</option>}
-        <option value="RUB">₽ Российский рубль</option>
-        <option value="USD">$ Доллар США</option>
-        <option value="EUR">€ Евро</option>
+        <option value="RUB">{t('₽ Российский рубль')}</option>
+        <option value="USD">{t('$ Доллар США')}</option>
+        <option value="EUR">{t('€ Евро')}</option>
       </select>
     </label>
   )
 }
 
 export function BoardSize({ value }: { value: number }) {
+  const t = useAdminText()
+
   const [size, setSize] = useState(value)
   const [touched, setTouched] = useState(false)
   useEffect(() => {
@@ -176,12 +197,16 @@ export function BoardSize({ value }: { value: number }) {
   }, [value, touched, size])
   return (
     <label>
-      Размер на главной: <strong>{size} из 5</strong>
+      {t('Размер на главной:')}
+      <strong>
+        {boardSize(size).scale.toLocaleString(undefined, { maximumFractionDigits: 2 })}× · {size} /
+        10
+      </strong>
       <input
         name="displaySize"
         type="range"
         min="1"
-        max="5"
+        max="10"
         step="1"
         value={size}
         onChange={(event) => {
@@ -190,14 +215,14 @@ export function BoardSize({ value }: { value: number }) {
         }}
       />
       <span className="studio-range-labels">
-        <span>1 · Небольшой</span>
-        <span>5 · Крупный</span>
+        <span>{t('1× · Небольшой')}</span>
+        <span>{t('4× · Крупный')}</span>
       </span>
       <span className="studio-scale-preview" aria-hidden="true">
-        <i style={{ width: `${size * 12 + 24}%`, height: `${size * 12 + 24}%` }} />
+        <i style={{ width: `${size * 7 + 20}%`, height: `${size * 7 + 20}%` }} />
       </span>
       <span className="studio-hint">
-        Меняет только место в мозаике. Реальный размер и пропорции холста сохраняются.
+        {t('Меняет только место в мозаике. Реальный размер и пропорции холста сохраняются.')}
       </span>
     </label>
   )
@@ -214,20 +239,53 @@ export function Pagination({
   total: number
   onPage: (page: number) => void
 }) {
+  const t = useAdminText()
+
   return (
     <div className="studio-pagination">
-      <span>Всего: {total}</span>
+      <span>
+        {t('Всего:')}
+        {total}
+      </span>
       <div>
         <button type="button" disabled={page <= 1} onClick={() => onPage(page - 1)}>
-          ← Назад
+          {t('← Назад')}
         </button>
         <span>
           {page} / {Math.max(1, pages)}
         </span>
         <button type="button" disabled={page >= pages} onClick={() => onPage(page + 1)}>
-          Дальше →
+          {t('Дальше →')}
         </button>
       </div>
     </div>
+  )
+}
+
+export function Priority({ value = 25 }: { value?: number | null }) {
+  const t = useAdminText()
+
+  const [priority, setPriority] = useState(Math.max(1, Math.min(50, value || 25)))
+  return (
+    <label>
+      {t('Порядок на главной:')}
+      <strong>{priority}</strong>
+      <input
+        name="sortOrder"
+        type="range"
+        min="1"
+        max="50"
+        step="1"
+        value={priority}
+        onChange={(event) => setPriority(Number(event.target.value))}
+      />
+      <span className="studio-range-labels">
+        <span>{t('1 — первое место')}</span>
+        <span>{t('50 — последнее место')}</span>
+      </span>
+      <span className="studio-hint">
+        {t('При равном приоритете сначала крупные работы, затем по названию.')}
+      </span>
+    </label>
   )
 }

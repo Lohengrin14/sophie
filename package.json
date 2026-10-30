@@ -16,7 +16,8 @@
     "seed:layout": "tsx --env-file=.env.local scripts/seed-layout.ts",
     "payload": "payload",
     "db:up": "docker compose up -d db",
-    "db:stop": "docker compose stop db"
+    "db:stop": "docker compose stop db",
+    "test:access": "node --env-file=.env.local scripts/access-smoke.mjs"
   },
   "dependencies": {
     "@fontsource/lora": "^5.2.6",

@@ -56,7 +56,7 @@ try {
     medium: 'oil',
     year: 2026,
     displaySize: 3,
-    sortOrder: -999999,
+    sortOrder: 1,
     published: false,
   })
   const body = await response.json()
@@ -82,7 +82,7 @@ try {
     400,
   )
   assert.equal((await get(`/api/artworks/${work.id}`)).images.length, 10)
-  assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { displaySize: 6 })).status, 400)
+  assert.equal((await api(`/api/artworks/${work.id}`, 'PATCH', { displaySize: 11 })).status, 400)
   patch = await api(`/api/artworks/${work.id}?locale=en`, 'PATCH', { title: 'QA English gallery' })
   assert.equal(patch.status, 200, 'Title can be saved independently from optional description')
   assert.ok(
@@ -90,7 +90,7 @@ try {
     'Russian title remains after English edit',
   )
   patch = await api(`/api/artworks/${work.id}?locale=ru`, 'PATCH', {
-    displaySize: 5,
+    displaySize: 10,
     published: true,
   })
   assert.equal(patch.status, 200, JSON.stringify(await patch.json()))
@@ -101,7 +101,7 @@ try {
     const home = await (await fetch(`${base}/${locale}`)).text()
     const main = home.match(/<main\b[\s\S]*?<\/main>/)?.[0]
     const card = main.match(new RegExp(`<a[^>]*id="work-${work.id}"[\\s\\S]*?</a>`))?.[0]
-    assert.ok(card?.includes('data-canvas-tier="5"'))
+    assert.ok(card?.includes('data-canvas-tier="10"'))
     assert.ok(main.indexOf(`id="work-${work.id}"`) < main.indexOf('layout-study-v1-01'))
   }
   const latest = await get(`/api/artworks/${work.id}`)

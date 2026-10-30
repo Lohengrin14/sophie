@@ -95,10 +95,10 @@ try {
         year: 2026,
         priceMinor: 10000 + index * 5000,
         currency: 'EUR',
-        availability: index === 7 ? 'sold' : index === 8 ? 'reserved' : 'available',
+        availability: index === 7 ? 'sold' : 'available',
         demo: true,
         featured: true,
-        sortOrder: -1000 + index,
+        sortOrder: index + 1,
         published: false,
       },
     })

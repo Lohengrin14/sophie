@@ -10,13 +10,19 @@ import {
 } from 'payload'
 import { galleryImageIDs, requestStatuses } from './lib/studio-admin'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { en } from '@payloadcms/translations/languages/en'
+import { can, isAdmin, sections, sectionNames, type Section } from './lib/studio-access'
 import { ru } from '@payloadcms/translations/languages/ru'
 import { artworkSlug, validStoredPrice } from './lib/admin-helpers'
 import sharp from 'sharp'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
-const staff: Access = ({ req }) => Boolean(req.user)
-const published: Access = ({ req }) => (req.user ? true : { published: { equals: true } })
+const sectionAccess =
+  (section: Section, action: 'read' | 'edit' = 'read'): Access =>
+  ({ req }) =>
+    can(req.user, section, action)
+const published: Access = ({ req }) =>
+  can(req.user, 'gallery') ? true : { published: { equals: true } }
 const moneyField = (name: string, label: string, description: string): NumberField => ({
   name,
   type: 'number',
@@ -47,8 +53,70 @@ const Users: CollectionConfig = {
     group: 'Настройки',
     description: 'Учётные записи для входа в мастерскую. Это сотрудники, а не покупатели сайта.',
   },
-  access: { create: staff, read: staff, update: staff, delete: staff },
+  access: {
+    create: sectionAccess('users', 'edit'),
+    read: sectionAccess('users'),
+    update: sectionAccess('users', 'edit'),
+    delete: ({ req }) => isAdmin(req.user),
+  },
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc, req, operation }) => {
+        if (
+          operation === 'create' &&
+          !(await req.payload.count({ collection: 'users', overrideAccess: true, req })).totalDocs
+        ) {
+          data.role = 'admin'
+          return data
+        }
+        if (operation === 'create' && !data.role) data.role = 'staff'
+        if (!isAdmin(req.user)) {
+          if (isAdmin(originalDoc) || data.role === 'admin' || data.permissions !== undefined)
+            throw new Error(
+              'Только администратор может назначать доступы или менять администратора.',
+            )
+          data.role = originalDoc?.role || 'staff'
+        }
+        if (
+          originalDoc?.id === req.user?.id &&
+          data.role &&
+          data.role !== 'admin' &&
+          isAdmin(originalDoc)
+        )
+          throw new Error('Нельзя снять права администратора у себя.')
+        return data
+      },
+    ],
+    beforeDelete: [
+      ({ id, req }) => {
+        if (String(id) === String(req.user?.id)) throw new Error('Нельзя удалить свой аккаунт.')
+      },
+    ],
+  },
   fields: [
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        { label: 'Администратор', value: 'admin' },
+        { label: 'Сотрудник', value: 'staff' },
+      ],
+      label: 'Роль',
+    },
+    {
+      name: 'permissions',
+      type: 'group',
+      label: 'Доступы к разделам',
+      fields: sections.map((name) => ({
+        name,
+        type: 'group',
+        label: sectionNames[name],
+        fields: [
+          { name: 'read', type: 'checkbox', label: 'Чтение', defaultValue: false },
+          { name: 'edit', type: 'checkbox', label: 'Изменение', defaultValue: false },
+        ],
+      })),
+    },
     {
       name: 'name',
       type: 'text',
@@ -70,7 +138,14 @@ const Media: CollectionConfig = {
     description:
       'Фотографии для каталога. Новое фото можно загрузить прямо при добавлении картины. JPG, PNG или WebP, до 5 МБ.',
   },
-  access: { read: () => true, create: staff, update: staff, delete: staff },
+  access: {
+    read: () => true,
+    create: ({ req }) => can(req.user, 'gallery', 'edit') || can(req.user, 'artist', 'edit'),
+    // Media files can be shared across sections. Editors upload replacements and
+    // change their own section's reference; only admins overwrite shared files.
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
+  },
   upload: {
     staticDir: path.resolve(dirname, '../media/artworks'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
@@ -100,7 +175,12 @@ const References: CollectionConfig = {
     description:
       'Изображения, приложенные посетителями к заявкам. Они не видны в публичном каталоге.',
   },
-  access: { read: staff, create: staff, update: staff, delete: staff },
+  access: {
+    read: sectionAccess('requests'),
+    create: sectionAccess('requests', 'edit'),
+    update: sectionAccess('requests', 'edit'),
+    delete: sectionAccess('requests', 'edit'),
+  },
   upload: {
     staticDir: path.resolve(dirname, '../media/references'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
@@ -127,7 +207,12 @@ const Artworks: CollectionConfig = {
     description:
       'Галерея объединяет работу и её изображения. Для публикации в каждом языке нужно название; описание необязательно. Основной редактор находится на главной мастерской.',
   },
-  access: { read: published, create: staff, update: staff, delete: staff },
+  access: {
+    read: published,
+    create: sectionAccess('gallery', 'edit'),
+    update: sectionAccess('gallery', 'edit'),
+    delete: sectionAccess('gallery', 'edit'),
+  },
   hooks: {
     beforeValidate: [
       ({ data, originalDoc }) => {
@@ -224,15 +309,15 @@ const Artworks: CollectionConfig = {
       name: 'displaySize',
       type: 'number',
       min: 1,
-      max: 5,
+      max: 10,
+      defaultValue: 4,
       label: 'Размер на доске',
       validate: (value: unknown) =>
         value == null ||
-        (typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5) ||
-        'Выберите размер от 1 до 5.',
+        (typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 10) ||
+        'Выберите размер от 1 до 10.',
       admin: {
-        description:
-          '1 — небольшой, 5 — самый крупный. Не меняет реальные размеры холста. Пусто — подобрать по размерам.',
+        description: '10 шагов от 1× до 4×. Сантиметры определяют только пропорции.',
       },
     },
     {
@@ -317,12 +402,11 @@ const Artworks: CollectionConfig = {
       required: true,
       options: [
         { label: 'Доступна', value: 'available' },
-        { label: 'В резерве', value: 'reserved' },
         { label: 'Продана', value: 'sold' },
       ],
       admin: {
         description:
-          '«Доступна» — можно оставить заявку. «В резерве» — уже обсуждаете покупку. «Продана» — остаётся в портфолио без покупки.',
+          '«Доступна» — можно оставить заявку. «Продана» — остаётся в портфолио без покупки.',
       },
     },
     {
@@ -370,11 +454,17 @@ const Artworks: CollectionConfig = {
           name: 'sortOrder',
           type: 'number',
           label: 'Приоритет галереи',
-          defaultValue: 0,
+          defaultValue: 25,
+          min: 1,
+          max: 50,
+          validate: (value: unknown) =>
+            value == null ||
+            (typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 50) ||
+            'Выберите приоритет от 1 до 50.',
           admin: {
-            placeholder: '0',
+            placeholder: '25',
             description:
-              'Приоритет: меньшее число — раньше. Первая галерея закрепляется слева сверху. Например: 1, 2, 3.',
+              '1 — первое место, 50 — последнее. При равенстве: размер на доске по убыванию, затем название.',
           },
         },
         {
@@ -393,14 +483,19 @@ const Artworks: CollectionConfig = {
 }
 const QuoteRules: CollectionConfig = {
   slug: 'quote-rules',
-  labels: { singular: 'Ориентир', plural: 'Ориентиры заказов' },
+  labels: { singular: 'Расценка', plural: 'Цены и сроки' },
   admin: {
     useAsTitle: 'label',
     group: 'Обращения',
     description:
       'Одно правило — одно сочетание сюжета, техники и размера. Например: портрет, масло, 40 × 40 см → 500–650 евро, 28–49 дней. Это предварительная оценка для формы, а не окончательная договорённость.',
   },
-  access: { read: staff, create: staff, update: staff, delete: staff },
+  access: {
+    read: sectionAccess('quotes'),
+    create: sectionAccess('quotes', 'edit'),
+    update: sectionAccess('quotes', 'edit'),
+    delete: sectionAccess('quotes', 'edit'),
+  },
   fields: [
     {
       name: 'label',
@@ -524,7 +619,12 @@ const Requests: CollectionConfig = {
     description:
       'Обращения с сайта. Откройте заявку, посмотрите пожелания и контакт, свяжитесь с человеком и обновите статус. Внутренние заметки посетителю не видны.',
   },
-  access: { read: staff, create: () => false, update: staff, delete: staff },
+  access: {
+    read: sectionAccess('requests'),
+    create: () => false,
+    update: sectionAccess('requests', 'edit'),
+    delete: sectionAccess('requests', 'edit'),
+  },
   fields: [
     {
       name: 'reference',
@@ -639,6 +739,18 @@ const Requests: CollectionConfig = {
           'Видны только сотрудникам. Можно записать договорённости, цену, сроки и следующий шаг.',
       },
     },
+    {
+      name: 'referenceCount',
+      type: 'number',
+      defaultValue: 0,
+      admin: { hidden: true },
+      hooks: {
+        beforeValidate: [
+          ({ data, value }) =>
+            Array.isArray(data?.references) ? data.references.length : value || 0,
+        ],
+      },
+    },
     { name: 'consentVersion', type: 'text', admin: { hidden: true } },
   ],
 }
@@ -650,8 +762,9 @@ const Studio: GlobalConfig = {
     description:
       'Имя, контакты и информация на сайте. Заполненные значения отсюда имеют приоритет над резервными настройками разработчика. Перевод биографии добавляется через переключатель языка.',
   },
-  access: { read: () => true, update: staff },
+  access: { read: () => true, update: sectionAccess('artist', 'edit') },
   fields: [
+    { name: 'photo', type: 'upload', relationTo: 'media', label: 'Фотография художника' },
     {
       name: 'name',
       type: 'text',
@@ -740,7 +853,7 @@ export default buildConfig({
       views: { dashboard: { Component: '/components/admin/studio-dashboard#StudioDashboard' } },
     },
   },
-  i18n: { supportedLanguages: { ru }, fallbackLanguage: 'ru' },
+  i18n: { supportedLanguages: { ru, en }, fallbackLanguage: 'ru' },
   collections: [Users, Media, Artworks, QuoteRules, Requests, References],
   globals: [Studio],
   localization: {
