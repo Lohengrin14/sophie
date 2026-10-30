@@ -1,5 +1,7 @@
 :root {
   --bg: #fcfcfa;
+  --header-bg: #f1f2f4;
+  --site-header-height: 58px;
   --surface: #ffffff;
   --ink: #1e2026;
   --muted: #63656e;
@@ -11,4 +13,10 @@
   --error: #a23726;
   --sans: 'Manrope', sans-serif;
   --serif: 'Lora', Georgia, serif;
+}
+
+@media (max-width: 800px) {
+  :root {
+    --site-header-height: 54px;
+  }
 }
