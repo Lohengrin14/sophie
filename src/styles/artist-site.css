@@ -1,0 +1,225 @@
+/* Editorial grid and straight grotesk, inspired by the supplied portfolio references. */
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest/Onest-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --sans: 'Onest', Arial, sans-serif;
+  --serif: 'Onest', Arial, sans-serif;
+}
+body {
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+.site-header {
+  --nav-accent: var(--accent);
+  border-bottom: 0;
+}
+.header-inner.container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 1.3fr) auto;
+  gap: 40px;
+}
+.site-header .wordmark {
+  display: inline-flex;
+  max-width: 100%;
+  justify-self: start;
+  overflow-wrap: normal;
+}
+.site-header .wordmark > span {
+  display: flex;
+  min-width: 0;
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 550;
+  font-size: 25px;
+  letter-spacing: -0.065em;
+  line-height: 1;
+}
+.site-header .artist-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.site-header .main-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin: 0;
+  gap: 24px;
+}
+.site-header .main-nav a {
+  position: relative;
+  justify-content: flex-start;
+  width: fit-content;
+  padding: 0;
+  border-radius: 0;
+  font-size: 10px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.site-header .main-nav a:hover,
+.site-header .main-nav a.active {
+  background: transparent;
+  color: var(--nav-accent);
+}
+
+.site-header .header-actions {
+  justify-self: end;
+  gap: 14px;
+}
+.site-header .language {
+  justify-content: center;
+  min-width: 32px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.site-header .theme-trigger {
+  color: var(--muted);
+}
+.site-header .theme-trigger:hover {
+  color: var(--ink);
+}
+.page-main > h1,
+.artist-page h1,
+.commission-intro h1 {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 450;
+  font-size: clamp(36px, 5.5vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.065em;
+}
+.artist-page .about-layout {
+  align-items: start;
+}
+.artist-page .about-text {
+  max-width: 40ch;
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.5;
+  letter-spacing: -0.025em;
+}
+.contact-page .contact-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 48px;
+}
+.contact-page .contact-links a {
+  font-size: clamp(22px, 3.2vw, 40px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+.faq-section h2 {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 450;
+  letter-spacing: -0.045em;
+}
+.form-title {
+  font-weight: 450;
+  letter-spacing: -0.04em;
+}
+.site-footer {
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.theme-panel {
+  width: min(620px, calc(100vw - 48px));
+}
+.theme-panel [role='radiogroup'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 1000px) and (min-width: 801px) {
+  .header-inner.container {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 1.4fr) auto;
+    gap: 24px;
+  }
+}
+@media (max-width: 800px) {
+  .header-inner.container {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .site-header .wordmark > span {
+    font-size: 23px;
+  }
+  .site-header .header-actions {
+    gap: 6px;
+  }
+  .site-header .main-nav {
+    display: none;
+    padding: 20px 24px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .site-header .main-nav.is-open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .site-header .main-nav a {
+    min-height: 44px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .theme-panel {
+    width: min(340px, calc(100vw - 24px));
+  }
+  .theme-panel [role='radiogroup'] {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mosaic-main {
+  --mosaic-side: clamp(24px, 3vw, 56px);
+  padding-top: clamp(24px, 3vw, 44px);
+}
+@media (max-width: 700px) {
+  .mosaic-main {
+    --mosaic-side: 16px;
+    padding-top: 16px;
+  }
+}
+
+/* Contact shortcuts share one treatment on the artist and commission pages. */
+.artist-contacts {
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+.artist-contacts.contact-links a {
+  min-width: 0;
+  max-width: 100%;
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.4;
+  padding-block: 8px;
+}
+.artist-contacts a svg {
+  flex-shrink: 0;
+}
+.artist-info #contacts {
+  scroll-margin-top: calc(var(--site-header-height) + 24px);
+}
+.artist-info h1 {
+  margin-top: 0;
+}
+.commission-direct {
+  margin-top: 36px;
+}
+.commission-direct .artist-contacts {
+  margin-top: 10px;
+}
+.artist-info {
+  min-width: 0;
+}

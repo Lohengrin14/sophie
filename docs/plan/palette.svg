@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="216" viewBox="0 0 1050 216" role="img" aria-labelledby="title desc">
+  <title id="title">Sophie — предварительная палитра</title>
+  <desc id="desc">Светлый фон, белая поверхность, тёмный текст, серые подписи, зелёный акцент, светлая граница и терракотовая ошибка.</desc>
+  <rect width="1050" height="216" rx="12" fill="#F7F5F0"/>
+  <g font-family="system-ui, sans-serif" fill="#232522">
+    <text x="24" y="31" font-size="16" font-weight="600">Палитра v0.1 · галерея художника</text>
+    <g transform="translate(24 48)">
+      <rect width="132" height="96" rx="6" fill="#F7F5F0" stroke="#65685F"/>
+      <text y="119" font-size="13">Фон</text><text y="140" font-size="12">#F7F5F0</text>
+    </g>
+    <g transform="translate(169 48)">
+      <rect width="132" height="96" rx="6" fill="#FFFFFF" stroke="#65685F"/>
+      <text y="119" font-size="13">Поверхность</text><text y="140" font-size="12">#FFFFFF</text>
+    </g>
+    <g transform="translate(314 48)">
+      <rect width="132" height="96" rx="6" fill="#232522"/>
+      <text y="119" font-size="13">Текст</text><text y="140" font-size="12">#232522</text>
+    </g>
+    <g transform="translate(459 48)">
+      <rect width="132" height="96" rx="6" fill="#65685F"/>
+      <text y="119" font-size="13">Подписи</text><text y="140" font-size="12">#65685F</text>
+    </g>
+    <g transform="translate(604 48)">
+      <rect width="132" height="96" rx="6" fill="#344A3C"/>
+      <text y="119" font-size="13">Акцент</text><text y="140" font-size="12">#344A3C</text>
+    </g>
+    <g transform="translate(749 48)">
+      <rect width="132" height="96" rx="6" fill="#D7D9D0"/>
+      <text y="119" font-size="13">Разделители</text><text y="140" font-size="12">#D7D9D0</text>
+    </g>
+    <g transform="translate(894 48)">
+      <rect width="132" height="96" rx="6" fill="#9B482F"/>
+      <text y="119" font-size="13">Ошибки</text><text y="140" font-size="12">#9B482F</text>
+    </g>
+  </g>
+</svg>
