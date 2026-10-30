@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+import type { CSSProperties } from 'react'
+import { cookies } from 'next/headers'
+import { THEME_COOKIE, resolveTheme, themeVariables } from '@/lib/site-themes'
 import { notFound } from 'next/navigation'
 import '@fontsource/manrope/400.css'
 import '@fontsource/manrope/500.css'
@@ -8,6 +11,7 @@ import '@fontsource/manrope/800.css'
 import '@fontsource/lora/400.css'
 import '@fontsource/lora/400-italic.css'
 import '@/styles/site.css'
+import '@/styles/site-themes.css'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { getStudio } from '@/lib/data'
@@ -44,13 +48,19 @@ export default async function SiteLayout({
   const { locale } = await params
   if (!isLocale(locale)) notFound()
   const { brand } = await getStudio(locale)
+  const theme = resolveTheme((await cookies()).get(THEME_COOKIE)?.value)
   return (
-    <html lang={locale} data-scroll-behavior="smooth">
+    <html
+      lang={locale}
+      data-scroll-behavior="smooth"
+      data-site-theme={theme.id}
+      style={themeVariables(theme) as CSSProperties}
+    >
       <body>
         <a className="skip-link" href="#main">
           {text(locale, 'Перейти к содержимому', 'Skip to content')}
         </a>
-        <Header locale={locale} brand={brand} />
+        <Header locale={locale} brand={brand} initialTheme={theme.id} />
         {children}
         <Footer locale={locale} brand={brand} />
       </body>

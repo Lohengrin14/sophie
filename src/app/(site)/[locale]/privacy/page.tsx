@@ -25,6 +25,13 @@ export default async function Privacy({ params }: { params: Promise<{ locale: st
       <p>
         {text(
           locale,
+          'Выбранная палитра сохраняется в cookie artist_theme на вашем устройстве на один год. Она используется только для оформления сайта.',
+          'Your chosen palette is stored in an artist_theme cookie on your device for one year, solely to remember the site appearance.',
+        )}
+      </p>
+      <p>
+        {text(
+          locale,
           'Перед публичным запуском здесь появится согласованная политика: кто обрабатывает данные, для чего, на какой срок и как запросить удаление. Эта страница описывает тестовый режим и не является готовой политикой для реальных продаж.',
           'Before a public launch, this page will be replaced with the agreed policy identifying the operator, purposes, retention periods and deletion process. This page describes the test environment and is not a production sales policy.',
         )}
