@@ -51,11 +51,6 @@ export default async function Work({
             title={String(work.title || '')}
             locale={locale}
           />
-          {work.demo && (
-            <p className="demo-caption detail-demo">
-              {text(locale, 'Демонстрационная работа и цена.', 'Demonstration artwork and price.')}
-            </p>
-          )}
         </div>
         <div className="work-description">
           <h1>{String(work.title)}</h1>
