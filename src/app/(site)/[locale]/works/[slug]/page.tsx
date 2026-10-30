@@ -39,7 +39,7 @@ export default async function Work({
     ...new Map(media.map((image) => [image.id, { id: image.id, url: String(image.url) }])).values(),
   ]
   return (
-    <main id="main" className="container page-main">
+    <main id="main" className="container page-main work-page">
       <Link className="back-link" href={`/${locale}#work-${work.id}`}>
         <ArrowLeft size={16} />
         {text(locale, 'К коллекции', 'Back to the collection')}
