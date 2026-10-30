@@ -92,6 +92,9 @@ export function MosaicPreview({
         if (event.pointerType === 'touch') stop()
       }}
       onPointerCancel={stop}
+      onContextMenu={(event) => {
+        if (window.matchMedia('(pointer: coarse)').matches) event.preventDefault()
+      }}
       onFocus={start}
       onBlur={stop}
     >
