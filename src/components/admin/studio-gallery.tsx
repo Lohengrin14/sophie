@@ -1,6 +1,7 @@
 'use client'
 import { useAdminText } from './studio-locale'
 import { useEffect, useState, type FormEvent } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ExternalLink, Plus, Search, Star, Trash2, Upload, Copy } from 'lucide-react'
 import type { Artwork, Media } from '@/payload-types'
 import { useAuth } from '@payloadcms/ui'
@@ -29,8 +30,21 @@ export function GalleryPanel({ locale }: { locale: Language }) {
   const t = useAdminText()
 
   const { user } = useAuth<User>()
+  const router = useRouter()
+  const queryParams = useSearchParams()
+  const target = queryParams.get('gallery')
+  const editing =
+    target === 'new'
+      ? 'new'
+      : target && /^[1-9]\d*$/.test(target) && Number.isSafeInteger(Number(target))
+        ? Number(target)
+        : null
+  const openGallery = (id: number | 'new' | null, replace = false) => {
+    const url = id === null ? '/admin?tab=gallery' : `/admin?tab=gallery&gallery=${id}`
+    if (replace) router.replace(url)
+    else router.push(url)
+  }
   const [sort, setSort] = useState('sortOrder')
-  const [editing, setEditing] = useState<number | 'new' | null>(null)
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [data, setData] = useState<Page<Artwork> | null>(null)
@@ -69,8 +83,8 @@ export function GalleryPanel({ locale }: { locale: Language }) {
     return (
       <NewGallery
         locale={locale}
-        onBack={() => setEditing(null)}
-        onCreated={(id) => setEditing(id)}
+        onBack={() => openGallery(null)}
+        onCreated={(id) => openGallery(id, true)}
       />
     )
   if (editing !== null)
@@ -79,7 +93,8 @@ export function GalleryPanel({ locale }: { locale: Language }) {
         key={`${editing}-${locale}`}
         id={editing}
         locale={locale}
-        onBack={() => setEditing(null)}
+        onBack={() => openGallery(null)}
+        onNew={() => openGallery('new')}
       />
     )
   return (
@@ -91,7 +106,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
           <p>{t('Одна галерея — одна работа и до 10 её изображений.')}</p>
         </div>
         {can(user, 'gallery', 'edit') && (
-          <button className="studio-button" onClick={() => setEditing('new')}>
+          <button className="studio-button" onClick={() => openGallery('new')}>
             <Plus size={18} /> {t('Добавить галерею')}
           </button>
         )}
@@ -204,7 +219,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                       <button
                         className="studio-thumb-button"
                         aria-label={t(`Открыть ${work.title || t('галерею')}`)}
-                        onClick={() => setEditing(work.id)}
+                        onClick={() => openGallery(work.id)}
                       >
                         {image ? (
                           <img src={imageURL(image)} alt="" />
@@ -214,7 +229,7 @@ export function GalleryPanel({ locale }: { locale: Language }) {
                       </button>
                     </td>
                     <td>
-                      <button className="studio-title-button" onClick={() => setEditing(work.id)}>
+                      <button className="studio-title-button" onClick={() => openGallery(work.id)}>
                         {work.title || t('Добавьте перевод названия')}
                       </button>
                       {!work.published && <small className="studio-draft">{t('Черновик')}</small>}
@@ -397,12 +412,15 @@ function GalleryEditor({
   id,
   locale,
   onBack,
+  onNew,
 }: {
   id: number
   locale: Language
   onBack: () => void
+  onNew: () => void
 }) {
   const t = useAdminText()
+  const { user } = useAuth<User>()
 
   const [work, setWork] = useState<Artwork | null>(null)
   const [error, setError] = useState('')
@@ -450,17 +468,24 @@ function GalleryEditor({
             )}
           </p>
         </div>
-        {work.published && work.title && (
-          <a
-            className="studio-button secondary"
-            href={publicPath(work, locale)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t('На сайте')}
-            <ExternalLink size={16} />
-          </a>
-        )}
+        <div className="studio-heading-actions">
+          {can(user, 'gallery', 'edit') && (
+            <button className="studio-button" type="button" data-studio-navigation onClick={onNew}>
+              <Plus size={18} /> {t('Добавить галерею')}
+            </button>
+          )}
+          {work.published && work.title && (
+            <a
+              className="studio-button secondary"
+              href={publicPath(work, locale)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t('На сайте')}
+              <ExternalLink size={16} />
+            </a>
+          )}
+        </div>
       </div>
       <div className="studio-editor-grid">
         <div>
@@ -686,7 +711,6 @@ function NewGallery({
       onCreated(result.doc.id)
     } catch (error) {
       setError((error as Error).message)
-    } finally {
       setBusy(false)
     }
   }
