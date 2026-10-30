@@ -8,18 +8,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   if (!isLocale(locale)) notFound()
   const works = await getArtworks(locale)
-  const hasDemo = works.some((work) => work.demo)
   return (
     <main id="main" className="mosaic-main">
       <h1 className="sr-only">{text(locale, 'Картины', 'Paintings')}</h1>
       <MosaicGallery works={works.map(toCardItem)} locale={locale} />
       {works.length === 0 && (
         <p className="muted">{text(locale, 'Работы скоро появятся', 'New works coming soon')}</p>
-      )}
-      {hasDemo && (
-        <p className="showcase-demo">
-          {text(locale, 'Демонстрационные изображения', 'Demonstration images')}
-        </p>
       )}
     </main>
   )
