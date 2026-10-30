@@ -2074,6 +2074,7 @@ p {
 }
 .work-stage {
   position: relative;
+  width: 100%;
   height: auto;
   max-height: clamp(280px, calc(100svh - 350px), 680px);
   touch-action: pan-y pinch-zoom;
