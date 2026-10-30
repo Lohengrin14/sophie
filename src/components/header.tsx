@@ -4,9 +4,19 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { text, type Locale } from '@/lib/i18n'
+import { ThemePicker } from './theme-picker'
+import type { ThemeId } from '@/lib/site-themes'
 import type { Brand } from '@/lib/brand'
 
-export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
+export function Header({
+  locale,
+  brand,
+  initialTheme = 'mono',
+}: {
+  locale: Locale
+  brand: Brand
+  initialTheme?: ThemeId
+}) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const other = locale === 'ru' ? 'en' : 'ru'
@@ -54,6 +64,7 @@ export function Header({ locale, brand }: { locale: Locale; brand: Brand }) {
           })}
         </nav>
         <div className="header-actions">
+          <ThemePicker initialTheme={initialTheme} locale={locale} onOpen={() => setOpen(false)} />
           <Link
             className="language"
             href={alternate}
